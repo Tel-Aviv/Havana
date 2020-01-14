@@ -7,23 +7,19 @@ var fs = require('fs')
 var app = express();
 // app.use(cors({credentials:true, origin: 'http://localhost:8887',}))
 app.use(ntlm());
-app.use(express.static("./dist"))
-fs.readFile('./dist/index.html', "utf8", (err, file) => {
 
-    app.all('*', function(request, response) {
+const template = fs.readFileSync('./templates/index.html', "utf8")
 
-        if (err) {
-            console.error(err);
-            response.end(err.toString());
-            return
-        }
+app.get('/', function(request, response) {
 
-        file = file.replace('{USER_NAME}', request.ntlm.UserName);   
-        response.end(file)
-        
-    });
+    file = template.replace('{USER_NAME}', request.ntlm.UserName);   
+    response.end(file)
 
-    app.listen(8080);    
 })
+
+app.use(express.static("./dist"))
+
+
+app.listen(8080);    
     
 
