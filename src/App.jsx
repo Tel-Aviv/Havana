@@ -1,6 +1,7 @@
 // @flow
 import React, { useState, useEffect } from 'react';
 import { Route, Switch, withRouter, Link, useHistory } from 'react-router-dom';
+import axios from 'axios';
 import moment from 'moment';
 
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
@@ -19,8 +20,12 @@ import { blue } from '@ant-design/colors';
 import { DatePicker } from 'antd';
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 
+import ConfirmList from './ConfirmList';
 import Confirm from './Confirm';
 import MonthlyReport from './MonthlyReport';
+
+import { UserContext } from "./UserContext";
+import { getUserFromHtml } from './utils';
 
 const App = (props) => {
 
@@ -28,8 +33,21 @@ const App = (props) => {
 
     const [month, setMonth] = useState(moment().month());
     const [year, setYear] = useState(moment().year());
-    const elem = document.getElementById('USER_NAME');
-    const userName = elem.textContent;
+    const [isManager, setIsManager] = useState(false);
+    const [pendingsCount, setPendingsCount] = useState()
+    const user = getUserFromHtml()
+
+    useEffect( () => {
+        async function fetchData() {
+            let res = await axios('http://localhost:5000/api/v1/user/c1306948');
+            const isManager = res.data.isManager;
+            setIsManager(isManager)
+
+            res = await axios(`http://localhost:5000/api/v1/pendings/count`)
+            setPendingsCount(res.data.count);
+        }
+        fetchData();
+    }, [isManager])
 
     const onMonthChange = (date, dateString) => {
         if( date ) {
@@ -42,7 +60,7 @@ const App = (props) => {
     }
 
     const onApprovalClicked = () => {
-        history.push(`/confirm`);
+        history.push(`/confirmlist`);
     }
 
     return (
@@ -52,21 +70,26 @@ const App = (props) => {
                 <Row>
                     <Col span={4}><MonthPicker onChange={onMonthChange}/></Col>
                     <Col span={4}>
-                        <Badge count={25} onClick={onApprovalClicked}>
+                        <Badge count={pendingsCount} onClick={onApprovalClicked} hidden={!isManager}>
                             <Icon type="setting" theme="outlined" 
                                     style={{ fontSize: '28px', color: 'wheat' }}
                                  />
                         </Badge>    
                     </Col>
-                    <Col span={4} style={{color:'wheat'}}>שלום {userName}</Col>
+                    <Col span={4} style={{color:'wheat'}}>שלום {user.name}</Col>
                 </Row>
             </Header>
             <Layout style={{ padding: '0 24px 24px' }}>
-                <Switch>
-                    <Route exact path='/' component={MonthlyReport} />
-                    <Route path='/confirm' component={Confirm} />
-                </Switch>
-
+                <UserContext.Provider value={user}>
+                    <Switch>
+                        <Route exact path='/'
+                                render={ (props) => 
+                                    <MonthlyReport month={month} year={year} />
+                                }/>
+                        <Route path='/confirmlist' component={ConfirmList} />
+                        <Route path='/confirm/:userid' component={Confirm} />
+                    </Switch>
+                </UserContext.Provider>
             </Layout>
          </Layout>
         </> 

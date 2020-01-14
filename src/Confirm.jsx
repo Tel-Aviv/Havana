@@ -1,8 +1,13 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 
-const Confirm = () => {
-    return(
-        <div>DDD</div>
+const Confirm = (props) => {
+    
+    const routeParams = useParams();
+    console.log(routeParams.userid);
+
+    return (
+        <div>SS</div>
     )
 }
 
