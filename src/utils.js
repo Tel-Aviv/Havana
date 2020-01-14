@@ -7,6 +7,11 @@ export function getUserFromHtml() {
 
     return {
         name: userName,
-        id: userId
+        id: userId,
     }
+}
+
+export function getHost() {
+    const elem = document.getElementById('HOST');
+    return elem.textContent;
 }

@@ -7,7 +7,7 @@ const { Header, Content, Footer, Sider } = Layout;
 
 import { Table, Divider, Tag, Button } from 'antd';
 
-import { UserContext } from "./UserContext";
+import { DataContext } from "./DataContext";
 
 type Props = {
     month: number,
@@ -43,13 +43,13 @@ const MonthlyReport = (props: Props) => {
     const [year, setYear] = useState(props.year);
     const [tableData, setTableData] = useState([])
 
-    const user = useContext(UserContext)
+    const dataContext = useContext(DataContext)
 
     useEffect( () => {
 
         async function fetchData() {
             
-            const url = `http://localhost:5000/api/v1/report/${user.id}?m=${month}&y=${year}`;
+            const url = `http://${dataContext.host}/api/v1/report/${dataContext.user.id}?m=${month}&y=${year}`;
             const resp = await axios(url); 
             const data = resp.data.map( (item, index ) => {
                     const _item = {...item, key: index};

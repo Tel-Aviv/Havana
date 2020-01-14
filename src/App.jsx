@@ -24,8 +24,8 @@ import ConfirmList from './ConfirmList';
 import Confirm from './Confirm';
 import MonthlyReport from './MonthlyReport';
 
-import { UserContext } from "./UserContext";
-import { getUserFromHtml } from './utils';
+import { DataContext } from "./DataContext";
+import { getUserFromHtml, getHost } from './utils';
 
 const App = (props) => {
 
@@ -35,15 +35,19 @@ const App = (props) => {
     const [year, setYear] = useState(moment().year());
     const [isManager, setIsManager] = useState(false);
     const [pendingsCount, setPendingsCount] = useState()
-    const user = getUserFromHtml()
+    const context = {
+        user : getUserFromHtml(),
+        host : getHost()
+    }
+
 
     useEffect( () => {
         async function fetchData() {
-            let res = await axios('http://localhost:5000/api/v1/user/c1306948');
+            let res = await axios(`http://${context.host}/api/v1/user/${context.user.id}`);
             const isManager = res.data.isManager;
             setIsManager(isManager)
 
-            res = await axios(`http://localhost:5000/api/v1/pendings/count`)
+            res = await axios(`http://${context.host}/api/v1/pendings/count`)
             setPendingsCount(res.data.count);
         }
         fetchData();
@@ -76,11 +80,11 @@ const App = (props) => {
                                  />
                         </Badge>    
                     </Col>
-                    <Col span={4} style={{color:'wheat'}}>שלום {user.name}</Col>
+                    <Col span={4} style={{color:'wheat'}}>שלום {context.user.name}</Col>
                 </Row>
             </Header>
             <Layout style={{ padding: '0 24px 24px' }}>
-                <UserContext.Provider value={user}>
+                <DataContext.Provider value={context}>
                     <Switch>
                         <Route exact path='/'
                                 render={ (props) => 
@@ -89,11 +93,11 @@ const App = (props) => {
                         <Route path='/confirmlist' component={ConfirmList} />
                         <Route path='/confirm/:userid' component={Confirm} />
                     </Switch>
-                </UserContext.Provider>
+                </DataContext.Provider>
             </Layout>
          </Layout>
         </> 
     )
 }
 
-export default withRouter(App);
+export default App;

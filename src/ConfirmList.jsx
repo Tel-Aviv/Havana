@@ -1,9 +1,11 @@
 // @flow
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Route, Switch, withRouter, Link, useHistory } from 'react-router-dom';
 
 import { Table, Divider, Tag } from 'antd';
+
+import { DataContext } from './DataContext';
 
 const columns = [{
         title: 'Name',
@@ -25,11 +27,12 @@ const ConfirmList = () => {
 
     const history = useHistory()
     const [tableData, setTableData] = useState([])
+    const dataContext = useContext(DataContext)
 
     useEffect( () =>  {
 
         async function fetchData() {
-            const url = `http://localhost:5000/api/v1/pendings`;
+            const url = `http://${dataContext.host}/api/v1/pendings`;
             const resp = await axios(url); 
             setTableData(resp.data)
         }
