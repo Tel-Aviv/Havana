@@ -27,6 +27,10 @@ const columns = [{
         dataIndex: "exit",
         key: "exit"
     }, {
+        title: "Total",
+        dataIndex: "total",
+        key: "total"
+    },{
         title: "הערות",
         dataIndex: "notes",
         key: "notes"
