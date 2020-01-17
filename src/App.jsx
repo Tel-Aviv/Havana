@@ -4,30 +4,31 @@ import { Route, Switch, withRouter, Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 
-import { Layout, Menu, Breadcrumb, Icon } from 'antd';
+import { Layout, Menu, Breadcrumb, Icon } from 'antd-rtl';
 const { Header, Content, Footer, Sider } = Layout;
 
 import { Typography } from 'antd';
 const { Title } = Typography;
 
-import { Row, Col } from 'antd';
+import { Row, Col } from 'antd-rtl';
 
 import { Badge } from 'antd';
 import "antd/dist/antd.css";
 
 import { blue } from '@ant-design/colors';
 
-import { DatePicker } from 'antd';
+import { DatePicker } from 'antd-rtl';
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 
 import ConfirmList from './ConfirmList';
 import Confirm from './Confirm';
 import MonthlyReport from './MonthlyReport';
+import ReportPDF from './ReportPDF';
 
 import { DataContext } from "./DataContext";
 import { getUserFromHtml, getHost } from './utils';
 
-const App = (props) => {
+const App = () => {
 
     const history = useHistory();
 
@@ -72,7 +73,10 @@ const App = (props) => {
         <Layout style={{ minHeight: '100vh' }}>
             <Header className="header">
                 <Row>
-                    <Col span={4}><MonthPicker onChange={onMonthChange}/></Col>
+                    <Col span={4}>
+                        <MonthPicker onChange={onMonthChange}
+                                    value={moment()}/>
+                    </Col>
                     <Col span={4}>
                         <Badge count={pendingsCount} onClick={onApprovalClicked} hidden={!isManager}>
                             <Icon type="setting" theme="outlined" 
@@ -92,6 +96,10 @@ const App = (props) => {
                                 }/>
                         <Route path='/confirmlist' component={ConfirmList} />
                         <Route path='/confirm/:userid' component={Confirm} />
+                        <Route path='/pdf' 
+                                render={ (props) => 
+                                    <ReportPDF tableData={props} />
+                                } />
                     </Switch>
                 </DataContext.Provider>
             </Layout>

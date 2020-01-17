@@ -1,13 +1,17 @@
 // @flow
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
 
-import { Table, Divider, Tag, Button } from 'antd';
+import { Table, Divider, Tag, Button, Modal } from 'antd';
+
+import ReactToPrint from 'react-to-print';
 
 import { DataContext } from "./DataContext";
+import ReportPDF from './ReportPDF';
 
 type Props = {
     month: number,
@@ -42,8 +46,11 @@ const MonthlyReport = (props: Props) => {
     const [month, setMonth] = useState(props.month);
     const [year, setYear] = useState(props.year);
     const [tableData, setTableData] = useState([])
+    const [modalVisible, setModalVisible] = useState(false);
 
-    const dataContext = useContext(DataContext)
+    const dataContext = useContext(DataContext);
+    const history = useHistory();
+    const componentRef = useRef();
 
     useEffect( () => {
 
@@ -62,11 +69,32 @@ const MonthlyReport = (props: Props) => {
         fetchData()
     }, [])
 
+    const onShowPDF = () => {
+        //history.push('/pdf');
+        setModalVisible(!modalVisible);
+    }
+
+    const handlePrintCancel = () => {
+        setModalVisible(false);
+    }
+
     return(
         <Content style={{ margin: '0 16px' }}>
-            <Table dataSource={tableData} columns={columns}>
+            <Table dataSource={tableData} columns={columns}
+                    ref={componentRef}>
             </Table>
+            <Modal title="Print Report"
+                    visible={modalVisible}
+                    footer={[
+                            <ReactToPrint
+                                trigger={() => <Button type="primary">Print</Button>}
+                                content={() => componentRef.current}
+                            />,
+                            <Button onClick={handlePrintCancel}>Cancel</Button>
+                        ]}>
+            </Modal>
             <Button type="primary">Submit</Button>
+            <Button type="primary" onClick={onShowPDF}>PDF</Button>
         </Content>
     )
 }
