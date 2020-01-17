@@ -24,6 +24,7 @@ import ConfirmList from './ConfirmList';
 import Confirm from './Confirm';
 import MonthlyReport from './MonthlyReport';
 import ReportPDF from './ReportPDF';
+import Settings from './Settings';
 
 import { DataContext } from "./DataContext";
 import { getUserFromHtml, getHost } from './utils';
@@ -100,6 +101,8 @@ const App = () => {
                                 render={ (props) => 
                                     <ReportPDF tableData={props} />
                                 } />
+                        <Route path='/settings'
+                                component={Settings} />
                     </Switch>
                 </DataContext.Provider>
             </Layout>
