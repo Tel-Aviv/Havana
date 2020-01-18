@@ -7,3 +7,14 @@ html {
     color: wheat;
     font-size: '28px';
 }
+
+.avatar-uploader {
+    width: 128px;
+    height: 128px;
+    cursor: default;
+}
+
+.ant-upload-select-picture-card .ant-upload-text {
+    margin-top: 8px;
+    color: #666;
+}  

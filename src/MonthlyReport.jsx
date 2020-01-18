@@ -87,14 +87,11 @@ const MonthlyReport = (props: Props) => {
         setModalVisible(false);
     }
 
-    // const signatureSrc = 'data:image/png;base64,' + signature;
-
     return(
         <Content style={{ margin: '0 16px' }}>
-            <Table dataSource={tableData} columns={columns}
-                    ref={componentRef}>
+            <Table dataSource={tableData} columns={columns}>
             </Table>
-            <Img src={signature} />
+            
             <Modal title="Print Report"
                     visible={modalVisible}
                     footer={[
@@ -104,6 +101,11 @@ const MonthlyReport = (props: Props) => {
                             />,
                             <Button onClick={handlePrintCancel}>Cancel</Button>
                         ]}>
+                <div ref={componentRef}>   
+                    <Table dataSource={tableData} columns={columns}>
+                    </Table>                     
+                    <Img src={signature} /> 
+                </div>
             </Modal>
             <Button type="primary">Submit</Button>
             <Button type="primary" onClick={onShowPDF}>PDF</Button>
