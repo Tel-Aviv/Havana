@@ -4,8 +4,10 @@ import { Route, Switch, withRouter, Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 
-import { Layout, Menu, Breadcrumb, Icon } from 'antd-rtl';
+import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
+
+import { version } from 'antd';
 
 import { Typography } from 'antd';
 const { Title } = Typography;
@@ -42,14 +44,17 @@ const App = () => {
         host : getHost()
     }
 
-
     useEffect( () => {
         async function fetchData() {
-            let res = await axios(`http://${context.host}/api/v1/user/${context.user.id}`);
+            let res = await axios(`http://${context.host}/api/v1/user/${context.user.id}`, {
+                withCredentials: true
+            });
             const isManager = res.data.isManager;
             setIsManager(isManager)
 
-            res = await axios(`http://${context.host}/api/v1/pendings/count`)
+            res = await axios(`http://${context.host}/api/v1/pendings/count`, {
+                withCredentials: true
+            })
             setPendingsCount(res.data.count);
         }
         fetchData();
@@ -69,6 +74,10 @@ const App = () => {
         history.push(`/confirmlist`);
     }
 
+    const goSettings = () => {
+        history.push(`/settings`);
+    }
+
     return (
         <>
         <Layout style={{ minHeight: '100vh' }}>
@@ -79,8 +88,11 @@ const App = () => {
                                     value={moment()}/>
                     </Col>
                     <Col span={4}>
+                        <Icon type="setting" theme="outlined" 
+                            style={{ fontSize: '28px', color: 'wheat' }}
+                            onClick={goSettings}/>
                         <Badge count={pendingsCount} onClick={onApprovalClicked} hidden={!isManager}>
-                            <Icon type="setting" theme="outlined" 
+                            <Icon type="notification" theme="outlined" 
                                     style={{ fontSize: '28px', color: 'wheat' }}
                                  />
                         </Badge>    
