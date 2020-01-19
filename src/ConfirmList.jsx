@@ -8,7 +8,7 @@ import { Table, Divider, Tag } from 'antd';
 import { DataContext } from './DataContext';
 
 const columns = [{
-        title: 'Name',
+        title: 'שם עובד',
         dataIndex: 'name',
         key: 'name',
     },{
@@ -16,7 +16,7 @@ const columns = [{
       dataIndex: "id",
       key: "id"
   }, {
-      title: "comment",
+      title: "הערות",
       dataIndex: "comment",
       key: "comment"
   }
@@ -33,7 +33,9 @@ const ConfirmList = () => {
 
         async function fetchData() {
             const url = `http://${dataContext.host}/api/v1/pendings`;
-            const resp = await axios(url); 
+            const resp = await axios(url, {
+                withCredentials: true
+            }); 
             setTableData(resp.data)
         }
 
