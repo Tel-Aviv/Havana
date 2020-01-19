@@ -3,8 +3,8 @@ import React, { useState } from 'react'
 import { Input, InputNumber, Form, Button } from 'antd';
 var moment = require('moment');
 
-import { EditableContext } from "./table-context";
-import DatePicker from '../TimePicker'
+import { ReportContext } from "./table-context";
+import CustomTimePicker from '../CustomTimePicker'
 const format = 'H:mm';
 
 
@@ -13,13 +13,13 @@ const format = 'H:mm';
 export default class EditableCell extends React.Component {
     getInput = () => (this.props.inputType !== 'time') ?
                         <Input /> :
-                        <DatePicker />
+                        <CustomTimePicker />
     cellEditable = (inputType, val) => { 
         return ( inputType !== 'time' ||  !val)
     }
     
     render() {
-        return <EditableContext.Consumer>
+        return <ReportContext.Consumer>
             {({ getFieldDecorator }) => {
                 const {
                     rowEditing,
@@ -53,6 +53,6 @@ export default class EditableCell extends React.Component {
                     </td>
                 );
             }}
-        </EditableContext.Consumer>;
+        </ReportContext.Consumer>;
     }
 }

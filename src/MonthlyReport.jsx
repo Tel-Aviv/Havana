@@ -9,15 +9,15 @@ import { useTranslation, Trans } from "react-i18next";
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
 
-import { Divider, Tag, Button } from 'antd';
+// import { Divider, Tag, Button } from 'antd';
 
-import { Table, Divider, Tag, Button, Modal } from 'antd';
+import {  Divider, Tag, Button, Modal } from 'antd';
 import { Typography } from 'antd';
 const { Title, Paragraph, Text } = Typography;
 
 import ReactToPrint from 'react-to-print';
 
-import Table from './components/Table/Table';
+import Report from './components/Report/Report';
 import { DataContext } from "./DataContext";
 import ReportPDF from './ReportPDF';
 
@@ -43,39 +43,37 @@ const MonthlyReport = (props: Props) => {
 
     const { t } = useTranslation();
 
-    useEffect( () => {  
-
+    useEffect( () => {
         async function fetchData() {
 
             setLoadingData(true)
-            //const url = `http://${dataContext.host}/api/report/${dataContext.user.id}?year=${year}&month=${month}`;
-            const url = `http://${dataContext.host}/me/reports/?year=2019&month=12`;
-            const resp = await axios(url, {
-
-            
-            setMonth(props.month)
-            setYear(props.year)
-
-            const url = `http://${dataContext.host}/api/v1/report/${dataContext.user.id}?m=${props.month}&y=${props.year}`;
-            let resp = await axios(url, {
-                withCredentials: true
-            }); 
-            const data = resp.data.map( (item, index ) => {
-                    const _item = {...item, key: index};
-                    // _item.day = `${item.day} ${item.dayOfWeek}`;
-                    return _item;
-            })
-            setTableData(data)
-            setLoadingData(false)
-
-            resp = await axios('http://localhost:5000/me/signatute', {
-                withCredentials: true
-            });
-            setSignature(resp.data)
-
+            try {
+                const url = `http://${dataContext.host}/me/reports?month=${props.month + 1}&year=${props.year}`;
+                const resp = await axios(url, {
+                    withCredentials: true
+                }); 
+                const data = resp.data.map( (item, index ) => {
+                        const _item = {...item, key: index};
+                        return _item;
+                })
+                setLoadingData(false)
+                setTableData(data)
+            } catch(err) {
+                console.error(err);
+            }
+            try {
+                const resp = await axios(`http://${dataContext.host}/me/signature`, {
+                    withCredentials: true
+                });
+                setSignature(resp.data)
+            } catch(err) {
+                console.error(err);
+            }
         }
         fetchData()
     }, [props])
+
+  
 
     const onShowPDF = () => {
         //history.push('/pdf');
@@ -89,11 +87,8 @@ const MonthlyReport = (props: Props) => {
     return (
         <Content style={{ margin: '0 16px' }}>
 
-            <Table dataSource={tableData} loading={loadingData}/>
             <Title level={2} dir='rtl'>{t('title')} {t('for_month')} {month+1}.{year}</Title>
-            <Table dataSource={tableData} columns={columns}
-                    pagination={false} bordered={true}>
-            </Table>
+            <Report dataSource={tableData} loading={loadingData} editable={true}/>
             
             <Modal title="Print Report"
                     visible={modalVisible}
@@ -107,9 +102,7 @@ const MonthlyReport = (props: Props) => {
                 <div ref={componentRef}>
                     <Title level={3} dir='rtl'>{dataContext.user.name}</Title>
                     <Title level={4} dir='rtl'>{t('title')} {t('for_month')} {month+1}.{year}</Title>
-                    <Table dataSource={tableData} columns={columns}
-                            pagination={false} bordered={true}>
-                    </Table>                     
+                    <Report dataSource={tableData} loading={loadingData} editable={true}/>                   
                     <Img src={signature} /> 
                 </div>
             </Modal>

@@ -5,7 +5,7 @@ import 'antd/dist/antd.css';
 import { Table, Popconfirm, Form, Icon, Button } from 'antd';
 var moment = require('moment');
 
-import { EditableContext } from "./table-context";
+import { ReportContext } from "./table-context";
 import EditableCell from './EditableCell'
 import Axios from 'axios';
 
@@ -32,13 +32,6 @@ class EditableTable extends React.Component {
         ellipsis: true,
         editable: false,
       },
-      // {
-      //   title: 'יום',
-      //   dataIndex: 'dayOfWeek',
-      //   ellipsis: true,
-      //   align: 'center',
-      //   editable: false,
-      // },
       {
         title: 'כניסה',
         dataIndex: 'entry',
@@ -81,13 +74,13 @@ class EditableTable extends React.Component {
               <Popconfirm title="האם ברצונך לבטל את השינויים ?" onConfirm={() => this.cancel(record.key)}>
                 <Icon type="close-circle" theme="twoTone" twoToneColor="#eb2f96" style={iconStyle} />
               </Popconfirm>
-              <EditableContext.Consumer>
+              <ReportContext.Consumer>
                 {form => (
                   <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a"
                     onClick={() => this.save(form, record.key)}
                     style={iconStyle} />
                 )}
-              </EditableContext.Consumer>
+              </ReportContext.Consumer>
             </span>
           ) : (
               editingKey === '' ?
@@ -122,7 +115,7 @@ class EditableTable extends React.Component {
   }
 
   isRowEditable = record => {
-    return true &&  // not manager
+    return this.props.editable &&  // not manager
       record.dayOfWeek != "ז" &&
       record.dayOfWeek != "ו" && (  
         !record.entry || !record.exit  
@@ -195,8 +188,11 @@ class EditableTable extends React.Component {
     });
 
     const isValid = !this.state.data.some(r => !r.valid)
+    if (isValid) {
+      //call to callback
+    }
     return (
-      <EditableContext.Provider value={this.props.form}>
+      <ReportContext.Provider value={this.props.form}>
         <Table
           {...this.props}
           tableLayout='auto'
@@ -209,8 +205,8 @@ class EditableTable extends React.Component {
           size="small"
           tableLayout={undefined}
         />
-        <Button disabled={!isValid} onClick={() => this.submit()} type="primary">Submit</Button>
-      </EditableContext.Provider>
+        {/* <Button disabled={!isValid} onClick={() => this.submit()} type="primary">Submit</Button> */}
+      </ReportContext.Provider>
     );
   }
 }

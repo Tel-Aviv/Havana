@@ -61,7 +61,7 @@ const App = () => {
 
     useEffect( () => {
         async function fetchData() {
-            let res = await axios(`http://${context.host}/api/v1/user/${context.user.id}`, {
+            let res = await axios(`http://${context.host}/api/users/${context.user.id}`, {
                 withCredentials: true
             });
             const isManager = res.data.isManager;
@@ -73,12 +73,6 @@ const App = () => {
                 })
                 setPendingsCount(res.data.count);
             }
-
-            res = await axios(`http://${context.host}/api/v1/pendings/count`, {
-                withCredentials: true
-            })
-            setPendingsCount(res.data.count);
-
         }
         fetchData();
     }, [isManager])
