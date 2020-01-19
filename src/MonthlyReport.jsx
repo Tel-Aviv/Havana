@@ -9,12 +9,15 @@ import { useTranslation, Trans } from "react-i18next";
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
 
+import { Divider, Tag, Button } from 'antd';
+
 import { Table, Divider, Tag, Button, Modal } from 'antd';
 import { Typography } from 'antd';
 const { Title, Paragraph, Text } = Typography;
 
 import ReactToPrint from 'react-to-print';
 
+import Table from './components/Table/Table';
 import { DataContext } from "./DataContext";
 import ReportPDF from './ReportPDF';
 
@@ -23,46 +26,14 @@ type Props = {
     year: number
 }
 
-const columns = [{
-        title: 'תאריך',
-        dataIndex: 'day',
-        key: 'day'
-    }, {
-        title: "כניסה",
-        dataIndex: "entry",
-        key: "entry"
-    }, {
-        title: "יציאה",
-        dataIndex: "exit",
-        key: "exit"
-    }, {
-        title: "סה",
-        dataIndex: "total",
-        key: "total"
-    },{
-        title: "הערות",
-        dataIndex: "notes",
-        key: "notes",
-        render: (notes, record) => {
-            let note = !record.entry ? 'no_entry' : '';
-            if( !note ) {
-                note = !record.exit ? 'no_exit' : '';
-            }
-            
-            return (<span>
-                <Tag color='volcano'>
-                    <Trans i18nKey={note} />
-                </Tag>
-            </span>)
-        }
-    }
-];
-
 const MonthlyReport = (props: Props) => {
 
     const [month, setMonth] = useState(props.month);
     const [year, setYear] = useState(props.year);
     const [tableData, setTableData] = useState([])
+
+    const [loadingData, setLoadingData] = useState(false)
+
     const [modalVisible, setModalVisible] = useState(false);
     const [signature, setSignature] = useState()
 
@@ -72,23 +43,30 @@ const MonthlyReport = (props: Props) => {
 
     const { t } = useTranslation();
 
-    useEffect( () => {
+    useEffect( () => {  
 
         async function fetchData() {
+
+            setLoadingData(true)
+            //const url = `http://${dataContext.host}/api/report/${dataContext.user.id}?year=${year}&month=${month}`;
+            const url = `http://${dataContext.host}/me/reports/?year=2019&month=12`;
+            const resp = await axios(url, {
+
             
             setMonth(props.month)
             setYear(props.year)
 
-            const url = `http://${dataContext.host}/api/v1/report/${dataContext.user.id}?m=${month}&y=${year}`;
+            const url = `http://${dataContext.host}/api/v1/report/${dataContext.user.id}?m=${props.month}&y=${props.year}`;
             let resp = await axios(url, {
                 withCredentials: true
             }); 
             const data = resp.data.map( (item, index ) => {
                     const _item = {...item, key: index};
-                    _item.day = `${item.day} ${item.dayOfWeek}`;
+                    // _item.day = `${item.day} ${item.dayOfWeek}`;
                     return _item;
             })
             setTableData(data)
+            setLoadingData(false)
 
             resp = await axios('http://localhost:5000/me/signatute', {
                 withCredentials: true
@@ -108,8 +86,10 @@ const MonthlyReport = (props: Props) => {
         setModalVisible(false);
     }
 
-    return(
+    return (
         <Content style={{ margin: '0 16px' }}>
+
+            <Table dataSource={tableData} loading={loadingData}/>
             <Title level={2} dir='rtl'>{t('title')} {t('for_month')} {month+1}.{year}</Title>
             <Table dataSource={tableData} columns={columns}
                     pagination={false} bordered={true}>

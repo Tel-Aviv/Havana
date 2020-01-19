@@ -67,10 +67,18 @@ const App = () => {
             const isManager = res.data.isManager;
             setIsManager(isManager)
 
+            if( isManager ) {
+                res = await axios(`http://${context.host}/me/pendings/count`,{
+                    withCredentials: true
+                })
+                setPendingsCount(res.data.count);
+            }
+
             res = await axios(`http://${context.host}/api/v1/pendings/count`, {
                 withCredentials: true
             })
             setPendingsCount(res.data.count);
+
         }
         fetchData();
     }, [isManager])
