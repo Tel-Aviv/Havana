@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 
 import { TimePicker, Button } from 'antd';
 
+const format = 'H:mm';
 export default React.forwardRef((props, ref) => {
     const [open, setOpen] = useState(false);
     return (

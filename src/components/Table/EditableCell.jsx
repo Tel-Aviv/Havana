@@ -11,13 +11,9 @@ const format = 'H:mm';
 
 
 export default class EditableCell extends React.Component {
-    getInput = () => {
-
-        if (this.props.inputType !== 'time') {
-            return <Input />;
-        }
-        return <DatePicker />;
-    };
+    getInput = () => (this.props.inputType !== 'time') ?
+                        <Input /> :
+                        <DatePicker />
     cellEditable = (inputType, val) => { 
         return ( inputType !== 'time' ||  !val)
     }
@@ -25,37 +21,38 @@ export default class EditableCell extends React.Component {
     render() {
         return <EditableContext.Consumer>
             {({ getFieldDecorator }) => {
-        const {
-            rowEditing,
-            dataIndex,
-            title,
-            inputType,
-            record,
-            index,
-            children,
-            ...restProps
-        } = this.props;
-        return (
-            <td {...restProps}>
-                {rowEditing && this.cellEditable(inputType, record[dataIndex]) ?  (
-                    <Form.Item style={{ margin: 0 }}>
-                        {getFieldDecorator(dataIndex, {
-                            rules: [
-                                {
-                                    required: true,
-                                    message: `אנא הזן ${title}!`,
-                                },
-                            ],
-                            initialValue: (record[dataIndex] && this.props.inputType === 'time') ?
-                                        moment.utc(record[dataIndex], format) : undefined
-                        })(this.getInput())}
-                    </Form.Item>
-                ) : (
-                        children
-                    )}
-            </td>
-        );
-    }}
+                const {
+                    rowEditing,
+                    dataIndex,
+                    title,
+                    inputType,
+                    record,
+                    index,
+                    children,
+                    cellEditbale,
+                    ...restProps
+                } = this.props;
+                return (
+                    <td {...restProps}>
+                        {rowEditing && cellEditbale ?  (
+                            <Form.Item style={{ margin: 0 }}>
+                                {getFieldDecorator(dataIndex, {
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: `אנא הזן ${title}!`,
+                                        },
+                                    ],
+                                    initialValue: (record[dataIndex] && this.props.inputType === 'time') ?
+                                                moment.utc(record[dataIndex], format) : undefined
+                                })(this.getInput())}
+                            </Form.Item>
+                        ) : (
+                                children
+                            )}
+                    </td>
+                );
+            }}
         </EditableContext.Consumer>;
     }
 }

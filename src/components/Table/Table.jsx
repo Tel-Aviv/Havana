@@ -22,6 +22,7 @@ class EditableTable extends React.Component {
     super(props);
     this.state = { 
       data: [],
+      originalData: [],
       editingKey: '' 
     };
     this.columns = [
@@ -72,9 +73,9 @@ class EditableTable extends React.Component {
         dataIndex: 'operation',
         render: (text, record) => {
           const { editingKey } = this.state;
-          const editable = record.requireChange;
+          const editableRow = record.requireChange;
           const editing = this.isRowEditing(record);
-          return !editable ? {} :
+          return !editableRow ? {} :
           editing ? (
             <span>
               <Popconfirm title="האם ברצונך לבטל את השינויים ?" onConfirm={() => this.cancel(record.key)}>
@@ -106,6 +107,7 @@ class EditableTable extends React.Component {
       if(this.props.dataSource != prevProps.dataSource) {
         this.setState({
           ...this.state,
+          originalData: this.props.dataSource,
           data: this.props.dataSource.map( record =>  {
             record.requireChange = this.isRowEditable(record);
             record.valid = (record.requireChange)?  false : true;
@@ -159,12 +161,12 @@ class EditableTable extends React.Component {
     this.setState({ editingKey: key });
   }
   submit() {
-     axios({
-       method: 'post',
-       data: this.state.data,
-       url: `http://${dataContext.host}/me/reports/?year=2019&month=12`,
-       withCredentials: true
-     }) 
+    //  axios({
+    //    method: 'post',
+    //    data: this.state.data,
+    //    url: `http://${dataContext.host}/me/reports/?year=2019&month=12`,
+    //    withCredentials: true
+    //  }) 
   }
   render() {
     const components = {
@@ -179,13 +181,15 @@ class EditableTable extends React.Component {
       }
       return {
         ...col,
-        onCell: record => ({
+        onCell: (record, rowIndex) => ({
           record,
           inputType: (col.dataIndex === 'exit' ||
             col.dataIndex === 'entry') ? 'time' : 'text',
           dataIndex: col.dataIndex,
           title: col.title,
           rowEditing: this.isRowEditing(record),
+          cellEditbale: col.dataIndex == 'notes' || 
+                        !this.state.originalData[rowIndex][col.dataIndex],
         }),
       };
     });
