@@ -12,7 +12,11 @@ const template = fs.readFileSync('./templates/index.html', "utf8")
 
 app.get('/', function(request, response) {
 
-    file = template.replace('{USER_NAME}', request.ntlm.UserName);   
+    file = 
+        template.replace('{USER_NAME}', request.ntlm.UserName)
+                .replace('{USER_ID}', 'c1306948')
+                .replace('{HOST}', 'localhost/ps')  
+
     response.end(file)
 
 })

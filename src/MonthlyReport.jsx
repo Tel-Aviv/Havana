@@ -5,8 +5,9 @@ import axios from 'axios';
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
 
-import { Table, Divider, Tag, Button } from 'antd';
+import { Divider, Tag, Button } from 'antd';
 
+import Table from './components/Table/Table';
 import { DataContext } from "./DataContext";
 
 type Props = {
@@ -14,59 +15,39 @@ type Props = {
     year: number
 }
 
-const columns = [{
-        title: 'תאריך',
-        dataIndex: 'day',
-        key: 'day'
-    }, {
-        title: "כניסה",
-        dataIndex: "entry",
-        key: "entry"
-    }, {
-        title: "יציאה",
-        dataIndex: "exit",
-        key: "exit"
-    }, {
-        title: "Total",
-        dataIndex: "total",
-        key: "total"
-    },{
-        title: "הערות",
-        dataIndex: "notes",
-        key: "notes"
-    }
-];
 
 const MonthlyReport = (props: Props) => {
 
     const [month, setMonth] = useState(props.month);
     const [year, setYear] = useState(props.year);
     const [tableData, setTableData] = useState([])
+    const [loadingData, setLoadingData] = useState(false)
 
     const dataContext = useContext(DataContext)
 
-    useEffect( () => {
+    useEffect( () => {  
 
         async function fetchData() {
-            
-            const url = `http://${dataContext.host}/api/v1/report/${dataContext.user.id}?m=${month}&y=${year}`;
-            const resp = await axios(url); 
+            setLoadingData(true)
+            //const url = `http://${dataContext.host}/api/report/${dataContext.user.id}?year=${year}&month=${month}`;
+            const url = `http://${dataContext.host}/me/reports/?year=2019&month=12`;
+            const resp = await axios(url, {
+                withCredentials: true
+            }); 
             const data = resp.data.map( (item, index ) => {
                     const _item = {...item, key: index};
-                    _item.day = `${item.day} ${item.dayOfWeek}`;
+                    // _item.day = `${item.day} ${item.dayOfWeek}`;
                     return _item;
             })
             setTableData(data)
-
+            setLoadingData(false)
         }
         fetchData()
     }, [])
 
-    return(
+    return (
         <Content style={{ margin: '0 16px' }}>
-            <Table dataSource={tableData} columns={columns}>
-            </Table>
-            <Button type="primary">Submit</Button>
+            <Table dataSource={tableData} loading={loadingData}/>
         </Content>
     )
 }
