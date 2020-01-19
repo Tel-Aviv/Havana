@@ -7,3 +7,20 @@ html {
     color: wheat;
     font-size: '28px';
 }
+
+.cbox {
+    border: 1px solid #40a9ff;
+    border-radius: 2px;
+    margin: 0 0 16px;
+}
+
+.avatar-uploader {
+    width: 128px;
+    height: 128px;
+    cursor: default;
+}
+
+.ant-upload-select-picture-card .ant-upload-text {
+    margin-top: 8px;
+    color: #666;
+}  
