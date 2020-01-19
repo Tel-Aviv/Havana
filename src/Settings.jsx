@@ -6,24 +6,29 @@ import { Upload, Button, Icon, message } from 'antd';
 import { Row, Col } from 'antd';
 
 import { Typography } from 'antd';
-const { Text } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 import { DataContext } from './DataContext';
 
 const Settings = () => {
 
     const [signature, setSignature] = useState()
+    const [stamp, setStamp] = useState();
     const [loading, setLoading] = useState()
     const context = useContext(DataContext)
 
     useEffect( () => {
 
         async function fetchData() {
-            const resp = await axios('http://localhost:5000/me/signatute', {
+            let resp = await axios('http://localhost:5000/me/signatute', {
                 withCredentials: true
             });
             setSignature(resp.data)
 
+            resp = await axios('http://localhost:5000/me/stamp', {
+                withCredentials: true
+            }) 
+            setStamp(resp.data)
         }
 
         fetchData()
@@ -98,15 +103,27 @@ const Settings = () => {
 
     return (
         <>
-            <Row>
-                
-                <Upload {...uploadProps}>
-                    { signature?  <>
-                                     <img src={signature} className='avatar-uploader' onClick={e => dummyClick(e) }/> 
-                                     <Button onClick={ e => removeSignature(e) }>remove</Button>
-                                  </> : 
-                                  uploadButton }
-                </Upload>            
+            <Title level={2}>Your Pesrsonal Info</Title>
+            <Row gutter={[16, 16]}>
+                <Col span={12} className='cbox'>
+                    <Text>Signature</Text>
+                    <Upload {...uploadProps}>
+                        { signature?  <>
+                                        <img src={signature} className='avatar-uploader' onClick={e => dummyClick(e) }/> 
+                                        <Button onClick={ e => removeSignature(e) }>remove</Button>
+                                    </> : 
+                                    uploadButton }
+                    </Upload>
+                    <br /> <br /> <br /> <br />
+
+                </Col>
+                <Col span={12} className='cbox'>
+                    <Text>Seal</Text>
+                    <Upload {...uploadProps}>
+                        <img src={stamp} />
+                    </Upload> 
+                </Col>
+
             </Row>
         </>
     )

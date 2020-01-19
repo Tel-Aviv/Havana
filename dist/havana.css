@@ -8,6 +8,12 @@ html {
     font-size: '28px';
 }
 
+.cbox {
+    border: 1px solid #40a9ff;
+    border-radius: 2px;
+    margin: 0 0 16px;
+}
+
 .avatar-uploader {
     width: 128px;
     height: 128px;
