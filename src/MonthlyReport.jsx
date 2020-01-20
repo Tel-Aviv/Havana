@@ -4,12 +4,11 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Img from 'react-image';
 import i18n from 'i18next';
+
 import { useTranslation } from "react-i18next";
 
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
-
-// import { Divider, Tag, Button } from 'antd';
 
 import {  Divider, Tag, Button, Modal } from 'antd';
 import { Typography } from 'antd';
@@ -31,7 +30,7 @@ const MonthlyReport = (props: Props) => {
     const [month, setMonth] = useState(props.month);
     const [year, setYear] = useState(props.year);
     const [tableData, setTableData] = useState([])
-
+    const [reportId, setReportId] = useState();
     const [loadingData, setLoadingData] = useState(false)
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -46,16 +45,24 @@ const MonthlyReport = (props: Props) => {
     useEffect( () => {
         async function fetchData() {
 
+            setMonth(props.month)
+            setYear(props.year)
+
             setLoadingData(true)
             try {
                 const url = `http://${dataContext.host}/me/reports?month=${props.month + 1}&year=${props.year}`;
                 const resp = await axios(url, {
                     withCredentials: true
                 }); 
+                let reportId = 0;
                 const data = resp.data.map( (item, index ) => {
                         const _item = {...item, key: index};
+                        if( reportId === 0 )
+                            reportId = item.reportId;
                         return _item;
                 })
+                setLoadingData(false)
+                setReportId(reportId);
                 setTableData(data)
             } catch(err) {
                 console.error(err);
@@ -76,6 +83,18 @@ const MonthlyReport = (props: Props) => {
     }, [props])
 
   
+    const onSubmit = async () => {
+        try {
+            await axios({
+                url: `http://${dataContext.host}/me/reports?month=${month + 1}&year=${year}&reportid=${reportId}`, 
+                method: 'post',
+                data: tableData,
+                withCredentials: true
+            })
+        } catch(err) {
+            console.error(err);
+        }
+    }
 
     const onShowPDF = () => {
         //history.push('/pdf');
@@ -108,7 +127,7 @@ const MonthlyReport = (props: Props) => {
                     <Img src={signature} /> 
                 </div>
             </Modal>
-            <Button type="primary">{t('submit')}</Button>
+            <Button type="primary" onClick={onSubmit}>{t('submit')}</Button>
             <Button type="primary" onClick={onShowPDF}>PDF</Button>
         </Content>
     )
