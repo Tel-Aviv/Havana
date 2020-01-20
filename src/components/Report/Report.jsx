@@ -7,15 +7,16 @@ var moment = require('moment');
 
 import { ReportContext } from "./table-context";
 import EditableCell from './EditableCell'
-import Axios from 'axios';
+import EditIcons from './EditIcons';
 
 const format = 'H:mm';
 
 
-const iconStyle = {
-  margin: 8,
-  fontSize: '100%'
-}
+
+
+const columns =[
+
+]
 
 class EditableTable extends React.Component {
   constructor(props) {
@@ -29,6 +30,7 @@ class EditableTable extends React.Component {
       {
         title: 'יום',
         dataIndex: 'day',
+        align: 'right',
         ellipsis: true,
         editable: false,
       },
@@ -64,34 +66,16 @@ class EditableTable extends React.Component {
         title: '',
         width: '8%',
         dataIndex: 'operation',
-        render: (text, record) => {
-          const { editingKey } = this.state;
-          const editableRow = record.requireChange;
-          const editing = this.isRowEditing(record);
-          return !editableRow ? {} :
-          editing ? (
-            <span>
-              <Popconfirm title="האם ברצונך לבטל את השינויים ?" onConfirm={() => this.cancel(record.key)}>
-                <Icon type="close-circle" theme="twoTone" twoToneColor="#eb2f96" style={iconStyle} />
-              </Popconfirm>
-              <ReportContext.Consumer>
-                {form => (
-                  <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a"
-                    onClick={() => this.save(form, record.key)}
-                    style={iconStyle} />
-                )}
-              </ReportContext.Consumer>
-            </span>
-          ) : (
-              editingKey === '' ?
-                (<Icon type="edit" theme="twoTone"
-                  onClick={() => this.edit(record.key)} type="edit" style={iconStyle} />)
-                : (
-                  <Icon type="edit" style={iconStyle} />
-                )
-
-            );
-        },
+        render: (text, record) => 
+           (record.requireChange)? 
+            (<EditIcons 
+              recordId={record.key}
+              editing={this.isRowEditing(record)} 
+              disable={this.state.editingKey !== ''} 
+              edit={this.edit.bind(this)} 
+              save={this.save.bind(this)} 
+              cancel={this.cancel.bind(this)}
+            />): {}
       },
     ];
   }
@@ -144,9 +128,7 @@ class EditableTable extends React.Component {
         
         newData.splice(index, 1, newItem);
         this.setState({ data: newData, editingKey: '' });
-      } else {
-        newData.push(row);
-        this.setState({ data: newData, editingKey: '' });
+        this.props.onChange && this.props.onChange(newData)
       }
     });
   }
@@ -154,12 +136,7 @@ class EditableTable extends React.Component {
     this.setState({ editingKey: key });
   }
   submit() {
-    //  axios({
-    //    method: 'post',
-    //    data: this.state.data,
-    //    url: `http://${dataContext.host}/me/reports/?year=2019&month=12`,
-    //    withCredentials: true
-    //  }) 
+
   }
   render() {
     const components = {
@@ -189,11 +166,12 @@ class EditableTable extends React.Component {
 
     const isValid = !this.state.data.some(r => !r.valid)
     if (isValid) {
-      //call to callback
+      this.props.onValidated && this.props.onValidated(this.state.data)
     }
     return (
       <ReportContext.Provider value={this.props.form}>
         <Table
+          style={{ direction: 'rtl' }}
           {...this.props}
           tableLayout='auto'
           bordered={false}
@@ -204,8 +182,8 @@ class EditableTable extends React.Component {
           pagination={false}
           size="small"
           tableLayout={undefined}
+          
         />
-        {/* <Button disabled={!isValid} onClick={() => this.submit()} type="primary">Submit</Button> */}
       </ReportContext.Provider>
     );
   }

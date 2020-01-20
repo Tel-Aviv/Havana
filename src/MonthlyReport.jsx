@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Img from 'react-image';
 import i18n from 'i18next';
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
@@ -56,11 +56,13 @@ const MonthlyReport = (props: Props) => {
                         const _item = {...item, key: index};
                         return _item;
                 })
-                setLoadingData(false)
                 setTableData(data)
             } catch(err) {
                 console.error(err);
+            }  finally {
+                setLoadingData(false)
             }
+
             try {
                 const resp = await axios(`http://${dataContext.host}/me/signature`, {
                     withCredentials: true
