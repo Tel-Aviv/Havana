@@ -80,8 +80,10 @@ const MonthlyReport = (props: Props) => {
   
     const onSubmit = async () => {
         try {
-            await axios.post(`http://${dataContext.host}/me/reports?month=${month + 1}&year=${year}&reportid=${reportId}`, {
-                body: tableData,
+            await axios({
+                url: `http://${dataContext.host}/me/reports?month=${month + 1}&year=${year}&reportid=${reportId}`, 
+                method: 'post',
+                data: tableData,
                 withCredentials: true
             })
         } catch(err) {
