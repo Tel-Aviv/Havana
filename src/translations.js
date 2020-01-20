@@ -9,6 +9,7 @@ const translations = {
             "no_entry": "no entry",
             "no_exit": "no exit",
             "submit": "Submit",
+            "approve": "Approve",
             "for_month": "for month",
         }
     },
@@ -22,6 +23,7 @@ const translations = {
             "no_entry": "כניסה חסרה",
             "no_exit": "יציאה חסרה",
             "submit": "שלח",
+            "approve": "אישור",
             "for_month": " לחודש",
         }
     }

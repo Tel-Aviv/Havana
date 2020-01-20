@@ -148,7 +148,10 @@ const App = () => {
                                     <MonthlyReport month={month} year={year} />
                                 }/>
                         <Route path='/confirmlist' component={ConfirmList} />
-                        <Route path='/confirm/:userid' component={Confirm} />
+                        <Route path='/confirm/:userid'
+                                render={ () => 
+                                    <Confirm month={month} year={year} />
+                                } />
                         <Route path='/pdf' 
                                 render={ (props) => 
                                     <ReportPDF tableData={props} />
