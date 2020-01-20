@@ -5,6 +5,7 @@ import axios from 'axios';
 import moment from 'moment';
 import i18n from 'i18next';
 import { useTranslation, initReactI18next } from "react-i18next";
+import { Helmet } from 'react-helmet';
 
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
@@ -105,8 +106,12 @@ const App = () => {
 
     return (
         <>
-        <Layout style={{ minHeight: '100vh' }}>
-            <Header className="header">
+        <Helmet>
+            <title>{t('title')}</title>
+            <meta name="description" content={t('title')} />
+        </Helmet>        
+        <Layout> 
+            <Header>
                 <Row>
                     <Col span={4}>
                         <Tooltip title={t('home')}>
@@ -153,8 +158,8 @@ const App = () => {
                     </Switch>
                 </DataContext.Provider>
             </Layout>
-         </Layout>
-        </> 
+        </Layout> 
+    </>
     )
 }
 
