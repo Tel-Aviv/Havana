@@ -20,12 +20,12 @@ const Settings = () => {
     useEffect( () => {
 
         async function fetchData() {
-            let resp = await axios(`http://${dataContext.host}/me/signatute`,{
+            let resp = await axios(`http://${context.host}/me/signatute`,{
                 withCredentials: true
             });
             setSignature(resp.data)
 
-            resp = await axios(`http:/${dataContext.host}/me/stamp`, {
+            resp = await axios(`http:/${context.host}/me/stamp`, {
                 withCredentials: true
             }) 
             setStamp(resp.data)
