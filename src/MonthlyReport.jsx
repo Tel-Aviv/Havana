@@ -19,6 +19,7 @@ import { Tabs } from 'antd';
 const { TabPane } = Tabs;
 
 import { Calendar, Badge } from 'antd';
+import { Row, Col } from 'antd';
 
 import ReactToPrint from 'react-to-print';
 
@@ -39,8 +40,10 @@ const MonthlyReport = (props: Props) => {
     const [reportId, setReportId] = useState();
     const [loadingData, setLoadingData] = useState(false)
 
-    const [modalVisible, setModalVisible] = useState(false);
-    const [signature, setSignature] = useState()
+    const [printModalVisible, setPrintModalVisible] = useState(false);
+    const [dayModalVisible, setDayModalVisible] = useState(false);
+    const [selectedDay, setSelectedDay] = useState();
+    const [signature, setSignature] = useState();
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
@@ -104,12 +107,13 @@ const MonthlyReport = (props: Props) => {
 
     const onShowPDF = () => {
         //history.push('/pdf');
-        setModalVisible(!modalVisible);
+        setPrintModalVisible(!printModalVisible);
     }
 
     const handlePrintCancel = () => {
-        setModalVisible(false);
+        setPrintModalVisible(false);
     }
+
 
     const operations = <Text>{t('title')} {t('for_month')} {month+1}.{year}</Text>;
 
@@ -122,7 +126,7 @@ const MonthlyReport = (props: Props) => {
         if( tableDataItem ) {
             console.log(tableDataItem);
         }
-        
+
         const badge = <Badge status='error' text={notes} />;
         if( !total )
             return (
@@ -141,6 +145,25 @@ const MonthlyReport = (props: Props) => {
                 </ul>
             )
         }
+    }
+
+    const onCalendarDaySelected = (value) => {
+        setSelectedDay(value.format('DD/MM/YYYY'))
+        const tableDataItem = tableData.find( item => {
+            const itemDate = moment(item.date);
+            return value.isSame(itemDate, 'day');
+        })
+        if( tableDataItem ) {
+            setDayModalVisible(true);
+        }
+    }
+
+    const dayModalCancel = () => {
+        setDayModalVisible(false);
+    }
+
+    const dayModalOK = () => {
+        setDayModalVisible(false);
     }
 
     return (
@@ -165,18 +188,18 @@ const MonthlyReport = (props: Props) => {
                     </span>
                     }
                     key="2">
-                    <Calendar dateCellRender={dateCellRender}/>
+                    <Calendar dateCellRender={dateCellRender} onSelect={onCalendarDaySelected}/>
                 </TabPane>
             </Tabs>
             
             <Modal title="Print Report"
-                    visible={modalVisible}
+                    visible={printModalVisible}
                     footer={[
                             <ReactToPrint removeAfterPrint={true}
                                 trigger={() => <Button type="primary">Print</Button>}
                                 content={() => componentRef.current}
                             />,
-                            <Button onClick={handlePrintCancel}>Cancel</Button>
+                            <Button onClick={handlePrintCancel}>{t('cancel')}</Button>
                         ]}>
                 <div ref={componentRef}>
                     <Title level={3} dir='rtl'>{dataContext.user.name}</Title>
@@ -185,6 +208,26 @@ const MonthlyReport = (props: Props) => {
                     <Img src={signature} /> 
                 </div>
             </Modal>
+            <Modal title={selectedDay}
+                visible={dayModalVisible}
+                footer={
+                    [
+                        <Button type="primary" onClick={dayModalOK}>OK</Button>,
+                        <Button onClick={dayModalCancel}>{t('cancel')}</Button>
+                    ]
+                }>
+                <Row gutter={[16, 16]}>
+                    <Col>
+                        <div>In</div>
+                        <div>10:44</div>
+                    </Col>
+                    <Col>
+                        <div>Out</div>
+                        <div>10:45</div>
+                    </Col>                    
+                </Row>
+            </Modal>
+            
             <Button type="primary" onClick={onSubmit}>{t('submit')}</Button>
             <Button type="primary" onClick={onShowPDF}>PDF</Button>
         </Content>

@@ -2,6 +2,7 @@ const translations = {
     en: {
         translation: {
             "Switch": "English",
+            "cancel": "Cancel",
             "title": "Hours Report",
             "home": "Home",
             "settings": "Settings",
@@ -18,6 +19,7 @@ const translations = {
     he: {
         translation: {
             "Switch": "Hebrew",
+            "cancel": "ביטול",
             "title": "דוח שעות",
             "home": "דף ראשי",
             "settings": "הגדרות",
