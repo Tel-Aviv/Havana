@@ -2,6 +2,7 @@
 import React, {useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import moment from 'moment';
 import Img from 'react-image';
 import i18n from 'i18next';
 
@@ -13,6 +14,11 @@ const { Header, Content, Footer, Sider } = Layout;
 import {  Divider, Tag, Button, Modal } from 'antd';
 import { Typography } from 'antd';
 const { Title, Paragraph, Text } = Typography;
+
+import { Tabs } from 'antd';
+const { TabPane } = Tabs;
+
+import { Calendar, Badge } from 'antd';
 
 import ReactToPrint from 'react-to-print';
 
@@ -105,11 +111,63 @@ const MonthlyReport = (props: Props) => {
         setModalVisible(false);
     }
 
+    const operations = <Text>{t('title')} {t('for_month')} {month+1}.{year}</Text>;
+
+    const dateCellRender = (value) => {
+        const { date, total, notes } = tableData[0];
+        const tableDataItem = tableData.find( item => {
+            const itemDate = moment(item.date);
+            return value.isSame(itemDate, 'day');
+        })
+        if( tableDataItem ) {
+            console.log(tableDataItem);
+        }
+        
+        const badge = <Badge status='error' text={notes} />;
+        if( !total )
+            return (
+                <ul className="events">
+                    <li>
+                        <Badge status='error' text={notes} />
+                    </li>
+                </ul>
+            )
+        else {    
+            return (
+                <ul className="events">
+                    <li>
+                        <Badge status='success' text={notes} />
+                    </li>
+                </ul>
+            )
+        }
+    }
+
     return (
         <Content style={{ margin: '0 16px' }}>
 
-            <Title level={2} dir='rtl'>{t('title')} {t('for_month')} {month+1}.{year}</Title>
-            <Report dataSource={tableData} loading={loadingData} editable={true}/>
+            {/* <Title level={2} dir='rtl'>{t('title')} {t('for_month')} {month+1}.{year}</Title> */}
+            <Tabs defaultActiveKey="1" tabBarExtraContent={operations}
+                  type="line">
+                <TabPane tab={
+                    <span>
+                        <Icon type="bars" />
+                        {t('plain')}
+                    </span>
+                }
+                key="1">
+                    <Report dataSource={tableData} loading={loadingData} editable={true}/>
+                </TabPane>
+                <TabPane tab={
+                    <span>
+                        <Icon type="schedule" />
+                        {t('calendar')}
+                    </span>
+                    }
+                    key="2">
+                    <Calendar dateCellRender={dateCellRender}/>
+                </TabPane>
+            </Tabs>
             
             <Modal title="Print Report"
                     visible={modalVisible}
