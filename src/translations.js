@@ -15,6 +15,8 @@ const translations = {
             "submit": "Submit",
             "approve": "Approve",
             "for_month": "for month",
+            "miising_in": "missing entry",
+            "missing_out": "missing exit"
         }
     },
     he: {
@@ -33,6 +35,8 @@ const translations = {
             "submit": "שלח",
             "approve": "אישור",
             "for_month": " לחודש",
+            "miising_in": "חסרה כניסה",
+            "missing_out": "חסרה יציאה"
         }
     }
 }    

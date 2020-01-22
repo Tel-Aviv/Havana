@@ -67,37 +67,25 @@ const CalendarReport = (props: Props) => {
             const itemDate = moment(item.rdate);
             return value.isSame(itemDate, 'day');
         })
-        if( tableDataItems.length == 0 ) {
-            // console.error(`DataTable item not found for ${value.toString()}`);
+        if( tableDataItems.length == 0 ) 
             return;
-        }
 
-        const result = tableDataItems.map( tableDataItem => {
-                const { rdate, total, notes } = tableDataItem;
+        return <ul className="events">
+            {
+                tableDataItems.map( (tableDataItem, index) => {
 
-                // const badge = <Badge status='error' text={notes} />;
-                if( !total )
-                    return (
-                        <ul className="events">
-                            <li>
-                                <Badge status='error' text={notes} />
-                            </li>
-                        </ul>
-                    )
-                else {    
-                    return (
-                        <ul className="events">
-                            <li>
-                                <Badge status='success' text={notes} />
-                            </li>
-                        </ul>
-                    )
-                }            
-        })
+                    const { total, notes, exit, entry } = tableDataItem;
+                    let _notes = ( exit ===  '') ? t('missing_out') : notes;
+                    _notes = ( entry === '' )? t('missing_in') : _notes;
 
-        console.log(result);
+                    // if( !total )
+                        return <li key={index}><Badge status='error' text={_notes} /></li>
+                    // else 
+                    //     return <li key={index}><Badge status='success' text={_notes} /></li>
+                })
+            }
+        </ul>;
 
-        return result;
     }
 
     const onChange = (date: moment) => {
