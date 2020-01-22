@@ -42,7 +42,7 @@ const CalendarReport = (props: Props) => {
     const onCalendarDaySelected = (value) => {
         setSelectedDay(value.format('DD/MM/YYYY'))
         const tableDataItem = tableData.find( item => {
-            const itemDate = moment(item.date);
+            const itemDate = moment(item.rdate);
             return value.isSame(itemDate, 'day');
         })
         if( tableDataItem ) {
@@ -64,14 +64,14 @@ const CalendarReport = (props: Props) => {
             return null;
 
         const tableDataItem = tableData.find( item => {
-            const itemDate = moment(item.date);
+            const itemDate = moment(item.rdate);
             return value.isSame(itemDate, 'day');
         })
         if( !tableDataItem ) {
             // console.error(`DataTable item not found for ${value.toString()}`);
             return;
         }
-        const { date, total, notes } = tableDataItem;
+        const { rdate, total, notes } = tableDataItem;
 
         const badge = <Badge status='error' text={notes} />;
         if( !total )

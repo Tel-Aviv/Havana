@@ -11,19 +11,26 @@ import EditIcons from './EditIcons';
 
 const format = 'H:mm';
 
-const columns =[
+// const columns =[
 
-]
+// ]
 
 class EditableTable extends React.Component {
+
   constructor(props) {
+    
     super(props);
+
     this.state = { 
       data: [],
       originalData: [],
       editingKey: '' 
     };
-    this.columns = [
+
+    this.columns = [{
+        title: 'תאריך',
+        dataIndex: 'rdate',
+      },
       {
         title: 'יום',
         dataIndex: 'day',
@@ -83,9 +90,12 @@ class EditableTable extends React.Component {
           ...this.state,
           originalData: this.props.dataSource,
           data: this.props.dataSource.map( record =>  {
-            record.requireChange = this.isRowEditable(record);
-            record.valid = (record.requireChange)?  false : true;
-            return record
+            return { 
+                ...record, 
+                requireChange : this.isRowEditable(record),
+                valid : (record.requireChange)?  false : true,
+                rdate : moment(record.rdate).format('DD/MM/YYYY')
+            }
           }),
         })
       }
@@ -105,6 +115,7 @@ class EditableTable extends React.Component {
   cancel = () => {
     this.setState({ editingKey: '' });
   };
+
   save(form, key) {
     form.validateFields((error, row) => {
       if (error) {
@@ -129,12 +140,11 @@ class EditableTable extends React.Component {
       }
     });
   }
+  
   edit(key) {
     this.setState({ editingKey: key });
   }
-  submit() {
-
-  }
+  
   render() {
     const components = {
       body: {
@@ -171,7 +181,7 @@ class EditableTable extends React.Component {
           style={{ direction: 'rtl' }}
           {...this.props}
           tableLayout='auto'
-          bordered={false}
+          bordered={true}
           components={components}
           dataSource={this.state.data}
           columns={columns}

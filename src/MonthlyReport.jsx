@@ -61,10 +61,8 @@ const MonthlyReport = () => {
     useEffect( () => {
 
         if( _calendarDate ) {
-            console.log(_calendarDate.toString);
-
             setCalendarDate(_calendarDate)
-            setMonth(_calendarDate.month())
+            setMonth(_calendarDate.month()+1)
             setYear(_calendarDate.year())
         }
     }, [_calendarDate]);
