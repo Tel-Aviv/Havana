@@ -63,34 +63,41 @@ const CalendarReport = (props: Props) => {
         if( tableData.length === 0 )
             return null;
 
-        const tableDataItem = tableData.find( item => {
+        const tableDataItems = tableData.filter( item => {
             const itemDate = moment(item.rdate);
             return value.isSame(itemDate, 'day');
         })
-        if( !tableDataItem ) {
+        if( tableDataItems.length == 0 ) {
             // console.error(`DataTable item not found for ${value.toString()}`);
             return;
         }
-        const { rdate, total, notes } = tableDataItem;
 
-        const badge = <Badge status='error' text={notes} />;
-        if( !total )
-            return (
-                <ul className="events">
-                    <li>
-                        <Badge status='error' text={notes} />
-                    </li>
-                </ul>
-            )
-        else {    
-            return (
-                <ul className="events">
-                    <li>
-                        <Badge status='success' text={notes} />
-                    </li>
-                </ul>
-            )
-        }
+        const result = tableDataItems.map( tableDataItem => {
+                const { rdate, total, notes } = tableDataItem;
+
+                // const badge = <Badge status='error' text={notes} />;
+                if( !total )
+                    return (
+                        <ul className="events">
+                            <li>
+                                <Badge status='error' text={notes} />
+                            </li>
+                        </ul>
+                    )
+                else {    
+                    return (
+                        <ul className="events">
+                            <li>
+                                <Badge status='success' text={notes} />
+                            </li>
+                        </ul>
+                    )
+                }            
+        })
+
+        console.log(result);
+
+        return result;
     }
 
     const onChange = (date: moment) => {
