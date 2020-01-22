@@ -44,6 +44,7 @@ const MonthlyReport = () => {
     const [printModalVisible, setPrintModalVisible] = useState(false);
     const [signature, setSignature] = useState();
     const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState();
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
@@ -99,7 +100,8 @@ const MonthlyReport = () => {
                 withCredentials: true
             })
         } catch(err) {
-            console.error(err);
+            setErrorMessage(err);
+            setShowError(true);
         }
     }
 
@@ -144,7 +146,7 @@ const MonthlyReport = () => {
 
     return (
         <Content style={{ margin: '0 16px' }}>
-            { showError ? (<Alert closable message='error' 
+            { showError ? (<Alert closable message={errorMessage}
                 onClose={onCloseError}
                 showIcon type='error' />
                 ) : null
