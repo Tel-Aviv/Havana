@@ -70,7 +70,7 @@ const CalendarReport = (props: Props) => {
         if( tableDataItems.length == 0 ) 
             return;
 
-        return <ul className="events">
+        return <ul className="events" dir='rtl'>
             {
                 tableDataItems.map( (tableDataItem, index) => {
 

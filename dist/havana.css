@@ -27,7 +27,7 @@ html {
 
 .events {
     list-style: none;
-    margin: 0;
+    margin-left: 74px;
     padding: 0;
   }
 
@@ -45,3 +45,9 @@ html {
   .notes-month section {
     font-size: 28px;
   }  
+
+.ant-badge-status-text {
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+    margin: 10px;
+}   
