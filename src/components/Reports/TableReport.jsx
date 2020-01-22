@@ -11,9 +11,6 @@ import EditIcons from './EditIcons';
 
 const format = 'H:mm';
 
-
-
-
 const columns =[
 
 ]

@@ -5,7 +5,7 @@ import { useTranslation, Trans } from "react-i18next";
 
 import {  Divider, Tag, Button, Modal } from 'antd';
 
-import Report from './components/Report/Report';
+import Report from './components/Reports/TableReport';
 
 type Props = {
     month: number,

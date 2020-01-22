@@ -16,7 +16,7 @@ app.get('/', function(request, response) {
     file = 
         template.replace('{USER_NAME}', request.ntlm.UserName)
                 .replace('{USER_ID}', request.ntlm.UserName)
-                .replace('{HOST}', 'localhost/ps')  
+                .replace('{HOST}', 'localhost:5000')  
 
     response.end(file)
 
