@@ -158,7 +158,9 @@ const MonthlyReport = () => {
     }
 
     const disabledDate = (current) => {
-        return current && current > moment().endOf('day');
+        return current && 
+                ( current > moment().endOf('day') )
+                || (current < moment().add(-12, 'month'))
     }
 
     return (
@@ -181,6 +183,7 @@ const MonthlyReport = () => {
                     <MonthPicker onChange={onMonthChange}
                                  disabledDate={disabledDate}
                                  value={calendarDate}
+                                 allowClear={false}
                                  defaultValue={moment()} />
                     <TableReport dataSource={reportData} loading={loadingData} editable={true} />
                 </TabPane>

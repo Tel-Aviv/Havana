@@ -104,6 +104,7 @@ const CalendarReport = (props: Props) => {
                     value={calendarDate}
                     onChange={onChange}
                     fullscreen={true}
+                    validRange={[moment().add(-12, 'month'), moment()]}
                     onSelect={onCalendarDaySelected}/>
         <Modal title={selectedDay}
                 visible={dayModalVisible}
