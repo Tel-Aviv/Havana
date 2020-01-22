@@ -26,7 +26,7 @@ import { blue } from '@ant-design/colors';
 
 import ConfirmList from './ConfirmList';
 import Confirm from './Confirm';
-import MonthlyReport from './MonthlyReport';
+import Home from './Home';
 import ReportPDF from './ReportPDF';
 import Settings from './Settings';
 
@@ -135,7 +135,7 @@ const App = () => {
                     <Switch>
                         <Route exact path='/'
                                 render={ (props) => 
-                                    <MonthlyReport />
+                                    <Home />
                                 }/>
                         <Route path='/confirmlist' component={ConfirmList} />
                         <Route path='/confirm/:userid'

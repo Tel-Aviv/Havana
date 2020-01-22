@@ -35,7 +35,7 @@ import ReportPDF from './ReportPDF';
 import { DatePicker } from 'antd';
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 
-const MonthlyReport = () => {
+const Home = () => {
 
     const [month, setMonth] = useState(moment().month()+1);
     const [year, setYear] = useState(moment().year());
@@ -217,4 +217,4 @@ const MonthlyReport = () => {
     )
 }
 
-export default MonthlyReport;
+export default Home;
