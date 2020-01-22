@@ -194,6 +194,14 @@ const Home = () => {
                             } key="2">
                     <CalendarReport tableData={reportData} value={calendarDate}/>
                 </TabPane>
+                <TabPane tab={<span>
+                                <Icon type="fund" />
+                                {t('yearly')}
+                            </span>
+                            }
+                            key='3'>
+                    <div>Year</div>
+                </TabPane>
             </Tabs>
             
             <Modal title="Print Report"

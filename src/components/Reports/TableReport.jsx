@@ -181,7 +181,7 @@ class EditableTable extends React.Component {
           style={{ direction: 'rtl' }}
           {...this.props}
           tableLayout='auto'
-          bordered={true}
+          bordered={false}
           components={components}
           dataSource={this.state.data}
           columns={columns}
