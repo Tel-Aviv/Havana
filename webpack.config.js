@@ -1,12 +1,16 @@
 var path = require('path');
 
 module.exports = {
-    entry: './src/index.js',
+    entry: {
+        bundle: path.resolve(__dirname, './src/index.js'),
+        // ssr_bundle: './src/ssr/index.js'
+    },
     module: {
         rules: [
         {
             test: /\.(js|jsx)$/,
-            exclude: /node_modules/,
+            exclude: [/node_modules/, 
+                      '/ssr/index.js'],
             use: ['babel-loader']
         },
         {
@@ -24,10 +28,14 @@ module.exports = {
     resolve: {
         extensions: ['*', '.js', '.jsx']
     },
+    performance: {
+        hints: false
+    },
     output: {
         path: __dirname + '/dist',
         publicPath: '/',
-        filename: 'bundle.js'
+        chunkFilename: '[name].bundle.js'
+        // filename: 'bundle.js'
     },
     devServer: {
         contentBase: path.join(__dirname, 'dist'),

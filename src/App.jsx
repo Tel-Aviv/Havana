@@ -24,12 +24,9 @@ import { Tooltip } from 'antd';
 
 import { blue } from '@ant-design/colors';
 
-import { DatePicker } from 'antd';
-const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
-
 import ConfirmList from './ConfirmList';
 import Confirm from './Confirm';
-import MonthlyReport from './MonthlyReport';
+import Home from './Home';
 import ReportPDF from './ReportPDF';
 import Settings from './Settings';
 
@@ -100,10 +97,6 @@ const App = () => {
         history.push('/');
     }
 
-    const disabledDate = (current) => {
-        return current && current > moment().endOf('day');
-    }
-
     return (
         <>
         <Helmet>
@@ -119,9 +112,6 @@ const App = () => {
                                 style={{ fontSize: '28px', color: 'wheat' }}
                                 onClick={goHome}/>
                         </Tooltip>
-                        <MonthPicker onChange={onMonthChange}
-                                    disabledDate={disabledDate}
-                                    defaultValue={moment()} />
                     </Col>
                     <Col span={4}>
                         <Tooltip title={t('settings')}>
@@ -145,7 +135,7 @@ const App = () => {
                     <Switch>
                         <Route exact path='/'
                                 render={ (props) => 
-                                    <MonthlyReport month={month} year={year} />
+                                    <Home />
                                 }/>
                         <Route path='/confirmlist' component={ConfirmList} />
                         <Route path='/confirm/:userid'
