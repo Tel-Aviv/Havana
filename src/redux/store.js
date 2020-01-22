@@ -1,5 +1,6 @@
 // @flow
 import { createStore } from 'redux';
-import counter from './reducers/counter';
+import reportDate from './reducers/reportDateReducer'
 
-export default createStore(counter)
+export default createStore(reportDate,
+        window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())

@@ -1,3 +1,1 @@
-export const ADD_TODO = "ADD_TODO";
-export const TOGGLE_TODO = "TOGGLE_TODO";
-export const SET_FILTER = "SET_FILTER";
+export const SET_REPORT_DATE = "SET_REPORT_DATE";

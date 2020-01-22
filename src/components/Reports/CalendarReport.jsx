@@ -1,9 +1,9 @@
 // @flow
-import React, { useState, useEffect }  from 'react';
+import React, { useState, useEffect, useCallback }  from 'react';
 import moment from 'moment';
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from 'react-redux'
-// import { increaseCount } from './redux/actions';
+import { useSelector, useDispatch } from 'react-redux';
+import { SET_REPORT_DATE } from '../../redux/actionTypes';
 
 import {  Divider, Tag, Button, Modal } from 'antd';
 import { Calendar, Badge, Card } from 'antd';
@@ -21,10 +21,18 @@ const CalendarReport = (props: Props) => {
     const [selectedDay, setSelectedDay] = useState();
     const [dayModalVisible, setDayModalVisible] = useState(false);
 
-    const store = useSelector(store => store);
     const dispatch = useDispatch();
+    // const incrementCounter = useCallback(
+    //     () => dispatch({ type: SET_REPORT_DATE }),
+    //     [dispatch]
+    // )    
 
     const { t } = useTranslation();
+
+    const setReportDate = (date: moment) => ({ 
+        type: SET_REPORT_DATE,
+        data: date
+    });
 
     useEffect( () => {
         setCalendarDate(props.value);
@@ -86,7 +94,8 @@ const CalendarReport = (props: Props) => {
     }
 
     const onChange = (date: moment) => {
-        // dispatch(date);
+        setCalendarDate(date);
+        dispatch(setReportDate(date));
     }
 
     return <>

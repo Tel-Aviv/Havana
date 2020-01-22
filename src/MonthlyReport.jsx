@@ -6,6 +6,8 @@ import moment from 'moment';
 import Img from 'react-image';
 import i18n from 'i18next';
 
+import { useSelector, useDispatch } from 'react-redux';
+
 import { useTranslation } from "react-i18next";
 
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
@@ -49,6 +51,23 @@ const MonthlyReport = () => {
     const dataContext = useContext(DataContext);
     const history = useHistory();
     const componentRef = useRef();
+
+    const _calendarDate = useSelector(
+        store => {
+            return ( store ) ? store.reportDate : store;
+        }
+    );
+
+    useEffect( () => {
+
+        if( _calendarDate ) {
+            console.log(_calendarDate.toString);
+
+            setCalendarDate(_calendarDate)
+            setMonth(_calendarDate.month())
+            setYear(_calendarDate.year())
+        }
+    }, [_calendarDate]);
 
     const { t } = useTranslation();
 
@@ -162,8 +181,9 @@ const MonthlyReport = () => {
                         }
                         key="1">
                     <MonthPicker onChange={onMonthChange}
-                                    disabledDate={disabledDate}
-                                    defaultValue={moment()} />
+                                 disabledDate={disabledDate}
+                                 value={calendarDate}
+                                 defaultValue={moment()} />
                     <TableReport dataSource={reportData} loading={loadingData} editable={true} />
                 </TabPane>
                 <TabPane tab={<span>
