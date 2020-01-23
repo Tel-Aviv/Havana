@@ -57,12 +57,14 @@ const CalendarReport = (props: Props) => {
         setEntryTimes(tableDataItems.map( item => (
                                             {
                                                 id: item.id,
-                                                entry: item.entry
+                                                entry: item.entry,
+                                                type: 'entry'
                                             })));
         setExitTimes(tableDataItems.map( item => (
                                             {
                                                 id: item.id,
                                                 exit: item.exit,
+                                                type: 'exit'
                                             })));
         setDayModalVisible(true);
     }
@@ -109,18 +111,18 @@ const CalendarReport = (props: Props) => {
 
     const componentRef = useRef();
 
-    const onTimeChanged = (itemId, time) => {
-        console.log('time changed');
+    const onTimeChanged = (item, time) => {
         dispatch(action_ItemChanged({
-            id: itemId,
-            exit: time
+            id: item.id,
+            exit: time,
+            type: item.type
         }));
     }
 
     const getTimeField = (item, time) => (        
         time ? 
             <div>{time}</div> :
-            <XTimePicker ref={componentRef} itemId={item.id} onChanged={onTimeChanged}/>
+            <XTimePicker ref={componentRef} item={item} onChanged={onTimeChanged}/>
     )
 
     const XTimePicker = React.forwardRef( (props, ref) => {
@@ -130,7 +132,7 @@ const CalendarReport = (props: Props) => {
 
         const handleOk = () => {
             setOpen(false)
-            props.onChanged(props.itemId, selectedTime);
+            props.onChanged(props.item, selectedTime);
         }
         const onChange = (time, timeString) => {
             setSelectedTime(timeString);
@@ -144,7 +146,11 @@ const CalendarReport = (props: Props) => {
                     onChange={onChange}
                     onOpenChange={(e) => setOpen(e)}
                     addon={ () => (
-                        <Button size='small' type='primary' onClick={handleOk}>OK</Button>
+                        <Button size='small' type='primary' 
+                                style={{
+                                    width: '100%'
+                                }}    
+                                onClick={handleOk}>OK</Button>
                     )}/>
     })
 

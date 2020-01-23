@@ -58,6 +58,12 @@ const Home = () => {
         }
     );
 
+    const _reportItem = useSelector(
+        store => {
+            return ( store ) ? store.item : store;
+        }
+    )
+
     useEffect( () => {
 
         if( _calendarDate ) {
@@ -66,6 +72,20 @@ const Home = () => {
             setYear(_calendarDate.year())
         }
     }, [_calendarDate]);
+
+    useEffect( () => {
+        const reportItem = reportData.find( item => (
+            item.id === _reportItem.id
+        ));
+        if( reportItem ) {
+            if( _reportItem.type === 'exit') {
+                reportItem.exit = _reportItem.exit
+            } else if( _reportItem.type === 'entry') {
+                reportItem.exit = _reportItem.entry
+            }
+            console.log(reportItem);
+        }
+    }, [_reportItem])
 
     const { t } = useTranslation();
 
