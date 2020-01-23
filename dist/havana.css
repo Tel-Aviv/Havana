@@ -51,3 +51,7 @@ html {
     font-size: 14px;
     margin: 10px;
 }   
+
+.rtl {
+  direction: rtl;
+}
