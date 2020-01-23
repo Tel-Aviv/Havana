@@ -1,6 +1,6 @@
 // @flow
 import React from 'react'
-import { Input, InputNumber, Form, Button } from 'antd';
+import { Input, Form, Button } from 'antd';
 var moment = require('moment');
 
 import { ReportContext } from "./table-context";
@@ -18,7 +18,8 @@ type State = {
 export default class EditableCell extends React.Component<Props, State> {
     getInput = () => (this.props.inputType !== 'time') ?
                         <Input /> :
-                        <CustomTimePicker />
+                        <CustomTimePicker  allowClear={false} />
+
     cellEditable = (inputType, val) => { 
         return ( inputType !== 'time' ||  !val)
     }
