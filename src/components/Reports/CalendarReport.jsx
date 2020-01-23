@@ -1,9 +1,9 @@
 // @flow
-import React, { useState, useEffect, useCallback }  from 'react';
+import React, { useState, useEffect, useCallback, useRef }  from 'react';
 import moment from 'moment';
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from 'react-redux';
-import { SET_REPORT_DATE } from '../../redux/actionTypes';
+import { SET_REPORT_DATE, UPDATE_ITEM } from '../../redux/actionTypes';
 
 import { Divider, Tag, Button, Modal, Icon,
         Calendar, Badge, Card,
@@ -30,9 +30,14 @@ const CalendarReport = (props: Props) => {
 
     const { t } = useTranslation();
 
-    const setReportDate = (date: moment) => ({ 
+    const action_SetReportDate = (date: moment) => ({ 
         type: SET_REPORT_DATE,
         data: date
+    });
+
+    const action_ItemChanged = (item) => ({
+        type: UPDATE_ITEM,
+        item: item
     });
 
     useEffect( () => {
@@ -49,8 +54,16 @@ const CalendarReport = (props: Props) => {
         if( tableDataItems.length == 0 ) 
             return;
 
-        setEntryTimes(tableDataItems.map( item => item.entry));
-        setExitTimes(tableDataItems.map( item => item.exit));
+        setEntryTimes(tableDataItems.map( item => (
+                                            {
+                                                id: item.id,
+                                                entry: item.entry
+                                            })));
+        setExitTimes(tableDataItems.map( item => (
+                                            {
+                                                id: item.id,
+                                                exit: item.exit,
+                                            })));
         setDayModalVisible(true);
     }
 
@@ -91,26 +104,49 @@ const CalendarReport = (props: Props) => {
 
     const onReportDateChange = (date: moment) => {
         setCalendarDate(date);
-        dispatch(setReportDate(date));
+        dispatch(action_SetReportDate(date));
     }
 
-    const onTimeChange = () => {
-        console.log('ddd');
-        
+    const componentRef = useRef();
+
+    const onTimeChanged = (itemId, time) => {
+        console.log('time changed');
+        dispatch(action_ItemChanged({
+            id: itemId,
+            exit: time
+        }));
     }
 
-    const getTimeField = (time) => (        
+    const getTimeField = (item, time) => (        
         time ? 
             <div>{time}</div> :
-            <TimePicker allowClear={false} 
-                        format={'H:mm'}
-                        size="small"
-                        addon={() => (
-                            <Button size="small" type="primary" onClick={onTimeChange}>
-                                Ok
-                            </Button>
-                        )}/>
+            <XTimePicker ref={componentRef} itemId={item.id} onChanged={onTimeChanged}/>
     )
+
+    const XTimePicker = React.forwardRef( (props, ref) => {
+        
+        const [open, setOpen] = useState(false);
+        const [selectedTime, setSelectedTime] = useState();
+
+        const handleOk = () => {
+            setOpen(false)
+            props.onChanged(props.itemId, selectedTime);
+        }
+        const onChange = (time, timeString) => {
+            setSelectedTime(timeString);
+        }
+        return <TimePicker ref={ref}
+                    {...props}
+                    allowClear={false}
+                    format={'H:mm'}
+                    open={open}
+                    size='small'
+                    onChange={onChange}
+                    onOpenChange={(e) => setOpen(e)}
+                    addon={ () => (
+                        <Button size='small' type='primary' onClick={handleOk}>OK</Button>
+                    )}/>
+    })
 
     return <>
         <Calendar dateCellRender={dateCellRender} 
@@ -137,7 +173,7 @@ const CalendarReport = (props: Props) => {
                             {
                                 exitTimes.map( item => (
                                     <>
-                                            <Col span={16}>{getTimeField(item)}</Col>
+                                            <Col span={16}>{getTimeField(item, item.exit)}</Col>
                                             <Col span={5}>{t('out')}</Col>
                                             <Col span={1}><Icon type="logout" /></Col>
 
@@ -152,7 +188,7 @@ const CalendarReport = (props: Props) => {
                             {
                                 entryTimes.map( item => (
                                     <>
-                                        <Col span={16}>{ getTimeField(item) }</Col>
+                                        <Col span={16}>{ getTimeField(item, item.entry) }</Col>
                                         <Col span={5}>{t('in')}</Col>
                                         <Col span={1}><Icon type="login" /></Col>
                                     </>
