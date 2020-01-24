@@ -19,7 +19,7 @@
   "scripts": {
     "build": "webpack -d --watch",
     "prod": "webpack -p",
-    "start": "nodemon ./src/ssr/index.js",
+    "start": "nodemon ./src/ssr/index.js -e jsx",
     "test": "jest"
   },
   "dependencies": {

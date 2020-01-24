@@ -18,7 +18,8 @@ const translations = {
             "miising_in": "missing entry",
             "missing_out": "missing exit",
             "in": "In",
-            "out": "Out"
+            "out": "Out",
+            "notes": "Notes",
         }
     },
     he: {
@@ -40,7 +41,8 @@ const translations = {
             "miising_in": "חסרה כניסה",
             "missing_out": "חסרה יציאה",
             "in": "כניסה",
-            "out": "יציאה"
+            "out": "יציאה",
+            "notes": "הערות",
         }
     }
 }    

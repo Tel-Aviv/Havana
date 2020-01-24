@@ -7,10 +7,11 @@ import { SET_REPORT_DATE, UPDATE_ITEM } from '../../redux/actionTypes';
 
 import { Divider, Tag, Button, Modal, Icon,
         Calendar, Badge, Card,
-        Row, Col, TimePicker 
+        Row, Col, TimePicker, Input
 } from 'antd';
 
-import CustomTimePicker from '../CustomTimePicker'
+import { DatePicker } from 'antd';
+const { MonthPicker } = DatePicker;
 
 type Props = {
     tableData: [],
@@ -119,7 +120,7 @@ const CalendarReport = (props: Props) => {
         }));
     }
 
-    const getTimeField = (item, time) => (        
+    const getTimeField = (item, time) => (
         time ? 
             <div>{time}</div> :
             <XTimePicker ref={componentRef} item={item} onChanged={onTimeChanged}/>
@@ -132,12 +133,14 @@ const CalendarReport = (props: Props) => {
 
         const handleOk = () => {
             setOpen(false)
-            props.onChanged(props.item, selectedTime);
+            if( props.onChanged )
+                props.onChanged(props.item, selectedTime);
         }
         const onChange = (time, timeString) => {
             setSelectedTime(timeString);
         }
         return <TimePicker ref={ref}
+                    className='ltr'
                     {...props}
                     allowClear={false}
                     format={'H:mm'}
@@ -168,42 +171,59 @@ const CalendarReport = (props: Props) => {
                 visible={dayModalVisible}
                 footer={
                     [
-                        <Button type="primary" onClick={dayModalOK}>OK</Button>,
-                        <Button onClick={dayModalCancel}>{t('cancel')}</Button>
+                        <Button key='approve' type="primary" onClick={dayModalOK}>{t('approve')}</Button>,
+                        <Divider key='divider' type="vertical" />,
+                        <Button key='cancel' onClick={dayModalCancel}>{t('cancel')}</Button>
                     ]
-                }>
-                <div>
+                }
+                >
+                <Card>
                     <Row gutter={[16, 16]}>
-                        <Col span={12}>
-                            <Row gutter={[16, 16]}>
-                            {
-                                exitTimes.map( item => (
-                                    <>
-                                            <Col span={16}>{getTimeField(item, item.exit)}</Col>
-                                            <Col span={5}>{t('out')}</Col>
-                                            <Col span={1}><Icon type="logout" /></Col>
-
-                                    </>    
-                                ))
-                            }
-                            </Row>
-                        </Col>                    
-
-                        <Col span={12}>
-                            <Row gutter={[16, 16]}>
-                            {
-                                entryTimes.map( item => (
-                                    <>
-                                        <Col span={16}>{ getTimeField(item, item.entry) }</Col>
-                                        <Col span={5}>{t('in')}</Col>
-                                        <Col span={1}><Icon type="login" /></Col>
-                                    </>
-                                ))
-                            }
-                            </Row>
+                    {
+                        exitTimes.map( item => {
+                            return (<>
+                                <Col span={8}>
+                                    {
+                                        getTimeField(item, item.exit)
+                                    }
+                                </Col>                     
+                                <Col span={3}>
+                                    {t('out')}
+                                </Col>
+                                <Col span={1}>
+                                    <Icon type="logout" />
+                                </Col>
+                            </>)
+                        })
+                    }
+                    {
+                        entryTimes.map( item => {
+                            return (<>
+                                    <Col span={8}>
+                                    {
+                                        getTimeField(item, item.entry)
+                                    }
+                                    </Col>    
+                                    <Col span={3}>
+                                        <div>{t('in')}</div>
+                                    </Col>
+                                    <Col span={1}>
+                                        <Icon type="login" />
+                                    </Col>
+                            </>)
+                        })
+                    }
+                    </Row>
+                    <br />
+                    <Row gutter={[16, 16]}>
+                        <Col span={20}>
+                            <Input size='small' />
+                        </Col>
+                        <Col span={4}>
+                            <div className='rtl'>{t('notes')}</div>
                         </Col>
                     </Row>
-                </div>
+                </Card>
             </Modal>
          </>   
 

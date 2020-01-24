@@ -33,7 +33,7 @@ import { DataContext } from "./DataContext";
 import ReportPDF from './ReportPDF';
 
 import { DatePicker } from 'antd';
-const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
+const { MonthPicker } = DatePicker;
 
 const Home = () => {
 
