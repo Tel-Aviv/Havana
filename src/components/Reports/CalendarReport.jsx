@@ -180,9 +180,9 @@ const CalendarReport = (props: Props) => {
                 <Card>
                     <Row gutter={[16, 16]}>
                     {
-                        exitTimes.map( item => {
-                            return (<>
-                                <Col span={8}>
+                        exitTimes.map( (item, index) => {
+                            return (<React.Fragment key={index}>
+                                <Col span={8} >
                                     {
                                         getTimeField(item, item.exit)
                                     }
@@ -193,12 +193,12 @@ const CalendarReport = (props: Props) => {
                                 <Col span={1}>
                                     <Icon type="logout" />
                                 </Col>
-                            </>)
+                            </React.Fragment>)
                         })
                     }
                     {
-                        entryTimes.map( item => {
-                            return (<>
+                        entryTimes.map( (item, index) => {
+                            return (<React.Fragment key={index}>
                                     <Col span={8}>
                                     {
                                         getTimeField(item, item.entry)
@@ -210,7 +210,7 @@ const CalendarReport = (props: Props) => {
                                     <Col span={1}>
                                         <Icon type="login" />
                                     </Col>
-                            </>)
+                            </React.Fragment >)
                         })
                     }
                     </Row>
