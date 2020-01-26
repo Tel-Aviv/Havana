@@ -20,9 +20,10 @@ export default class EditableCell extends React.Component<Props, State> {
                         <Input /> :
                         <CustomTimePicker  allowClear={false} />
 
-    cellEditable = (inputType, val) => { 
-        return ( inputType !== 'time' ||  !val)
-    }
+    // cellEditable = (inputType, val) => { 
+    //     let res = inputType === 'time';
+    //     return res || (val === "0:00")
+    // }
     
     render() {
         return <ReportContext.Consumer>

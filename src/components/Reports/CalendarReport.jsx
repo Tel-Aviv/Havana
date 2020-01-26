@@ -120,10 +120,22 @@ const CalendarReport = (props: Props) => {
                 tableDataItems.map( (tableDataItem, index) => {
 
                     const { total, notes, exit, entry } = tableDataItem;
-                    let _notes = ( exit ===  '') ? t('missing_out') : notes;
-                    _notes = ( entry === '' )? t('missing_in') : _notes;
+                    let badge = <Badge status='error' text={notes} />;
+                    if( notes ===  '') {
+                        const _text = `סה"כ: ${total}`;
 
-                    return <li key={index}><Badge status='error' text={_notes} /></li>
+
+                        badge = <Badge status='success' text={_text} />
+                    } 
+
+                    return <li key={index}
+                                style={{
+                                        float: 'right',
+                                        marginRight: '13%'
+                                }}>
+                            {badge}      
+                    </li>
+
                 })
             }
         </ul>;
@@ -144,7 +156,7 @@ const CalendarReport = (props: Props) => {
     }
 
     const getTimeField = (item, time) => (
-        time ? 
+        time !== '0:00' ? 
             <div>{time}</div> :
             <XTimePicker item={item} onTimeSelected={onTimeChanged}/>
 
