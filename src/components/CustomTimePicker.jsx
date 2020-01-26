@@ -15,6 +15,7 @@ export default React.forwardRef( (props, ref) => {
     return (
         <TimePicker
             ref={ref}
+            className='ltr'
             {...props}
             format={format}
             open={open}
