@@ -59,3 +59,29 @@ html {
 .ltr {
   direction: ltr;
 }
+
+.editor-has-error {
+  background-color: #fff;
+  border: 1px solid #f5222d;
+  width: 100%;
+}
+
+.label-has-error {
+  color: #f5222d;
+}
+
+.hvn-header {
+  width: 100%;
+  height: 64px;
+  padding: 0 50px;
+  line-height: 64px;
+  flex: 0 0 auto;
+  background-color: #fff;
+  background: #fff;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px 0px;  
+}
+
+.hvn-header-item {
+  font-size: 28px;
+  color: #002140
+}

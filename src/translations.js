@@ -20,6 +20,7 @@ const translations = {
             "in": "In",
             "out": "Out",
             "notes": "Notes",
+            "missing_notes": "Please provide notes"
         }
     },
     he: {
@@ -43,6 +44,7 @@ const translations = {
             "in": "כניסה",
             "out": "יציאה",
             "notes": "הערות",
+            "missing_notes": "אנא הזן הערות!"
         }
     }
 }    

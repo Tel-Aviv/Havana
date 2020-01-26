@@ -104,33 +104,35 @@ const App = () => {
             <meta name="description" content={t('title')} />
         </Helmet>        
         <Layout> 
-            <Header>
+            <header className='hvn-header'>
                 <Row>
-                    <Col span={4}>
-                        <Tooltip title={t('home')}>
-                            <Icon type="home" theme="outlined" 
-                                style={{ fontSize: '28px', color: 'wheat' }}
-                                onClick={goHome}/>
-                        </Tooltip>
-                    </Col>
-                    <Col span={4}>
+                    <Col span={14}>
                         <Tooltip title={t('settings')}>
                             <Icon type="setting" theme="outlined" 
-                                style={{ fontSize: '28px', color: 'wheat' }}
+                                className='hvn-header-item'
                                 onClick={goSettings}/>
-                        </Tooltip>    
+                        </Tooltip>
+                    </Col>
+                    <Col span={2}>        
                         <Badge count={pendingsCount} onClick={onApprovalClicked} hidden={!isManager}>
                             <Tooltip title={t('notifications')}>
-                                <Icon type="notification" theme="outlined" 
-                                        style={{ fontSize: '28px', color: 'wheat' }}
+                                <Icon type="notification" theme="outlined"
+                                    className='hvn-header-item'
                                     />
                             </Tooltip>       
                         </Badge>    
                     </Col>
-                    <Col span={4} style={{color:'wheat'}}>שלום {context.user.name}</Col>
+                    <Col span={7} className='hvn-header-item'>{context.user.name}</Col>
+                    <Col span={1}>
+                        <Tooltip title={t('home')}>
+                            <Icon type="home" theme="outlined" 
+                                    className='hvn-header-item'
+                                onClick={goHome}/>
+                        </Tooltip>
+                    </Col>
                 </Row>
-            </Header>
-            <Layout style={{ padding: '0 24px 24px' }}>
+            </header>
+            <Layout style={{ padding: '24px' }}>
                 <DataContext.Provider value={context}>
                     <Switch>
                         <Route exact path='/'

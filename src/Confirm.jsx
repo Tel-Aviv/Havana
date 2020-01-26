@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 import { useTranslation, Trans } from "react-i18next";
 
 import {  Divider, Tag, Button, Modal } from 'antd';
 
-import Report from './components/Reports/TableReport';
+import { DataContext } from './DataContext';
+import TableReport from './components/Reports/TableReport';
 
 type Props = {
     month: number,
@@ -14,8 +16,12 @@ type Props = {
 
 const Confirm = (props: Props) => {
     
+    const [month, setMonth] = useState();
+    const [year, setYear] = useState();
     const [tableData, setTableData] = useState([])
     const [loadingData, setLoadingData] = useState(false)
+
+    const dataContext = useContext(DataContext)
 
     const { t } = useTranslation();
 
@@ -34,6 +40,15 @@ const Confirm = (props: Props) => {
                 const resp = await axios(url, {
                     withCredentials: true
                 }); 
+                let reportId = 0;
+                const data = resp.data.map( (item, index ) => {
+                        const _item = {...item, key: index};
+                        if( reportId === 0 )
+                            reportId = item.reportId;
+                        return _item;
+                })
+
+                setTableData(data)
 
             } catch(err) {
                 console.error(err);
@@ -43,19 +58,22 @@ const Confirm = (props: Props) => {
         }
 
         fetchData();
-    });
+    }, []);
 
     const onApprove = async() => {
         try {
-            await axios.post(`http://${dataContext.host}me/pendings/`)
+            const url = `http://${dataContext.host}/me/pendings/`;
+            await axios.post(url, {
+                withCredentials: true
+            })
         } catch( err ) {
-            console.log(err)
+            console.error(err)
         }
     }
 
     return (
         <>
-            <Report dataSource={tableData} loading={loadingData} editable={false} />
+            <TableReport dataSource={tableData} loading={loadingData} editable={false} />
             <Button type="primary" onClick={onApprove}>{t('approve')}</Button>
         </>
     )

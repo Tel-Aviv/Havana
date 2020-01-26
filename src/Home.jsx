@@ -29,6 +29,7 @@ import ReactToPrint from 'react-to-print';
 
 import TableReport from './components/Reports/TableReport';
 import CalendarReport from './components/Reports/CalendarReport';
+import YearReport from './components/Reports/YearReport';
 import { DataContext } from "./DataContext";
 import ReportPDF from './ReportPDF';
 
@@ -73,19 +74,19 @@ const Home = () => {
         }
     }, [_calendarDate]);
 
-    useEffect( () => {
-        const reportItem = reportData.find( item => (
-            item.id === _reportItem.id
-        ));
-        if( reportItem ) {
-            if( _reportItem.type === 'exit') {
-                reportItem.exit = _reportItem.exit
-            } else if( _reportItem.type === 'entry') {
-                reportItem.exit = _reportItem.entry
-            }
-            console.log(reportItem);
-        }
-    }, [_reportItem])
+    // useEffect( () => {
+    //     const reportItem = reportData.find( item => (
+    //         item.id === _reportItem.id
+    //     ));
+    //     if( reportItem ) {
+    //         if( _reportItem.type === 'exit') {
+    //             reportItem.exit = _reportItem.exit
+    //         } else if( _reportItem.type === 'entry') {
+    //             reportItem.exit = _reportItem.entry
+    //         }
+    //         console.log(reportItem);
+    //     }
+    // }, [_reportItem])
 
     const { t } = useTranslation();
 
@@ -220,7 +221,7 @@ const Home = () => {
                             </span>
                             }
                             key='3'>
-                    <div>Year</div>
+                    <YearReport />        
                 </TabPane>
             </Tabs>
             
