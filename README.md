@@ -2,6 +2,8 @@
 Online Presence System Client
 
 ## How to run
+This project requires the backend server (usually installed at IIS for Kerberos with NTLM authentication). 
+Its address should be known to React, so update ./src/ssr/index.js file with the appropriate address.
 In two distinct termnals run 
 1. yarn build
 2. yarn start
