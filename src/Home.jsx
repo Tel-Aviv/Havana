@@ -185,15 +185,22 @@ const Home = () => {
     }
 
     return (
-        <Content style={{ margin: '0 16px' }}>
+        <Content>
             { showError ? (<Alert closable message={errorMessage}
                 onClose={onCloseError}
                 showIcon type='error' />
                 ) : null
             }
             {/* <Title level={2} dir='rtl'>{t('title')} {t('for_month')} {month+1}.{year}</Title> */}
-            <Tabs defaultActiveKey="1" tabBarExtraContent={operations}
-                  type="line">
+            <Tabs defaultActiveKey="1" 
+                  tabBarExtraContent={operations}
+                  type="line"
+                  style={{
+                            margin: '1% 5%',
+                            backgroundColor: 'white',
+                            padding: '10px',
+                            direction: 'ltr'
+                        }}>
                 <TabPane tab={
                             <span>
                                 <Icon type="bars" />

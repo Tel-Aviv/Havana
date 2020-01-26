@@ -71,11 +71,12 @@ html {
 }
 
 .hvn-header {
-  width: 100%;
+  width: 80%;
   height: 64px;
-  padding: 0 50px;
+  margin: auto;
+  /* padding: 0 50px; */
   line-height: 64px;
-  flex: 0 0 auto;
+  /* flex: 0 0 auto; */
   background-color: #fff;
   background: #fff;
   box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px 0px;  
@@ -85,3 +86,7 @@ html {
   font-size: 28px;
   color: #002140
 }
+
+/* div[role="tablist"]{
+  direction: rtl;
+} */

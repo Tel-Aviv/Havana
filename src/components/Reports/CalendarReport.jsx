@@ -151,7 +151,8 @@ const CalendarReport = (props: Props) => {
     )
 
     return <>
-        <Calendar dateCellRender={dateCellRender} 
+        <Calendar  className='rtl'
+                    dateCellRender={dateCellRender} 
                     defaultValue={moment()}
                     value={calendarDate}
                     onChange={onReportDateChange}
