@@ -20,12 +20,12 @@ const Settings = () => {
     useEffect( () => {
 
         async function fetchData() {
-            let resp = await axios(`http://${context.host}/me/signatute`,{
+            let resp = await axios(`http://${context.host}/me/signature`,{
                 withCredentials: true
             });
             setSignature(resp.data)
 
-            resp = await axios(`http:/${context.host}/me/stamp`, {
+            resp = await axios(`http://${context.host}/me/stamp`, {
                 withCredentials: true
             }) 
             setStamp(resp.data)
@@ -76,7 +76,7 @@ const Settings = () => {
     const removeSignature = (event) => {
         event.stopPropagation()
 
-        axios.delete(`http://${context.host}/me/signatute`, {
+        axios.delete(`http://${context.host}/me/signature`, {
             withCredentials: true
         })
         setSignature(null)        

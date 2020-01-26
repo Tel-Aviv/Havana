@@ -29,11 +29,12 @@ import ReactToPrint from 'react-to-print';
 
 import TableReport from './components/Reports/TableReport';
 import CalendarReport from './components/Reports/CalendarReport';
+import YearReport from './components/Reports/YearReport';
 import { DataContext } from "./DataContext";
 import ReportPDF from './ReportPDF';
 
 import { DatePicker } from 'antd';
-const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
+const { MonthPicker } = DatePicker;
 
 const Home = () => {
 
@@ -58,6 +59,12 @@ const Home = () => {
         }
     );
 
+    const _reportItem = useSelector(
+        store => {
+            return ( store ) ? store.item : store;
+        }
+    )
+
     useEffect( () => {
 
         if( _calendarDate ) {
@@ -66,6 +73,20 @@ const Home = () => {
             setYear(_calendarDate.year())
         }
     }, [_calendarDate]);
+
+    // useEffect( () => {
+    //     const reportItem = reportData.find( item => (
+    //         item.id === _reportItem.id
+    //     ));
+    //     if( reportItem ) {
+    //         if( _reportItem.type === 'exit') {
+    //             reportItem.exit = _reportItem.exit
+    //         } else if( _reportItem.type === 'entry') {
+    //             reportItem.exit = _reportItem.entry
+    //         }
+    //         console.log(reportItem);
+    //     }
+    // }, [_reportItem])
 
     const { t } = useTranslation();
 
@@ -164,15 +185,22 @@ const Home = () => {
     }
 
     return (
-        <Content style={{ margin: '0 16px' }}>
+        <Content>
             { showError ? (<Alert closable message={errorMessage}
                 onClose={onCloseError}
                 showIcon type='error' />
                 ) : null
             }
             {/* <Title level={2} dir='rtl'>{t('title')} {t('for_month')} {month+1}.{year}</Title> */}
-            <Tabs defaultActiveKey="1" tabBarExtraContent={operations}
-                  type="line">
+            <Tabs defaultActiveKey="1" 
+                  tabBarExtraContent={operations}
+                  type="line"
+                  style={{
+                            margin: '1% 5%',
+                            backgroundColor: 'white',
+                            padding: '10px',
+                            direction: 'ltr'
+                        }}>
                 <TabPane tab={
                             <span>
                                 <Icon type="bars" />
@@ -200,7 +228,7 @@ const Home = () => {
                             </span>
                             }
                             key='3'>
-                    <div>Year</div>
+                    <YearReport />        
                 </TabPane>
             </Tabs>
             

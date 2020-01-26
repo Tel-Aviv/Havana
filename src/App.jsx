@@ -17,7 +17,7 @@ const { Title } = Typography;
 
 import { Row, Col } from 'antd';
 
-import { Badge } from 'antd';
+import { Avatar, Badge } from 'antd';
 import "antd/dist/antd.css";
 
 import { Tooltip } from 'antd';
@@ -104,33 +104,73 @@ const App = () => {
             <meta name="description" content={t('title')} />
         </Helmet>        
         <Layout> 
-            <Header>
-                <Row>
-                    <Col span={4}>
-                        <Tooltip title={t('home')}>
-                            <Icon type="home" theme="outlined" 
-                                style={{ fontSize: '28px', color: 'wheat' }}
-                                onClick={goHome}/>
-                        </Tooltip>
-                    </Col>
-                    <Col span={4}>
+            <Layout.Header className='rtl' style={{
+                backgroundColor: 'white',
+                padding: '0',
+                height: '60px',
+                boxShadow: 'rgba(0, 0, 0, 0.15) 0px 2px 8px 0px'
+            }}>                
+                <Menu mode="horizontal" style={{
+                    padding: '0 5%'
+                }}>  
+                    <Menu.Item style={{
+                            top: '-8px'
+                        }}>
+                            <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" 
+                                    onClick={goHome}/>
+                    </Menu.Item>
+                        <Menu.Item style={{
+                            marginTop: '12px',
+                        }}>
+                            <Badge count='25' onClick={onApprovalClicked}>
+                                <Tooltip title={t('notifications')}>
+                                    <Icon type="notification" theme="outlined" 
+                                        style={{
+                                            fontSize: '24px'
+                                        }}/>
+                                </Tooltip>
+                            </Badge>    
+                    </Menu.Item> 
+                    <Menu.Item key="setting" style={{
+                        float: 'left',
+                        marginTop: '12px'
+                        }}>
+                        <Tooltip title={t('settings')}>
+                            <Icon type="setting" 
+                                theme="outlined"
+                                style={{
+                                    fontSize: '24px'
+                                }} 
+                                onClick={goSettings} />
+                        </Tooltip>      
+                    </Menu.Item>
+                </Menu>                      
+                    {/* <Col span={14}>
                         <Tooltip title={t('settings')}>
                             <Icon type="setting" theme="outlined" 
-                                style={{ fontSize: '28px', color: 'wheat' }}
+                                className='hvn-header-item'
                                 onClick={goSettings}/>
-                        </Tooltip>    
+                        </Tooltip>
+                    </Col>
+                    <Col span={2}>        
                         <Badge count={pendingsCount} onClick={onApprovalClicked} hidden={!isManager}>
                             <Tooltip title={t('notifications')}>
-                                <Icon type="notification" theme="outlined" 
-                                        style={{ fontSize: '28px', color: 'wheat' }}
+                                <Icon type="notification" theme="outlined"
+                                    className='hvn-header-item'
                                     />
                             </Tooltip>       
                         </Badge>    
                     </Col>
-                    <Col span={4} style={{color:'wheat'}}>שלום {context.user.name}</Col>
-                </Row>
-            </Header>
-            <Layout style={{ padding: '0 24px 24px' }}>
+                    <Col span={7} className='hvn-header-item'>{context.user.name}</Col>
+                    <Col span={1}>
+                        <Tooltip title={t('home')}>
+                            <Icon type="home" theme="outlined" 
+                                    className='hvn-header-item'
+                                onClick={goHome}/>
+                        </Tooltip>
+                    </Col> */}
+            </Layout.Header>
+            <Layout style={{ padding: '24px' }}>
                 <DataContext.Provider value={context}>
                     <Switch>
                         <Route exact path='/'

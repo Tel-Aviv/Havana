@@ -14,6 +14,7 @@ moment.locale('he');
 
 import store from './redux/store';
 import App from './App'
+import App2 from './App2'
 
 ReactDOM.render(<ConfigProvider locale={heIL}>
                   <Provider store={store}>

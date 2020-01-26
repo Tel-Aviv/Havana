@@ -19,17 +19,20 @@
   "scripts": {
     "build": "webpack -d --watch",
     "prod": "webpack -p",
-    "start": "nodemon ./src/ssr/index.js",
+    "start": "nodemon ./src/ssr/index.js -e jsx",
     "test": "jest"
   },
   "dependencies": {
+    "@ant-design/aliyun-theme": "^0.0.4",
     "@babel/core": "^7.8.0",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
     "@react-pdf/renderer": "^1.6.8",
+    "ant-design-pro": "^2.3.2",
     "activedirectory": "^0.7.2",
     "antd": "^3.26.6",
     "axios": "^0.19.1",
+    "bizcharts": "^3.5.6",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -45,7 +48,8 @@
     "react-router-dom": "^5.1.2",
     "react-to-print": "^2.5.1",
     "redux": "^4.0.5",
-    "style-loader": "^1.1.2"
+    "style-loader": "^1.1.2",
+    "uniqid": "^5.2.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.8.3",
