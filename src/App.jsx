@@ -116,7 +116,7 @@ const App = () => {
                     <Menu.Item style={{
                             top: '-8px'
                         }}>
-                            <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" 
+                            <Avatar src={`data:image/jpeg;base64,${context.user.imageData}`}
                                     onClick={goHome}/>
                     </Menu.Item>
                         <Menu.Item style={{
