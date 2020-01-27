@@ -29,7 +29,7 @@ const translations = {
             "cancel": "ביטול",
             "title": "דוח שעות",
             "home": "דף ראשי",
-            "settings": "הגדרות",
+            "settings": "הגדרות אישיות",
             "notifications": "הודעות",
             "plain": "טבלה",
             "calendar": "לוח חודשי",

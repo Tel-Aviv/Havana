@@ -5,6 +5,7 @@ import axios from 'axios';
 import moment from 'moment';
 import Img from 'react-image';
 import i18n from 'i18next';
+import uniqid from 'uniqid';
 
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -235,11 +236,12 @@ const Home = () => {
             <Modal title="Print Report"
                     visible={printModalVisible}
                     footer={[
-                            <ReactToPrint removeAfterPrint={true}
+                            <ReactToPrint key={uniqid()}
+                                removeAfterPrint={true}
                                 trigger={() => <Button type="primary">Print</Button>}
                                 content={() => componentRef.current}
                             />,
-                            <Button onClick={handlePrintCancel}>{t('cancel')}</Button>
+                            <Button key={uniqid()} onClick={handlePrintCancel}>{t('cancel')}</Button>
                         ]}>
                 <div ref={componentRef}>
                     <Title level={3} dir='rtl'>{dataContext.user.name}</Title>

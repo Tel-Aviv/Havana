@@ -33,11 +33,13 @@ const YearReport = () => {
                 </Chart>
                 {/* <Bar height={200} data={data}/> */}
             </Col>
-            <Col span={12}>
-                <ChartCard  title="fff">
+            <Col offset={4} span={4}>
+                <ChartCard  title="As for today">
                     <WaterWave height={161} title="Hours remaining" percent={34} />
                 </ChartCard>
-            </Col>    
+            </Col>
+            <Col span={4}>
+            </Col>   
         </Row>        
     )
 }

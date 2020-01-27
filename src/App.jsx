@@ -114,61 +114,41 @@ const App = () => {
                     padding: '0 5%'
                 }}>  
                     <Menu.Item style={{
-                            top: '-8px'
+                            top: '12px'
                         }}>
-                            <Avatar src={`data:image/jpeg;base64,${context.user.imageData}`}
-                                    onClick={goHome}/>
+                            <div onClick={goSettings}>
+                                <Avatar src={`data:image/jpeg;base64,${context.user.imageData}`}/>
+                                <span>{context.user.name}</span>        
+                            </div>
                     </Menu.Item>
-                        <Menu.Item style={{
+                    <Menu.Item key="setting" style={{
+                        float: 'left',
+                        marginTop: '12px'
+                        }}>
+                        <Tooltip title={t('home')}>
+                            <Icon type="home" 
+                                theme="outlined"
+                                style={{
+                                    fontSize: '24px'
+                                }} 
+                                onClick={goHome}
+                            />
+                        </Tooltip>      
+                    </Menu.Item>                    
+                    <Menu.Item style={{
                             marginTop: '12px',
+                            float: 'left'
                         }}>
                             <Badge count='25' onClick={onApprovalClicked}>
                                 <Tooltip title={t('notifications')}>
-                                    <Icon type="notification" theme="outlined" 
+                                    <Icon type="bell" theme="outlined" 
                                         style={{
                                             fontSize: '24px'
                                         }}/>
                                 </Tooltip>
                             </Badge>    
                     </Menu.Item> 
-                    <Menu.Item key="setting" style={{
-                        float: 'left',
-                        marginTop: '12px'
-                        }}>
-                        <Tooltip title={t('settings')}>
-                            <Icon type="setting" 
-                                theme="outlined"
-                                style={{
-                                    fontSize: '24px'
-                                }} 
-                                onClick={goSettings} />
-                        </Tooltip>      
-                    </Menu.Item>
                 </Menu>                      
-                    {/* <Col span={14}>
-                        <Tooltip title={t('settings')}>
-                            <Icon type="setting" theme="outlined" 
-                                className='hvn-header-item'
-                                onClick={goSettings}/>
-                        </Tooltip>
-                    </Col>
-                    <Col span={2}>        
-                        <Badge count={pendingsCount} onClick={onApprovalClicked} hidden={!isManager}>
-                            <Tooltip title={t('notifications')}>
-                                <Icon type="notification" theme="outlined"
-                                    className='hvn-header-item'
-                                    />
-                            </Tooltip>       
-                        </Badge>    
-                    </Col>
-                    <Col span={7} className='hvn-header-item'>{context.user.name}</Col>
-                    <Col span={1}>
-                        <Tooltip title={t('home')}>
-                            <Icon type="home" theme="outlined" 
-                                    className='hvn-header-item'
-                                onClick={goHome}/>
-                        </Tooltip>
-                    </Col> */}
             </Layout.Header>
             <Layout style={{ padding: '24px' }}>
                 <DataContext.Provider value={context}>
