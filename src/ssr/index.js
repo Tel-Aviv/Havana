@@ -30,32 +30,6 @@ app.use(ntlm());
 
 const template = fs.readFileSync('./templates/index.html', "utf8")
 
-<<<<<<< HEAD
-app.get('/', function(request, response, next) {
-    return ad.findUser( `${request.ntlm.UserName}@tlv.gov.il` , function(err, user) {
-        let rsp;
-        if (err) {
-            console.error('ERROR: ' +JSON.stringify(err));
-            // return  next(err)
-
-            user = {
-                cn : 'אולג קליימן'
-            };
-            request.ntlm.UserName = 'c1306948';
-        }
-        
-        if (!user){ 
-            console.log('User: ' + request.ntlm.UserName + ' not found.');
-            rsp = 'User: ' + request.ntlm.UserName + ' not found.';
-        } else {
-            //TODO this operation take to match time
-             rsp = template.replace('{USER_NAME}', user.cn)
-                    .replace('{USER_ID}', request.ntlm.UserName)
-                    .replace('{HOST}', process.env.HOST)
-        }   
-        response.end(rsp)
-    });
-=======
 app.get('/', async  function(request, response, next) {
         return ad.findUser( `${request.ntlm.UserName}@tlv.gov.il` , function(err, user) {
             let rsp;
@@ -76,7 +50,6 @@ app.get('/', async  function(request, response, next) {
             }   
             response.end(rsp)
         });
->>>>>>> 8f175776356a03284faf0dc0ce0151c4cdbf2447
 })
 
 app.use(express.static("./dist"))

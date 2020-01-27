@@ -116,8 +116,10 @@ const App = () => {
                     <Menu.Item style={{
                             top: '12px'
                         }}>
-                            <Avatar src={`data:image/jpeg;base64,${context.user.imageData}`}
-                                    onClick={goHome}/>
+                            <div onClick={goSettings}>
+                                <Avatar src={`data:image/jpeg;base64,${context.user.imageData}`}/>
+                                <span>{context.user.name}</span>        
+                            </div>
                     </Menu.Item>
                     <Menu.Item key="setting" style={{
                         float: 'left',
