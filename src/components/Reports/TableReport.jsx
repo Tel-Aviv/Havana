@@ -103,10 +103,7 @@ class EditableTable extends React.Component {
 
   isRowEditable = record => {
     return this.props.editable &&  // not manager
-      record.dayOfWeek != "ז" &&
-      record.dayOfWeek != "ו" && (  
-        !record.entry || !record.exit  
-      )
+      record.notes !== ''
   }
   cancel = () => {
     this.setState({ editingKey: '' });
@@ -131,6 +128,7 @@ class EditableTable extends React.Component {
         newItem.valid = true,
         
         newData.splice(index, 1, newItem);
+        // Dispatch
         this.setState({ data: newData, editingKey: '' });
         this.props.onChange && this.props.onChange(newData)
       }
@@ -161,7 +159,7 @@ class EditableTable extends React.Component {
           dataIndex: col.dataIndex,
           title: col.title,
           rowEditing: this.isRowEditing(record),
-          cellEditbale: col.dataIndex == 'notes' || 
+          cellEditbale: col.dataIndex === 'notes' || 
                         this.state.originalData[rowIndex][col.dataIndex] === '0:00',
         }),
       };
@@ -174,7 +172,7 @@ class EditableTable extends React.Component {
     return (
       <ReportContext.Provider value={this.props.form}>
         <Table
-          style={{ direction: 'rtl' }}
+          style={{ direction: 'rtl', heigth: '600px' }}
           {...this.props}
           tableLayout='auto'
           bordered={false}
@@ -185,7 +183,7 @@ class EditableTable extends React.Component {
           pagination={false}
           size="small"
           tableLayout={undefined}
-          
+          scroll={{y: '600px'}}
         />
       </ReportContext.Provider>
     );

@@ -4,10 +4,13 @@ export function getUserFromHtml() {
     const userName = elem.textContent;
     elem = document.getElementById('USER_ID');
     const userId = elem.textContent;
+    elem = document.getElementById('USER_THUMBNAIL');
+    const imageData = elem.textContent;
 
     return {
         name: userName,
         id: userId,
+        imageData: imageData
     }
 }
 

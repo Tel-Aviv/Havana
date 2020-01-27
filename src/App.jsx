@@ -116,12 +116,8 @@ const App = () => {
                     <Menu.Item style={{
                             top: '12px'
                         }}>
-                            <Tooltip title={t('settings')}>
-                                <div onClick={goSettings}>
-                                    <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-                                    <span>{context.user.name}</span>
-                                </div>
-                            </Tooltip>
+                            <Avatar src={`data:image/jpeg;base64,${context.user.imageData}`}
+                                    onClick={goHome}/>
                     </Menu.Item>
                     <Menu.Item key="setting" style={{
                         float: 'left',
