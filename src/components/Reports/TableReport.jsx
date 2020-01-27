@@ -27,10 +27,7 @@ class EditableTable extends React.Component {
       editingKey: '' 
     };
 
-    this.columns = [{
-        title: 'תאריך',
-        dataIndex: 'rdate',
-      },
+    this.columns = [
       {
         title: 'יום',
         dataIndex: 'day',
@@ -42,21 +39,20 @@ class EditableTable extends React.Component {
         title: 'כניסה',
         dataIndex: 'entry',
         width: '15%',
-        align: 'center',
+        align: 'right',
         editable: true,
       },
       {
         title: 'יציאה',
         dataIndex: 'exit',
         width: '15%',
-        align: 'center',
+        align: 'right',
         editable: true,
       },
       {
         title: 'סיכום',
         dataIndex: 'total',
-        width: '10%',
-        align: 'center',
+        align: 'right',
         editable: false,
       },
       {
@@ -166,7 +162,7 @@ class EditableTable extends React.Component {
           title: col.title,
           rowEditing: this.isRowEditing(record),
           cellEditbale: col.dataIndex == 'notes' || 
-                        !this.state.originalData[rowIndex][col.dataIndex],
+                        this.state.originalData[rowIndex][col.dataIndex] === '0:00',
         }),
       };
     });

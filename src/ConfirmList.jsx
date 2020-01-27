@@ -49,13 +49,22 @@ const ConfirmList = () => {
     }
 
     return(
-        <>
-            <Table dataSource={tableData} columns={columns} size="middle" bordered
-                onRow={(record, index) => ({
-                        onClick: (event) => { onRowClick(record, index, event) } 
-            })}>
+        <div style={{
+                        margin: '1% 5%',
+                        backgroundColor: 'white',
+                        padding: '10px',
+                        direction: 'ltr'
+                    }}>
+            <Table dataSource={tableData} 
+                    columns={columns} 
+                    size="middle" 
+                    bordered={false}
+                    pagination={false}
+                    onRow={(record, index) => ({
+                                onClick: (event) => { onRowClick(record, index, event) } 
+                            })}>
             </Table>
-        </>
+        </div>
     )
 }
 

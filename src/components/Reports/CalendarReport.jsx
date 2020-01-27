@@ -144,7 +144,7 @@ const CalendarReport = (props: Props) => {
     }
 
     const getTimeField = (item, time) => (
-        time ? 
+        ( time !== '0:00' ) ?
             <div>{time}</div> :
             <XTimePicker item={item} onTimeSelected={onTimeChanged}/>
 
