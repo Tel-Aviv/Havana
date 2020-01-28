@@ -1,9 +1,9 @@
 // @flow
 import moment from 'moment';
-import { SET_REPORT_DATE, UPDATE_ITEM } from "../actionTypes";
+import { SET_REPORT_DATE } from "../actionTypes";
 
 const initialState = {
-  reportDate: moment()
+  reportDate: moment(),
 };
 
 export default function(state = initialState, action) {
@@ -15,11 +15,8 @@ export default function(state = initialState, action) {
             }
         }
 
-        case UPDATE_ITEM: {
-            return {
-                ...state,
-                item: action.item
-            }
-        }
+        default:
+            return state;    
+
     }
 }

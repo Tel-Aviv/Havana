@@ -34,6 +34,8 @@ import YearReport from './components/Reports/YearReport';
 import { DataContext } from "./DataContext";
 import ReportPDF from './ReportPDF';
 
+import { UPDATE_ITEM } from "./redux/actionTypes"
+
 import { DatePicker } from 'antd';
 const { MonthPicker } = DatePicker;
 
@@ -42,6 +44,8 @@ const Home = () => {
     const [month, setMonth] = useState(moment().month()+1);
     const [year, setYear] = useState(moment().year());
     const [reportData, setReportData] = useState([])
+    const [reportDataValid, setReportDataValid] = useState(false);
+    const [isReportSubmitted, setReportSubmitted] = useState(false);
     const [reportId, setReportId] = useState();
     const [loadingData, setLoadingData] = useState(false)
     const [calendarDate, setCalendarDate] = useState(moment());
@@ -54,17 +58,40 @@ const Home = () => {
     const history = useHistory();
     const componentRef = useRef();
 
+    const dispatch = useDispatch();
+
     const _calendarDate = useSelector(
-        store => {
-            return ( store ) ? store.reportDate : store;
-        }
+        store => store.reportDateReducer.reportDate
     );
 
-    const _reportItem = useSelector(
-        store => {
-            return ( store ) ? store.item : store;
-        }
+    const isReportDataValid = () => (
+
+        reportData.every( (item) => {
+
+            return (item.dayOfWeek === 'ש' || item.dayOfWeek === 'ו') ||
+                   ( item.entry !== '0:00' && item.exit !== '0:00' ) ||
+                   ( item.entry === '0:00' && item.exit === '0:00' );
+            
+        })
     )
+
+    const _updatedItem = useSelector(
+        store => store.reportUpdateReducer.lastUpdatedItem
+    )
+
+    useEffect( () => {
+        if(_updatedItem){
+            const index = reportData.findIndex( item => item.id === _updatedItem.id);
+            if (index > -1) {
+                reportData[index] = _updatedItem;
+                const res = isReportDataValid();
+                console.log(`validation result: ${res}`);
+                setReportDataValid( res );
+                setReportData(reportData);
+            }
+        }
+    }, [_updatedItem])
+
 
     useEffect( () => {
 
@@ -107,9 +134,10 @@ const Home = () => {
                             reportId = item.reportId;
                         return _item;
                 })
-                setLoadingData(false)
+                setLoadingData(false);
                 setReportId(reportId);
-                setReportData(data)
+                setReportData(data);
+
             } catch(err) {
                 console.error(err);
                 setShowError(true);
@@ -129,6 +157,10 @@ const Home = () => {
         fetchData()
     }, [month, year])
 
+    const action_updateItem = (item) => ({
+        type: UPDATE_ITEM,
+        item
+    })
   
     const onSubmit = async () => {
         try {
@@ -138,8 +170,10 @@ const Home = () => {
                 data: reportData,
                 withCredentials: true
             })
+            //TODO set success Alert
+            setReportSubmitted(true);
         } catch(err) {
-            setErrorMessage(err);
+            setErrorMessage(err.message);
             setShowError(true);
         }
     }
@@ -155,7 +189,11 @@ const Home = () => {
 
 
     const operations = <div>
-                            <Button type="primary" onClick={onSubmit}>{t('submit')}</Button>
+                            <Button type="primary" onClick={onSubmit}
+                                                   disabled={ !isReportSubmitted && !reportDataValid}
+                             >
+                                {t('submit')}
+                            </Button>
                             <Button type="primary" onClick={onShowPDF}>PDF</Button>
                         </div>;
 
@@ -214,7 +252,7 @@ const Home = () => {
                                  value={calendarDate}
                                  allowClear={false}
                                  defaultValue={moment()} />
-                    <TableReport dataSource={reportData} loading={loadingData} editable={true} />
+                    <TableReport dataSource={reportData} loading={loadingData} onChange={( item ) => dispatch(action_updateItem(item)) } editable={true} />
                 </TabPane>
                 <TabPane tab={<span>
                                 <Icon type="schedule" />

@@ -36,6 +36,13 @@ class EditableTable extends React.Component {
         editable: false,
       },
       {
+        title: 'יום בשבוע',
+        dataIndex: 'dayOfWeek',
+        align: 'right',
+        ellipsis: true,
+        editable: false,
+      },    
+      {
         title: 'כניסה',
         dataIndex: 'entry',
         width: '15%',
@@ -128,9 +135,8 @@ class EditableTable extends React.Component {
         newItem.valid = true,
         
         newData.splice(index, 1, newItem);
-        // Dispatch
+        this.props.onChange && this.props.onChange(newItem);
         this.setState({ data: newData, editingKey: '' });
-        this.props.onChange && this.props.onChange(newData)
       }
     });
   }
