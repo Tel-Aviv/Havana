@@ -44,13 +44,14 @@ const CalendarReport = (props: Props) => {
     });
 
     useEffect( () => {
+
         setCalendarDate(props.value);
         const _tableDataItems = props.tableData.map( item => {
                 return {
                     ...item,
                     validationPassed: true,
                     isValid : () => {
-                        const res = item.exit !== "" && item.entry !== "";
+                        const res = item.exit !== "0:00" && item.entry !== "0:00";
                         return res;
                     }
                 }
@@ -60,6 +61,7 @@ const CalendarReport = (props: Props) => {
     }, [props])
 
     const onCalendarDaySelected = (value) => {
+
         setSelectedDay(value.format('DD/MM/YYYY'))
         const tableDataItems = tableData.filter( item => {
             const itemDate = moment(item.rdate);
@@ -90,16 +92,27 @@ const CalendarReport = (props: Props) => {
     }
 
     const dayModalOK = () => {
-        if( validateData() )
+
+        if( validateData() ) {
+            dispatch(
+                action_ItemChanged({
+                                    id: item.id,
+                                    exit: time,
+                                    type: item.type
+                                    })
+            );            
             setDayModalVisible(false);
+        }
     }
 
     const validateData = () => {
+
         let result = selectedDayItems.reduce( (isValid, item) => {
             const _isValid = item.isValid();
             item.validationPassed = _isValid;
             return _isValid;
         }, false);
+
         return result;
     }
 
@@ -148,11 +161,6 @@ const CalendarReport = (props: Props) => {
     }
 
     const onTimeChanged = (item, time) => {
-        // dispatch(action_ItemChanged({
-        //     id: item.id,
-        //     exit: time,
-        //     type: item.type
-        // }));
     }
 
     const getTimeField = (item, time) => (
@@ -171,7 +179,7 @@ const CalendarReport = (props: Props) => {
                     fullscreen={true}
                     validRange={[moment().add(-12, 'month'), moment()]}
                     onSelect={onCalendarDaySelected}/>
-        <Modal closable={false} 
+        <Modal closable={true} 
                 className='rtl'
                 title={selectedDay}
                 visible={dayModalVisible}

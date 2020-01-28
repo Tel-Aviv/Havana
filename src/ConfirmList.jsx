@@ -32,7 +32,7 @@ const ConfirmList = () => {
     useEffect( () =>  {
 
         async function fetchData() {
-            const url = `http://${dataContext.host}/api/v1/pendings`;
+            const url = `http://${dataContext.host}/me/pendings`;
             const resp = await axios(url, {
                 withCredentials: true
             }); 
