@@ -51,8 +51,9 @@ const Home = () => {
     const [calendarDate, setCalendarDate] = useState(moment());
     const [printModalVisible, setPrintModalVisible] = useState(false);
     const [signature, setSignature] = useState();
-    const [showError, setShowError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState();
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertType, setAlertType] = useState();
+    const [alertMessage, setAlertMessage] = useState();
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
@@ -118,29 +119,78 @@ const Home = () => {
 
     const { t } = useTranslation();
 
+    const defineAlert = (data) => {
+        if( data ) {
+            
+            setAlertType('info');
+            if( !data.approved ) {
+                setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם אושר`);
+            } else {
+                setAlertMessage(`דוח שעות לחודש ${month}/${year} בתאריך אושר ${data.approved_when}`);
+            }
+
+        } else {
+            setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם אושר`);
+            setAlertType('warning');
+        }
+
+        setShowAlert(true);
+    }
+
     useEffect( () => {
         async function fetchData() {
 
             setLoadingData(true)
             try {
-                const url = `http://${dataContext.host}/me/reports?month=${month}&year=${year}`;
-                const resp = await axios(url, {
+
+                // Get report's status of requested month
+                let url = `http://${dataContext.host}/me/reports/status?month=${month}&year=${year}`;
+                let statusResp = await axios(url, {
                     withCredentials: true
-                }); 
+                });
+
                 let reportId = 0;
-                const data = resp.data.map( (item, index ) => {
+                let data = [];
+                
+                if( statusResp.data ) {
+                    // The status was returned, i.e. there were an updates to the original report
+                    // Get them!
+                    reportId = statusResp.data.reportId;
+                    url = `http://${dataContext.host}/me/reports/${reportId}/updates`;
+                    const resp = await axios(url, {
+                        withCredentials: true
+                    });
+
+                    data = resp.data.map( (item, index ) => {
                         const _item = {...item, key: index};
-                        if( reportId === 0 )
-                            reportId = item.reportId;
                         return _item;
-                })
+                    })
+
+                } else {
+
+                    // The status of the report is unknown, i.e. get the original report    
+                    url = `http://${dataContext.host}/me/reports/?month=${month}&year=${year}`;
+                    const resp = await axios(url, {
+                        withCredentials: true
+                    }); 
+                    
+                    data = resp.data.map( (item, index ) => {
+                            const _item = {...item, key: index};
+                            if( reportId === 0 )
+                                reportId = item.reportId;
+                            return _item;
+                    })
+                }
+
                 setLoadingData(false);
                 setReportId(reportId);
                 setReportData(data);
 
+                defineAlert(statusResp.data);
+
             } catch(err) {
                 console.error(err);
-                setShowError(true);
+                setShowAlert(true);
             }  finally {
                 setLoadingData(false)
             }
@@ -174,7 +224,7 @@ const Home = () => {
             setReportSubmitted(true);
         } catch(err) {
             setErrorMessage(err.message);
-            setShowError(true);
+            setShowAlert(true);
         }
     }
 
@@ -190,7 +240,7 @@ const Home = () => {
 
     const operations = <div>
                             <Button type="primary" onClick={onSubmit}
-                                                   disabled={ !isReportSubmitted && !reportDataValid}
+                                                   disabled={ isReportSubmitted || !reportDataValid}
                              >
                                 {t('submit')}
                             </Button>
@@ -225,21 +275,19 @@ const Home = () => {
 
     return (
         <Content>
-            { showError ? (<Alert closable message={errorMessage}
-                onClose={onCloseError}
-                showIcon type='error' />
+            { showAlert ? (<Alert closable={false}
+                                    message={alertMessage}
+                                    className='hvn-item-rtl' 
+                                    onClose={onCloseError}
+                                    showIcon 
+                                    type={alertType} />
                 ) : null
             }
             {/* <Title level={2} dir='rtl'>{t('title')} {t('for_month')} {month+1}.{year}</Title> */}
             <Tabs defaultActiveKey="1" 
                   tabBarExtraContent={operations}
                   type="line"
-                  style={{
-                            margin: '1% 5%',
-                            backgroundColor: 'white',
-                            padding: '10px',
-                            direction: 'ltr'
-                        }}>
+                  className='hvn-item-ltr'>
                 <TabPane tab={
                             <span>
                                 <Icon type="bars" />

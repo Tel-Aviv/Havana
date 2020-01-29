@@ -20,7 +20,10 @@ const translations = {
             "in": "In",
             "out": "Out",
             "notes": "Notes",
-            "missing_notes": "Please provide notes"
+            "missing_notes": "Please provide notes",
+            "not_approved": "This report is not approves yet",
+            "was_approved": "This report was approved at ",
+            "not_submitted": "This report was not submitted yet",
         }
     },
     he: {
@@ -44,7 +47,10 @@ const translations = {
             "in": "כניסה",
             "out": "יציאה",
             "notes": "הערות",
-            "missing_notes": "אנא הזן הערות!"
+            "missing_notes": "אנא הזן הערות!",
+            "not_approved": "דוח זה ממתין לאישור",
+            "was_approved": "הדוח הזה אושר בתקריך",
+            "not_submitted": "דוח זה לא נשלח לאישור",           
         }
     }
 }    
