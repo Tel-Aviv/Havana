@@ -23,7 +23,7 @@ const Settings = () => {
             let resp = await axios(`http://${context.host}/me/signature`,{
                 withCredentials: true
             });
-            setSignature(resp.data)
+            setSignature(`data:/image/*;base64,${resp.data}`)
 
             resp = await axios(`http://${context.host}/me/stamp`, {
                 withCredentials: true
@@ -118,7 +118,7 @@ const Settings = () => {
 
                 </Col>
                 <Col span={12} className='cbox'>
-                    <Text>Seal</Text>
+                    <Text>Stamp</Text>
                     <Upload {...uploadProps}>
                         <img src={stamp} />
                     </Upload> 
