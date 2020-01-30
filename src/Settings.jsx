@@ -29,11 +29,9 @@ const Settings = () => {
             });
             const signature = resp.data;
             if( signature.startsWith('data:') ) {
-                console.log('signature with MIME');
                 setSignature(signature);
             }
             else {    
-                console.log('signature without MIME');
                 setSignature(`data:/image/*;base64,${signature}`);
             }
 
@@ -85,19 +83,19 @@ const Settings = () => {
         event.stopPropagation()
     }
 
-    const removeStamp = (event) => {
+    const removeStamp = async (event) => {
         event.stopPropagation()
 
-        axios.delete(`http://${context.host}/me/signature`, {
+        await axios.delete(`http://${context.host}/me/stamp`, {
             withCredentials: true
         })
-        setSignature(null)        
+        setStamp(null)        
     }    
 
-    const removeSignature = (event) => {
+    const removeSignature = async (event) => {
         event.stopPropagation()
 
-        axios.delete(`http://${context.host}/me/stamp`, {
+        await axios.delete(`http://${context.host}/me/signature`, {
             withCredentials: true
         })
         setSignature(null)        

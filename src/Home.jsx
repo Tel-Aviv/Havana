@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
 
-import { Divider, Tag, Button, Modal } from 'antd';
+import { Divider, Tag, Button, List, Modal } from 'antd';
 import { Typography } from 'antd';
 const { Title, Paragraph, Text } = Typography;
 
@@ -206,7 +206,15 @@ const Home = () => {
                 const resp = await axios(`http://${dataContext.host}/me/signature`, {
                     withCredentials: true
                 });
-                setSignature(resp.data)
+            
+                const signature = resp.data;
+                if( signature.startsWith('data:') ) {
+                    setSignature(signature);
+                }
+                else {    
+                    setSignature(`data:/image/*;base64,${signature}`);
+                }                
+
             } catch(err) {
                 console.error(err);
             }
@@ -310,6 +318,7 @@ const Home = () => {
                                  defaultValue={moment()} />
                     <TableReport dataSource={reportData}
                                  loading={loadingData}
+                                 scroll={{y: '600px'}}
                                  onChange={( item ) => dispatch(action_updateItem(item)) } 
                                  editable={isReportEditable} />
                 </TabPane>
@@ -332,8 +341,12 @@ const Home = () => {
             
             <Modal title="Print Report"
                     visible={printModalVisible}
+                    closable={true}
+                    forceRender={true}
+                    onCancel={handlePrintCancel}
                     footer={[
                             <ReactToPrint key={uniqid()}
+                                copyStyles={true}
                                 removeAfterPrint={true}
                                 trigger={() => <Button type="primary">Print</Button>}
                                 content={() => componentRef.current}
@@ -342,9 +355,23 @@ const Home = () => {
                         ]}>
                 <div ref={componentRef}>
                     <Title level={3} dir='rtl'>{dataContext.user.name}</Title>
-                    <Title level={4} dir='rtl'>{t('title')} {t('for_month')} {month+1}.{year}</Title>
-                    <TableReport dataSource={reportData} loading={loadingData} editable={true}/>                   
-                    <Img src={signature} /> 
+                    <Title level={4} dir='rtl'>{t('title')} {t('for_month')} {month}.{year}</Title>
+                    <TableReport dataSource={reportData} 
+                                 loading={loadingData} 
+                                 editable={false} /> 
+                    {/* <List dataSource={reportData}
+                    renderItem={ item => (
+                                <List.Item style={{
+                                    height: '8px',
+                                    fontSize: 'small'
+                                }}>
+                                    <div>ok</div>
+                                </List.Item>
+                            )}>
+                    </List>                   */}
+                    <Img style={{
+                        width: '100px'
+                    }} src={signature} /> 
                 </div>
             </Modal>
             
