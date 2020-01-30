@@ -4,6 +4,8 @@ import axios from 'axios';
 
 import { useTranslation, Trans } from "react-i18next";
 
+import Pdf from 'react-to-pdf'
+
 import {  Divider, Tag, Button, Modal } from 'antd';
 
 import { DataContext } from './DataContext';
@@ -13,6 +15,8 @@ type Props = {
     month: number,
     year: number
 }
+
+const ref = React.createRef();
 
 const Confirm = (props: Props) => {
     
@@ -59,7 +63,8 @@ const Confirm = (props: Props) => {
         fetchData();
     }, []);
 
-    const onApprove = async() => {
+    const onApprove = async(toPdf) => {
+
         try {
             const url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}`;
             await axios(url, {
@@ -69,13 +74,27 @@ const Confirm = (props: Props) => {
         } catch( err ) {
             console.error(err)
         }
+
+        if( toPdf ) {
+            toPdf();
+        }
     }
 
     return (
-        <>
-            <TableReport dataSource={tableData} loading={loadingData} editable={false} />
-            <Button type="primary" onClick={onApprove}>{t('approve')}</Button>
-        </>
+        <div className='hvn-item-ltr'>
+            <Pdf targetRef={ref} filename="report.pdf">
+                {({ toPdf }) => <Button type="primary"
+                                        onClick={ () => onApprove(toPdf) }>
+                                    {t('approve')}
+                                </Button>}
+            </Pdf>
+            <div ref={ref}>
+                <TableReport dataSource={tableData} 
+                            loading={loadingData} 
+                            editable={false} />
+
+            </div>
+        </div>
     )
 }
 

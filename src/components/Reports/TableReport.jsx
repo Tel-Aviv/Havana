@@ -45,14 +45,12 @@ class EditableTable extends React.Component {
       {
         title: 'כניסה',
         dataIndex: 'entry',
-        width: '15%',
         align: 'right',
         editable: true,
       },
       {
         title: 'יציאה',
         dataIndex: 'exit',
-        width: '15%',
         align: 'right',
         editable: true,
       },
@@ -65,13 +63,11 @@ class EditableTable extends React.Component {
       {
         title: 'הערות',
         dataIndex: 'notes',
-        width: '40%',
         align: 'right',
         editable: true,
       },
       {
         title: '',
-        width: '8%',
         dataIndex: 'operation',
         render: (text, record) => 
            (record.requireChange)? 
@@ -189,7 +185,6 @@ class EditableTable extends React.Component {
           pagination={false}
           size="small"
           tableLayout={undefined}
-          scroll={{y: '600px'}}
         />
       </ReportContext.Provider>
     );
