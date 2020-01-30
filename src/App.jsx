@@ -49,7 +49,7 @@ const App = () => {
     const [month, setMonth] = useState(moment().month());
     const [year, setYear] = useState(moment().year());
     const [displayNotifications, setDisplayNotificatios] = useState(false);
-    const [pendingsCount, setPendingsCount] = useState()
+    const [pendingsCount, setPendingsCount] = useState(0)
     const context = {
         user : getUserFromHtml(),
         host : getHost()
@@ -70,7 +70,7 @@ const App = () => {
                 res = await axios(`http://${context.host}/me/pendings/count`,{
                     withCredentials: true
                 })
-                setPendingsCount(res.data.count);
+                setPendingsCount(res.data);
             }
         }
         fetchData();
@@ -143,7 +143,7 @@ const App = () => {
                             float: 'left',
                             display: displayNotifications
                         }}>
-                               <Badge count='25' onClick={onApprovalClicked} 
+                               <Badge count={pendingsCount} onClick={onApprovalClicked} 
                                    className='ltr' >
                                 <Tooltip title={t('notifications')}>
                                     <Icon type="bell" theme="outlined" 
@@ -163,10 +163,7 @@ const App = () => {
                                     <Home />
                                 }/>
                         <Route path='/confirmlist' component={ConfirmList} />
-                        <Route path='/confirm/:userid'
-                                render={ () => 
-                                    <Confirm month={month} year={year} />
-                                } />
+                        <Route path='/confirm/:userid/:reportId/' component={Confirm}/>
                         <Route path='/pdf' 
                                 render={ (props) => 
                                     <ReportPDF tableData={props} />
