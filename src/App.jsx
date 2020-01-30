@@ -48,7 +48,7 @@ const App = () => {
 
     const [month, setMonth] = useState(moment().month());
     const [year, setYear] = useState(moment().year());
-    const [isManager, setIsManager] = useState(false);
+    const [displayNotifications, setDisplayNotificatios] = useState(false);
     const [pendingsCount, setPendingsCount] = useState()
     const context = {
         user : getUserFromHtml(),
@@ -59,11 +59,12 @@ const App = () => {
 
     useEffect( () => {
         async function fetchData() {
-            let res = await axios(`http://${context.host}/api/users/${context.user.id}`, {
+            let res = await axios(`http://${context.host}/me/is_manager/`, {
                 withCredentials: true
             });
-            const isManager = res.data.isManager;
-            setIsManager(isManager)
+            const isManager = res.data;
+            const display = isManager ? 'block' : 'none';
+            setDisplayNotificatios(display)
 
             if( isManager ) {
                 res = await axios(`http://${context.host}/me/pendings/count`,{
@@ -73,7 +74,7 @@ const App = () => {
             }
         }
         fetchData();
-    }, [isManager])
+    }, [displayNotifications])
 
     const onMonthChange = (date, dateString) => {
         if( date ) {
@@ -99,11 +100,11 @@ const App = () => {
 
     return (
         <>
-        <Helmet>
-            <title>{t('title')}</title>
-            <meta name="description" content={t('title')} />
-        </Helmet>        
-        <Layout> 
+            <Helmet>
+                <title>{t('title')}</title>
+                <meta name="description" content={t('title')} />
+            </Helmet>        
+            <Layout> 
             <Layout.Header className='rtl' style={{
                 backgroundColor: 'white',
                 padding: '0',
@@ -139,9 +140,10 @@ const App = () => {
                     </Menu.Item>                    
                     <Menu.Item style={{
                             marginTop: '12px',
-                            float: 'left'
+                            float: 'left',
+                            display: displayNotifications
                         }}>
-                            <Badge count='25' onClick={onApprovalClicked} 
+                               <Badge count='25' onClick={onApprovalClicked} 
                                    className='ltr' >
                                 <Tooltip title={t('notifications')}>
                                     <Icon type="bell" theme="outlined" 
