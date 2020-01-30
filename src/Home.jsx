@@ -46,6 +46,7 @@ const Home = () => {
     const [reportData, setReportData] = useState([])
     const [reportDataValid, setReportDataValid] = useState(false);
     const [isReportSubmitted, setReportSubmitted] = useState(false);
+    const [isReportEditable, setIsReportEditable] = useState(true);
     const [reportId, setReportId] = useState();
     const [loadingData, setLoadingData] = useState(false)
     const [calendarDate, setCalendarDate] = useState(moment());
@@ -166,6 +167,7 @@ const Home = () => {
                         const _item = {...item, key: index};
                         return _item;
                     })
+                    setIsReportEditable(false)
 
                 } else {
 
@@ -181,6 +183,7 @@ const Home = () => {
                                 reportId = item.reportId;
                             return _item;
                     })
+                    setIsReportEditable(true)
                 }
 
                 setLoadingData(false);
@@ -225,6 +228,7 @@ const Home = () => {
             })
             //TODO set success Alert
             setReportSubmitted(true);
+            setIsReportEditable(false)
         } catch(err) {
             setErrorMessage(err.message);
             setShowAlert(true);
@@ -303,7 +307,10 @@ const Home = () => {
                                  value={calendarDate}
                                  allowClear={false}
                                  defaultValue={moment()} />
-                    <TableReport dataSource={reportData} loading={loadingData} onChange={( item ) => dispatch(action_updateItem(item)) } editable={true} />
+                    <TableReport dataSource={reportData}
+                                 loading={loadingData}
+                                 onChange={( item ) => dispatch(action_updateItem(item)) } 
+                                 editable={isReportEditable} />
                 </TabPane>
                 <TabPane tab={<span>
                                 <Icon type="schedule" />
