@@ -14,15 +14,14 @@ function customEntryParser(entry, raw, callback){
 };
 
 const AD_config = { url: 'ldap://domdc1.tlv.gov.il',
-                baseDN: 'DC=tlv,DC=gov,DC=il',
-                username: process.env.AD_USER,
-                password: process.env.AD_PASS,
-                entryParser : customEntryParser,
-                attributes : {
-                    user: ["cn", "thumbnailPhoto"]
-                },
-
-            }
+                    baseDN: 'DC=tlv,DC=gov,DC=il',
+                    username: process.env.AD_USER,
+                    password: process.env.AD_PASS,
+                    entryParser : customEntryParser,
+                    attributes : {
+                        user: ["cn", "thumbnailPhoto"]
+                    }
+}
 const ad = new ActiveDirectory(AD_config);
 
 var app = express();
@@ -31,16 +30,22 @@ app.use(ntlm());
 const template = fs.readFileSync('./templates/index.html', "utf8")
 
 app.get('/', async  function(request, response, next) {
+
         return ad.findUser( `${request.ntlm.UserName}@tlv.gov.il` , function(err, user) {
             let rsp;
             if (err) {
-                console.error('ERROR: ' +JSON.stringify(err));
-                return  next(err)
+                console.error('ERROR: ' + JSON.stringify(err));
+                // return  next(err)
             }
             
             if (!user){ 
-                console.log('User: ' + request.ntlm.UserName + ' not found.');
-                rsp = 'User: ' + request.ntlm.UserName + ' not found.';
+                console.log('User: ' + request.ntlm.UserName + ' not found in AD');
+
+                rsp = template.replace('{USER_NAME}', request.ntlm.UserName)
+                        .replace('{USER_THUMBNAIL}', null)
+                        .replace('{USER_ID}', request.ntlm.UserName)
+                        .replace('{HOST}', process.env.HOST)
+
             } else {
                 //TODO this operation take to match time
                 rsp = template.replace('{USER_NAME}', user.cn)

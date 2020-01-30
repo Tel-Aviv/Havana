@@ -86,7 +86,6 @@ const Home = () => {
             if (index > -1) {
                 reportData[index] = _updatedItem;
                 const res = isReportDataValid();
-                console.log(`validation result: ${res}`);
                 setReportDataValid( res );
                 setReportData(reportData);
             }
@@ -123,7 +122,9 @@ const Home = () => {
         if( data ) {
             
             setAlertType('info');
-            if( !data.approved ) {
+            if( !data.submitted ) {
+                setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם נשלח לאישור`);
+            } else if( !data.approved ) {
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם אושר`);
             } else {
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} בתאריך אושר ${data.approved_when}`);
@@ -190,6 +191,8 @@ const Home = () => {
 
             } catch(err) {
                 console.error(err);
+                setAlertMessage(err.message);
+                setAlertType('error');
                 setShowAlert(true);
             }  finally {
                 setLoadingData(false)
