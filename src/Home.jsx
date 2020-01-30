@@ -128,7 +128,8 @@ const Home = () => {
             } else if( !data.approved ) {
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם אושר`);
             } else {
-                setAlertMessage(`דוח שעות לחודש ${month}/${year} בתאריך אושר ${data.approved_when}`);
+                const whenApproved = moment(data.whenApproved).format('DD/MM/YYYY')
+                setAlertMessage(`דוח שעות לחודש ${month}/${year} אושר בתאריך ${whenApproved}`);
             }
 
         } else {

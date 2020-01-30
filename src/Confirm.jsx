@@ -26,7 +26,6 @@ const Confirm = (props: Props) => {
     const { t } = useTranslation();
 
     const routeParams = useParams();
-    console.log(routeParams.userid);
 
     useEffect( () => {
         async function fetchData() {
@@ -36,7 +35,7 @@ const Confirm = (props: Props) => {
 
             setLoadingData(true)
             try {
-                const url = `http://${dataContext.host}/me/employees/reports/${routeParams.userid}?month=${props.month + 1}&year=${props.year}`;
+                const url = `http://${dataContext.host}/me/employees/reports/${routeParams.userid}/${routeParams.reportId}`;
                 const resp = await axios(url, {
                     withCredentials: true
                 }); 
@@ -62,8 +61,9 @@ const Confirm = (props: Props) => {
 
     const onApprove = async() => {
         try {
-            const url = `http://${dataContext.host}/me/pendings/`;
-            await axios.post(url, {
+            const url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}`;
+            await axios(url, {
+                method: "PATCH",
                 withCredentials: true
             })
         } catch( err ) {

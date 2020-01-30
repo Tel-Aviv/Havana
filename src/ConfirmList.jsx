@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Route, Switch, withRouter, Link, useHistory } from 'react-router-dom';
+import moment from 'moment'
 
 import { Table, Divider, Tag } from 'antd';
 
@@ -9,15 +10,28 @@ import { DataContext } from './DataContext';
 
 const columns = [{
         title: 'שם עובד',
-        dataIndex: 'name',
+        dataIndex: 'userName',
+        align: 'right',
         key: 'name',
     },{
-      title: "id",
-      dataIndex: "id",
-      key: "id"
-  }, {
+      title: "שנה",
+      dataIndex: "year",
+      align: 'right',
+      key: "year"
+   },{
+      title: "חודש",
+      dataIndex: "month",
+      align: 'right',
+      key: "month"
+   },{
+      title: "תאריך שליחה",
+      dataIndex: "whenSubmitted",
+      align: 'right',
+      key: "submitted"
+   },{
       title: "הערות",
       dataIndex: "comment",
+      align: 'right',
       key: "comment"
   }
 
@@ -36,7 +50,14 @@ const ConfirmList = () => {
             const resp = await axios(url, {
                 withCredentials: true
             }); 
-            setTableData(resp.data)
+            const tableData = resp.data.map( (item, index) => {
+                return {
+                    ...item,
+                    whenSubmitted: moment(item.whenSubmitted).format('DD/MM/YYYY'),
+                    key: index
+                }
+            })
+            setTableData(tableData)
         }
 
         fetchData()
@@ -44,8 +65,7 @@ const ConfirmList = () => {
     }, [])
 
     const onRowClick = (record, index, event) => {
-        console.log(record.id)
-        history.push(`/confirm/${record.id}`);
+        history.push(`/confirm/${record.userId}/${record.reportId}`);
     }
 
     return(
@@ -56,6 +76,7 @@ const ConfirmList = () => {
                         direction: 'ltr'
                     }}>
             <Table dataSource={tableData} 
+                    style={{ direction: 'rtl', heigth: '600px' }}
                     columns={columns} 
                     size="middle" 
                     bordered={false}
