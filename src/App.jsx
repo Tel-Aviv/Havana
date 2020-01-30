@@ -116,10 +116,12 @@ const App = () => {
                     <Menu.Item style={{
                             top: '12px'
                         }}>
-                            <div onClick={goSettings}>
-                                <Avatar src={`data:image/jpeg;base64,${context.user.imageData}`}/>
-                                <span>{context.user.name}</span>        
-                            </div>
+                            <Tooltip title={t('settings')}>
+                                <div onClick={goSettings}>
+                                    <Avatar src={`data:image/jpeg;base64,${context.user.imageData}`}/>
+                                    <span>{context.user.name}</span>        
+                                </div>
+                            </Tooltip>
                     </Menu.Item>
                     <Menu.Item key="setting" style={{
                         float: 'left',
@@ -139,7 +141,8 @@ const App = () => {
                             marginTop: '12px',
                             float: 'left'
                         }}>
-                            <Badge count='25' onClick={onApprovalClicked}>
+                            <Badge count='25' onClick={onApprovalClicked} 
+                                   className='ltr' >
                                 <Tooltip title={t('notifications')}>
                                     <Icon type="bell" theme="outlined" 
                                         style={{
