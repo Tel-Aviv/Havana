@@ -16,7 +16,22 @@ module.exports = {
         {
             test: /\.css$/,
             use: ['style-loader', 'css-loader']
-        },      
+        },    
+        {
+            test: /\.less$/,
+            use: [{
+                loader: 'less-loader',
+                options: {
+                    modifyVars: {
+                        'primary-color': '#1DA57A',
+                        'link-color': '#1DA57A',
+                        'border-radius-base': '2px',
+                    },
+                    javascriptEnabled: true
+                }
+            }]
+            
+        },
         {
             test: /\.(gif|png|jpe?g|svg)$/i,
             use: [

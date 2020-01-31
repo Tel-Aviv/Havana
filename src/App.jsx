@@ -17,12 +17,10 @@ const { Title } = Typography;
 
 import { Row, Col } from 'antd';
 
-import { Avatar, Badge } from 'antd';
-import "antd/dist/antd.css";
+import { Avatar, Badge, Tooltip } from 'antd';
 
-import { Tooltip } from 'antd';
-
-import { blue } from '@ant-design/colors';
+// import "antd/dist/antd.css";
+import 'antd-rtl/es/tabs/style/index.css'
 
 import ConfirmList from './ConfirmList';
 import Confirm from './Confirm';
@@ -112,19 +110,25 @@ const App = () => {
                 boxShadow: 'rgba(0, 0, 0, 0.15) 0px 2px 8px 0px'
             }}>                
                 <Menu mode="horizontal" style={{
-                    padding: '0 5%'
+                    padding: '0 6%'
                 }}>  
-                    <Menu.Item style={{
+                    <Menu.Item key='settings' style={{
                             top: '12px'
                         }}>
                             <Tooltip title={t('settings')}>
                                 <div onClick={goSettings}>
-                                    <Avatar src={`data:image/jpeg;base64,${context.user.imageData}`}/>
-                                    <span>{context.user.name}</span>        
+                                    <Avatar size="large" src={`data:image/jpeg;base64,${context.user.imageData}`}
+                                        style={{
+                                            marginRight: '0'
+                                        }}
+                                        onError={ () => true} />
+                                    <span style={{
+                                        padding: '0 12px'
+                                    }}>{context.user.name}</span>        
                                 </div>
                             </Tooltip>
                     </Menu.Item>
-                    <Menu.Item key="setting" style={{
+                    <Menu.Item key='home' style={{
                         float: 'left',
                         marginTop: '12px'
                         }}>
@@ -138,7 +142,7 @@ const App = () => {
                             />
                         </Tooltip>      
                     </Menu.Item>                    
-                    <Menu.Item style={{
+                    <Menu.Item key='notifications' style={{
                             marginTop: '12px',
                             float: 'left',
                             display: displayNotifications

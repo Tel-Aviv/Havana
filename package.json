@@ -2,7 +2,13 @@
   "name": "Havana",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/Tel-Aviv/Havana.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tel-Aviv/Havana.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Tel-Aviv/Havana/issues"
+  },
   "author": "shukiBenishty <shuki.benishty@gmail.com>",
   "license": "MIT",
   "babel": {
@@ -31,6 +37,7 @@
     "activedirectory": "^0.7.2",
     "ant-design-pro": "^2.3.2",
     "antd": "^3.26.6",
+    "antd-rtl": "^3.11.14",
     "axios": "^0.19.1",
     "bizcharts": "^3.5.6",
     "cors": "^2.8.5",
@@ -38,6 +45,7 @@
     "express": "^4.17.1",
     "express-ntlm": "^2.5.0",
     "i18next": "^19.0.3",
+    "less-loader": "^5.0.0",
     "moment": "^2.24.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",

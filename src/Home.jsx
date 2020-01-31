@@ -18,7 +18,7 @@ import { Divider, Tag, Button, List, Modal } from 'antd';
 import { Typography } from 'antd';
 const { Title, Paragraph, Text } = Typography;
 
-import { Tabs } from 'antd';
+import { Tabs } from 'antd-rtl';
 const { TabPane } = Tabs;
 
 import { Calendar, Badge, Card } from 'antd';
@@ -102,20 +102,6 @@ const Home = () => {
             setYear(_calendarDate.year())
         }
     }, [_calendarDate]);
-
-    // useEffect( () => {
-    //     const reportItem = reportData.find( item => (
-    //         item.id === _reportItem.id
-    //     ));
-    //     if( reportItem ) {
-    //         if( _reportItem.type === 'exit') {
-    //             reportItem.exit = _reportItem.exit
-    //         } else if( _reportItem.type === 'entry') {
-    //             reportItem.exit = _reportItem.entry
-    //         }
-    //         console.log(reportItem);
-    //     }
-    // }, [_reportItem])
 
     const { t } = useTranslation();
 
@@ -235,36 +221,21 @@ const Home = () => {
                 data: reportData,
                 withCredentials: true
             })
-            //TODO set success Alert
+            //TODO: set success Alert
             setReportSubmitted(true);
             setIsReportEditable(false)
         } catch(err) {
-            setErrorMessage(err.message);
+            setAlertMessage(err.message);
             setShowAlert(true);
         }
     }
 
     const onShowPDF = () => {
-        //history.push('/pdf');
         setPrintModalVisible(!printModalVisible);
     }
 
     const handlePrintCancel = () => {
         setPrintModalVisible(false);
-    }
-
-
-    const operations = <div>
-                            <Button type="primary" onClick={onSubmit}
-                                                   disabled={ isReportSubmitted || !reportDataValid}
-                             >
-                                {t('submit')}
-                            </Button>
-                            <Button type="primary" onClick={onShowPDF}>PDF</Button>
-                        </div>;
-
-    const onCloseError = () => {
-        setShowError(false);
     }
 
     const onMonthChange = (date, dateString) => {
@@ -289,12 +260,22 @@ const Home = () => {
                 || (current < moment().add(-12, 'month'))
     }
 
+    const operations = <div>
+                            <Button type="primary" onClick={onSubmit}
+                                                   disabled={ isReportSubmitted || !reportDataValid}
+                                style={{
+                                    marginLeft: '8px'
+                                }}>
+                                {t('submit')}
+                            </Button>
+                            <Button type="primary" onClick={onShowPDF}>PDF</Button>
+                        </div>;
+
     return (
         <Content>
             { showAlert ? (<Alert closable={false}
                                     message={alertMessage}
                                     className='hvn-item-rtl' 
-                                    onClose={onCloseError}
                                     showIcon 
                                     type={alertType} />
                 ) : null
@@ -303,16 +284,20 @@ const Home = () => {
             <Tabs defaultActiveKey="1" 
                   tabBarExtraContent={operations}
                   type="line"
-                  className='hvn-item-ltr'>
+                  className='hvn-item-rtl'>
                 <TabPane tab={
                             <span>
-                                <Icon type="bars" />
+                                <Icon type="bars" />&nbsp;
                                 {t('plain')}
                             </span>
                         }
                         key="1">
                     <MonthPicker onChange={onMonthChange}
                                  disabledDate={disabledDate}
+                                 className='ltr'
+                                 style={{
+                                     float: 'left'
+                                 }}
                                  value={calendarDate}
                                  allowClear={false}
                                  defaultValue={moment()} />
@@ -323,14 +308,15 @@ const Home = () => {
                                  editable={isReportEditable} />
                 </TabPane>
                 <TabPane tab={<span>
-                                <Icon type="schedule" />
+                                <Icon type="schedule" />&nbsp;
                                 {t('calendar')}
                             </span>
-                            } key="2">
+                            } 
+                        key="2">
                     <CalendarReport tableData={reportData} value={calendarDate}/>
                 </TabPane>
                 <TabPane tab={<span>
-                                <Icon type="fund" />
+                                <Icon type="fund" />&nbsp;
                                 {t('yearly')}
                             </span>
                             }

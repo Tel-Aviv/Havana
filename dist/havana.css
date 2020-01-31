@@ -3,6 +3,13 @@ html {
     scroll-behavior: smooth; 
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+} 
+
 .wheatIcon {
     color: wheat;
     font-size: '28px';
@@ -103,4 +110,9 @@ html {
   background-color: white;
   padding: 10px  !important;
   direction: ltr;
+}
+
+.ant-tabs-extra-content {
+  line-height: 45px;
+  float: left !important
 }
