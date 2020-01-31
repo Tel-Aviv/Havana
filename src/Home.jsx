@@ -286,7 +286,6 @@ const Home = () => {
                                     type={alertType} />
                 ) : null
             }
-            {/* <Title level={2} dir='rtl'>{t('title')} {t('for_month')} {month+1}.{year}</Title> */}
             <Tabs defaultActiveKey="1" 
                   tabBarExtraContent={operations}
                   type="line"
