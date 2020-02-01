@@ -2,7 +2,7 @@
 import React from 'react'
 import axios from 'axios';
 import 'antd/dist/antd.css';
-import { Table, Popconfirm, Form, Icon, Button } from 'antd';
+import { Table, Popconfirm, Form, Icon, Button, Tag } from 'antd';
 var moment = require('moment');
 
 import { ReportContext } from "./table-context";
@@ -47,12 +47,36 @@ class EditableTable extends React.Component {
         dataIndex: 'entry',
         align: 'right',
         editable: true,
+        render: (text) => {
+          let tagColor = 'green';
+          if( text === '0:00' ) {
+            tagColor = 'volcano'
+          }
+          return <Tag color={tagColor}
+                    style={{
+                      marginRight: '0'
+                  }}>
+                    {text}
+                  </Tag>
+        }          
       },
       {
         title: 'יציאה',
         dataIndex: 'exit',
         align: 'right',
         editable: true,
+        render: (text) => {
+          let tagColor = 'green';
+          if( text === '0:00' ) {
+            tagColor = 'volcano'
+          }
+          return <Tag color={tagColor}
+                    style={{
+                      marginRight: '0'
+                  }}>
+                    {text}
+                  </Tag>
+        }
       },
       {
         title: 'סיכום',
@@ -65,6 +89,15 @@ class EditableTable extends React.Component {
         dataIndex: 'notes',
         align: 'right',
         editable: true,
+        render: (text, _) => 
+          ( text !== '' ) ?
+              <Tag color="volcano"
+                style={{
+                  marginRight: '0'
+                }}>
+                {text}
+              </Tag>
+              : null
       },
       {
         title: '',

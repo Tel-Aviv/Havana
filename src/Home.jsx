@@ -287,7 +287,7 @@ const Home = () => {
                 <TabPane tab={
                             <span>
                                 <Icon type="bars" />
-                                <span className='tab-item'>
+                                <span>
                                     {t('plain')}
                                 </span>
                             </span>
@@ -297,7 +297,8 @@ const Home = () => {
                                  disabledDate={disabledDate}
                                  className='ltr'
                                  style={{
-                                     float: 'left'
+                                     float: 'left',
+                                     marginBottom: '8px'
                                  }}
                                  value={calendarDate}
                                  allowClear={false}
@@ -310,7 +311,7 @@ const Home = () => {
                 </TabPane>
                 <TabPane tab={<span>
                                 <Icon type="schedule" />
-                                <span className='tab-item'>
+                                <span>
                                     {t('calendar')}
                                 </span>
                             </span>
@@ -320,7 +321,7 @@ const Home = () => {
                 </TabPane>
                 <TabPane tab={<span>
                                 <Icon type="fund" />
-                                <span className='tab-item'>
+                                <span>
                                     {t('yearly')}
                                 </span>
                             </span>
@@ -350,16 +351,6 @@ const Home = () => {
                     <TableReport dataSource={reportData} 
                                  loading={loadingData} 
                                  editable={false} /> 
-                    {/* <List dataSource={reportData}
-                    renderItem={ item => (
-                                <List.Item style={{
-                                    height: '8px',
-                                    fontSize: 'small'
-                                }}>
-                                    <div>ok</div>
-                                </List.Item>
-                            )}>
-                    </List>                   */}
                     <Img style={{
                         width: '100px'
                     }} src={signature} /> 

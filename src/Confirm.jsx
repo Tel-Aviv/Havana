@@ -69,7 +69,7 @@ const Confirm = (props: Props) => {
     }, []);
 
     const action_decreaseNotificationCount = () => ({
-        type: DECREASE_NOTIFICATIONS_COUNT,
+        type: DECREASE_NOTIFICATIONS_COUNT
     })
 
     const onApprove = async(toPdf) => {
@@ -95,6 +95,9 @@ const Confirm = (props: Props) => {
         <div className='hvn-item-ltr'>
             <Pdf targetRef={ref} filename="report.pdf">
                 {({ toPdf }) => <Button type="primary"
+                                         style={{
+                                             marginBottom: '8px'
+                                         }}   
                                         onClick={ () => onApprove(toPdf) }>
                                     {t('approve')}
                                 </Button>}
