@@ -6,11 +6,11 @@ import { ChartCard, Bar, WaterWave, Field } from 'ant-design-pro/lib/Charts';
 import { Row, Col, Card, Icon } from 'antd';
 
 const data = [
-  { genre: 'January', hours: 205 },
-  { genre: 'February', hours: 215},
-  { genre: 'March', hours: 220 },
-  { genre: 'April', hours: 150 },
-  { genre: 'May', hours: 168 }
+  { genre: 'יאנואר', hours: 205 },
+  { genre: 'פברואר', hours: 215},
+  { genre: 'מרץ', hours: 220 },
+  { genre: 'אפריל', hours: 150 },
+  { genre: 'מאי', hours: 168 }
 ];
 
 const cols = {
@@ -23,6 +23,11 @@ const cols = {
 const YearReport = () => {
     return (
         <Row>
+            <Col offset={4} span={4}>
+                <ChartCard className='ltr'>
+                    <WaterWave height={161} title="נשאר בסל השעות" percent={34} />
+                </ChartCard>
+            </Col>
             <Col span={12}>
                 <Chart width={600} height={400} data={data} scale={cols}>
                     <Axis name="genre" title/>
@@ -32,11 +37,6 @@ const YearReport = () => {
                     <Geom type="interval" position="genre*hours" color="genre" />
                 </Chart>
                 {/* <Bar height={200} data={data}/> */}
-            </Col>
-            <Col offset={4} span={4}>
-                <ChartCard  title="As for today">
-                    <WaterWave height={161} title="Hours remaining" percent={34} />
-                </ChartCard>
             </Col>
             <Col span={4}>
             </Col>   

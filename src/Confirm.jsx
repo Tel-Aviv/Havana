@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
@@ -10,6 +11,8 @@ import {  Divider, Tag, Button, Modal } from 'antd';
 
 import { DataContext } from './DataContext';
 import TableReport from './components/Reports/TableReport';
+
+import { DECREASE_NOTIFICATIONS_COUNT } from "./redux/actionTypes";
 
 type Props = {
     month: number,
@@ -30,6 +33,8 @@ const Confirm = (props: Props) => {
     const { t } = useTranslation();
 
     const routeParams = useParams();
+
+    const dispatch = useDispatch();
 
     useEffect( () => {
         async function fetchData() {
@@ -63,6 +68,10 @@ const Confirm = (props: Props) => {
         fetchData();
     }, []);
 
+    const action_decreaseNotificationCount = () => ({
+        type: DECREASE_NOTIFICATIONS_COUNT,
+    })
+
     const onApprove = async(toPdf) => {
 
         try {
@@ -71,6 +80,8 @@ const Confirm = (props: Props) => {
                 method: "PATCH",
                 withCredentials: true
             })
+
+            dispatch(action_decreaseNotificationCount());
         } catch( err ) {
             console.error(err)
         }

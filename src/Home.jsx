@@ -286,8 +286,10 @@ const Home = () => {
                   className='hvn-item-rtl'>
                 <TabPane tab={
                             <span>
-                                <Icon type="bars" />&nbsp;
-                                {t('plain')}
+                                <Icon type="bars" />
+                                <span className='tab-item'>
+                                    {t('plain')}
+                                </span>
                             </span>
                         }
                         key="1">
@@ -307,16 +309,20 @@ const Home = () => {
                                  editable={isReportEditable} />
                 </TabPane>
                 <TabPane tab={<span>
-                                <Icon type="schedule" />&nbsp;
-                                {t('calendar')}
+                                <Icon type="schedule" />
+                                <span className='tab-item'>
+                                    {t('calendar')}
+                                </span>
                             </span>
                             } 
                         key="2">
                     <CalendarReport tableData={reportData} value={calendarDate}/>
                 </TabPane>
                 <TabPane tab={<span>
-                                <Icon type="fund" />&nbsp;
-                                {t('yearly')}
+                                <Icon type="fund" />
+                                <span className='tab-item'>
+                                    {t('yearly')}
+                                </span>
                             </span>
                             }
                             key='3'>
