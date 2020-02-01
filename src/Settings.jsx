@@ -24,6 +24,7 @@ const Settings = () => {
     useEffect( () => {
 
         async function fetchData() {
+
             let resp = await axios(`http://${context.host}/me/signature`,{
                 withCredentials: true
             });
@@ -37,11 +38,18 @@ const Settings = () => {
 
             resp = await axios(`http://${context.host}/me/stamp`, {
                 withCredentials: true
-            }) 
-            setStamp(resp.data)
+            })
+            const stamp = resp.data;
+            if( stamp.startsWith('data:') ) {
+                setStamp(stamp)
+            } else {
+                setStamp(`data:/image/*;base64,${stamp}`);
+            }
+            
         }
 
         fetchData()
+        
     }, [])
 
     const beforeUpload = (file) => {
@@ -61,6 +69,21 @@ const Settings = () => {
         const reader = new FileReader();
         reader.addEventListener('load', () => callback(reader.result));
         reader.readAsDataURL(img);
+    }
+
+    const uploadStampChange = (info) => {
+        if (info.file.status === 'uploading') {
+            setLoading(true);
+            return;
+        }
+
+        if (info.file.status === 'done') {
+            getBase64(info.file.originFileObj, imageUrl => {
+                setLoading(false);
+                setStamp(imageUrl);
+            })
+        }
+
     }
 
     const uploadChange  = (info) => {
@@ -113,6 +136,18 @@ const Settings = () => {
         onRemove: removeSignature
     }
 
+    const uploadStampProps = {
+        action: `http://${context.host}/me/upload_stamp`,
+        withCredentials: true,
+        multiple: false,
+        listType: 'picture-card',
+        className: 'avatar-uploader',
+        showUploadList: false,
+        beforeUpload: beforeUpload,
+        onChange: uploadStampChange,
+        onRemove: removeStamp
+    }
+
     const uploadButton = (
         <>
             <Icon type={loading ? 'loading' : 'plus'} />
@@ -131,8 +166,9 @@ const Settings = () => {
                         <Icon type="edit" key="edit" />,
                         <Icon type="delete" onClick={ e => removeStamp(e) }/>,
                     ]}>
-                        <Upload {...uploadProps}>
-                            <img src={stamp} />
+                        <Upload {...uploadStampProps}>
+                            { stamp? <img src={stamp}  className='avatar-uploader' onClick={e => dummyClick(e) }/>
+                                    : uploadButton }
                         </Upload> 
                         <Meta title="Uploaded" description="from www.instagram.com" />
                     </Card>
@@ -148,8 +184,7 @@ const Settings = () => {
                             { signature?  <img src={signature} className='avatar-uploader' onClick={e => dummyClick(e) }/> 
                                         : uploadButton }
                         </Upload>
-                        <Meta title="Uploaded" description="from www.instagram.com" />
-                        <br /> <br /> <br /> <br />
+                        <Meta title="Uploaded" description="from local store" />
                     </Card>
                 </Col>
                 <Col span={8}>
