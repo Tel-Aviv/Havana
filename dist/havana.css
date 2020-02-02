@@ -112,6 +112,11 @@ body {
   direction: ltr;
 }
 
+.hvn-title {
+  text-align: center;
+  background-color: transparent;
+}
+
 .tab-item {
   vertical-align: text-bottom;
 } 
