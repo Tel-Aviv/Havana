@@ -146,11 +146,11 @@ const Home = () => {
                     // Get them!
                     reportId = statusResp.data.reportId;
                     url = `http://${dataContext.host}/me/reports/${reportId}/updates`;
-                    const resp = await axios(url, {
+                    const _resp = await axios(url, {
                         withCredentials: true
                     });
 
-                    data = resp.data.map( (item, index ) => {
+                    data = _resp.data.items.map( (item, index ) => {
                         const _item = {...item, key: index};
                         return _item;
                     })
@@ -163,14 +163,23 @@ const Home = () => {
                     const resp = await axios(url, {
                         withCredentials: true
                     }); 
-                    
-                    data = resp.data.map( (item, index ) => {
-                            const _item = {...item, key: index};
-                            if( reportId === 0 )
-                                reportId = item.reportId;
-                            return _item;
-                    })
-                    setIsReportEditable(true)
+
+                    console.log(resp.data);
+
+                    if( resp.data
+                        && resp.data.items 
+                        && resp.data.items.length > 0  ) {
+
+                        data = resp.data.items.map( (item, index ) => {
+                                const _item = {...item, key: index};
+                                if( reportId === 0 )
+                                    reportId = item.reportId;
+                                return _item;
+                        })
+                        
+                        setIsReportEditable(true)
+
+                    }
                 }
 
                 setLoadingData(false);
