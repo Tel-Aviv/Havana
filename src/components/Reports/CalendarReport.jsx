@@ -133,21 +133,17 @@ const CalendarReport = (props: Props) => {
                 tableDataItems.map( (tableDataItem, index) => {
 
                     const { total, notes, exit, entry } = tableDataItem;
-                    let badge = <Badge status='error' text={notes} />;
-                    if( notes ===  '') {
-                        const _text = `סה"כ: ${total}`;
+                    const tagColor = ( notes ===  '')? 'green' : 'volcano';
+                    const _text = ( notes ===  '')? `סה"כ: ${total}` : notes;
 
-
-                        badge = <Badge status='success' text={_text} />
-                    } 
-
-                    return <li key={index}
-                                style={{
-                                        float: 'right',
-                                        marginRight: '13%'
-                                }}>
-                            {badge}      
-                    </li>
+                    return (
+                        <li key={index}
+                                    style={{
+                                            float: 'right',
+                                            marginRight: '13%'
+                                    }}>
+                                <Tag color={tagColor}>{_text}</Tag>
+                        </li>)
 
                 })
             }

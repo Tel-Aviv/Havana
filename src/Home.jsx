@@ -146,11 +146,11 @@ const Home = () => {
                     // Get them!
                     reportId = statusResp.data.reportId;
                     url = `http://${dataContext.host}/me/reports/${reportId}/updates`;
-                    const resp = await axios(url, {
+                    const _resp = await axios(url, {
                         withCredentials: true
                     });
 
-                    data = resp.data.map( (item, index ) => {
+                    data = _resp.data.items.map( (item, index ) => {
                         const _item = {...item, key: index};
                         return _item;
                     })
@@ -163,14 +163,21 @@ const Home = () => {
                     const resp = await axios(url, {
                         withCredentials: true
                     }); 
-                    
-                    data = resp.data.map( (item, index ) => {
-                            const _item = {...item, key: index};
-                            if( reportId === 0 )
-                                reportId = item.reportId;
-                            return _item;
-                    })
-                    setIsReportEditable(true)
+
+                    if( resp.data
+                        && resp.data.items 
+                        && resp.data.items.length > 0  ) {
+
+                        data = resp.data.items.map( (item, index ) => {
+                                const _item = {...item, key: index};
+                                if( reportId === 0 )
+                                    reportId = item.reportId;
+                                return _item;
+                        })
+                        
+                        setIsReportEditable(true)
+
+                    }
                 }
 
                 setLoadingData(false);
@@ -286,8 +293,10 @@ const Home = () => {
                   className='hvn-item-rtl'>
                 <TabPane tab={
                             <span>
-                                <Icon type="bars" />&nbsp;
-                                {t('plain')}
+                                <Icon type="bars" />
+                                <span>
+                                    {t('plain')}
+                                </span>
                             </span>
                         }
                         key="1">
@@ -295,7 +304,8 @@ const Home = () => {
                                  disabledDate={disabledDate}
                                  className='ltr'
                                  style={{
-                                     float: 'left'
+                                     float: 'left',
+                                     marginBottom: '8px'
                                  }}
                                  value={calendarDate}
                                  allowClear={false}
@@ -307,16 +317,20 @@ const Home = () => {
                                  editable={isReportEditable} />
                 </TabPane>
                 <TabPane tab={<span>
-                                <Icon type="schedule" />&nbsp;
-                                {t('calendar')}
+                                <Icon type="schedule" />
+                                <span>
+                                    {t('calendar')}
+                                </span>
                             </span>
                             } 
                         key="2">
                     <CalendarReport tableData={reportData} value={calendarDate}/>
                 </TabPane>
                 <TabPane tab={<span>
-                                <Icon type="fund" />&nbsp;
-                                {t('yearly')}
+                                <Icon type="fund" />
+                                <span>
+                                    {t('yearly')}
+                                </span>
                             </span>
                             }
                             key='3'>
@@ -344,16 +358,6 @@ const Home = () => {
                     <TableReport dataSource={reportData} 
                                  loading={loadingData} 
                                  editable={false} /> 
-                    {/* <List dataSource={reportData}
-                    renderItem={ item => (
-                                <List.Item style={{
-                                    height: '8px',
-                                    fontSize: 'small'
-                                }}>
-                                    <div>ok</div>
-                                </List.Item>
-                            )}>
-                    </List>                   */}
                     <Img style={{
                         width: '100px'
                     }} src={signature} /> 
