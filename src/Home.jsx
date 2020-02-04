@@ -164,8 +164,6 @@ const Home = () => {
                         withCredentials: true
                     }); 
 
-                    console.log(resp.data);
-
                     if( resp.data
                         && resp.data.items 
                         && resp.data.items.length > 0  ) {

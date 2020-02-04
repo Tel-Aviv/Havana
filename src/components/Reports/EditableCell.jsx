@@ -15,51 +15,47 @@ type State = {
 
 }
 
-export default class EditableCell extends React.Component<Props, State> {
-    getInput = () => (this.props.inputType !== 'time') ?
-                        <Input /> :
-                        <CustomTimePicker  allowClear={false} />
+const EditableCell = (props) => {
 
-    // cellEditable = (inputType, val) => { 
-    //     let res = inputType === 'time';
-    //     return res || (val === "0:00")
-    // }
-    
-    render() {
-        return <ReportContext.Consumer>
-            {({ getFieldDecorator }) => {
-                const {
-                    rowEditing,
-                    dataIndex,
-                    title,
-                    inputType,
-                    record,
-                    index,
-                    children,
-                    cellEditbale,
-                    ...restProps
-                } = this.props;
-                return (
-                    <td {...restProps}>
-                        {rowEditing && cellEditbale ?  (
-                            <Form.Item style={{ margin: 0 }}>
-                                {getFieldDecorator(dataIndex, {
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: `אנא הזן ${title}!`,
-                                        },
-                                    ],
-                                    initialValue: (record[dataIndex] && this.props.inputType === 'time') ?
-                                                moment.utc(record[dataIndex], format) : undefined
-                                })(this.getInput())}
-                            </Form.Item>
-                        ) : (
-                                children
-                            )}
-                    </td>
-                );
-            }}
-        </ReportContext.Consumer>;
-    }
+    const getInput = () => ( props.inputType !== 'time') ?
+        <Input /> :
+        <CustomTimePicker />
+
+    return <ReportContext.Consumer>
+        {({ getFieldDecorator }) => {
+            const {
+                rowEditing,
+                dataIndex,
+                title,
+                inputType,
+                record,
+                index,
+                children,
+                cellEditbale,
+                ...restProps
+            } = props;
+            return (
+                <td {...restProps}>
+                    {rowEditing && cellEditbale ?  (
+                        <Form.Item style={{ margin: 0 }}>
+                            {getFieldDecorator(dataIndex, {
+                                rules: [
+                                    {
+                                        required: true,
+                                        message: `אנא הזן ${title}!`,
+                                    },
+                                ],
+                                initialValue: (record[dataIndex] && props.inputType === 'time') ?
+                                            moment.utc(record[dataIndex], format) : undefined
+                            })(getInput())}
+                        </Form.Item>
+                    ) : (
+                            children
+                        )}
+                </td>
+            );
+        }}
+    </ReportContext.Consumer>;
 }
+
+export default EditableCell
