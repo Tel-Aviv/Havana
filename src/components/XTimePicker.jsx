@@ -34,35 +34,5 @@ const XTimePicker = ( (props) => {
 })
 
 
-// const XTimePicker = React.forwardRef( (props, ref) => {
-    
-//     const [open, setOpen] = useState(false);
-//     const [selectedTime, setSelectedTime] = useState();
-
-//     const handleOk = () => {
-//         setOpen(false)
-//         if( props.onChanged )
-//             props.onChanged(props.item, selectedTime);
-//     }
-//     const onChange = (time, timeString) => {
-//         setSelectedTime(timeString);
-//     }
-//     return <TimePicker ref={ref}
-//                 className='ltr'
-//                 {...props}
-//                 allowClear={false}
-//                 format={'H:mm'}
-//                 open={open}
-//                 size='small'
-//                 onChange={onChange}
-//                 onOpenChange={(e) => setOpen(e)}
-//                 addon={ () => (
-//                     <Button size='small' type='primary' 
-//                             style={{
-//                                 width: '100%'
-//                             }}    
-//                             onClick={handleOk}>OK</Button>
-//                 )}/>
-// })
 
 export default XTimePicker;

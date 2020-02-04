@@ -10,10 +10,6 @@ const iconStyle = {
 }
 
 export default ({recordId, display, editing, disable, edit, save, cancel}) => {
-    // const { editingKey } = this.state;
-    // const editableRow = record.requireChange;
-    // const editing = this.isRowEditing(record);
-    // return !editableRow ? {} :
     return editing ? (
       <span>
         <Popconfirm title="האם ברצונך לבטל את השינויים ?" onConfirm={() => cancel(recordId)}>
@@ -28,7 +24,6 @@ export default ({recordId, display, editing, disable, edit, save, cancel}) => {
         </ReportContext.Consumer>
       </span>
     ) : (
-        // editingKey === '' ?
           disable ?
             (<Icon type="edit" style={iconStyle} />) :
             (<Icon type="edit" theme="twoTone"
