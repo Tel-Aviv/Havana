@@ -1,13 +1,17 @@
+// @flow
 import React, { useState, useEffect, useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import uniqid from 'uniqid';
 
 import { useTranslation, Trans } from "react-i18next";
 
 import Pdf from 'react-to-pdf'
 
 import {  Divider, Tag, Button, Typography, Modal } from 'antd';
+import { Input } from 'antd-rtl';
+
 const { Title } = Typography;          
 
 import { DataContext } from './DataContext';
@@ -29,6 +33,9 @@ const Confirm = (props: Props) => {
     const [tableData, setTableData] = useState([])
     const [title, setTitle] = useState();
     const [loadingData, setLoadingData] = useState(false)
+    const [notesModalVisible, setNotesModalVisible] = useState(false)
+    const [note, setNote] = useState('');
+    const [toPdfHandler, setToPdfHandler] = useState();
 
     const dataContext = useContext(DataContext)
 
@@ -75,10 +82,17 @@ const Confirm = (props: Props) => {
         type: DECREASE_NOTIFICATIONS_COUNT
     })
 
-    const onApprove = async(toPdf) => {
+    const onContinue = (toPdf) => {
+
+        setToPdfHandler({toPdf});
+        setNotesModalVisible(true);
+    }    
+
+
+    const onApprove = async() => {
 
         try {
-            const url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}`;
+            const url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}?note=${note}`;
             await axios(url, {
                 method: "PATCH",
                 withCredentials: true
@@ -89,9 +103,17 @@ const Confirm = (props: Props) => {
             console.error(err)
         }
 
-        if( toPdf ) {
-            toPdf();
-        }
+        if( toPdfHandler )
+            toPdfHandler.toPdf();
+
+    }
+    
+    const onNotesModalClosed = () => {
+        setNotesModalVisible(false)
+    }
+
+    const onNotesChanged = evt => {
+        setNote(evt.target.value)
     }
 
     return (
@@ -103,8 +125,8 @@ const Confirm = (props: Props) => {
                                             style={{
                                                 marginBottom: '8px'
                                             }}   
-                                            onClick={ () => onApprove(toPdf) }>
-                                        {t('approve')}
+                                            onClick={ () => onContinue(toPdf) }>
+                                        {t('continue')}
                                     </Button>}
                 </Pdf>
                 <div ref={ref}>
@@ -114,6 +136,28 @@ const Confirm = (props: Props) => {
 
                 </div>
             </div>
+            <Modal closable={false} 
+                    className='rtl'
+                    visible={notesModalVisible}
+                    title={t('notes_for_report')}
+                    footer={
+                        [
+                            <Button key='approve' type="primary" onClick={onApprove} >{t('approve')}</Button>,
+                            <Button key='cancel' onClick={onNotesModalClosed} style={{
+                                marginRight: '8px'
+                            }}>{t('cancel')}</Button>
+                        ]
+                    }
+                   >
+                <div>   
+                    <Input placeholder='הזן הערות במידת הצורך'
+                        className='rtl' 
+                        onChange={onNotesChanged} />
+                    <div style={{
+                        marginTop: '8px'
+                    }}>הערות שלחנה בדוא"ל לבעל הדוח</div>
+                </div>       
+            </Modal>
         </>
     )
 }
