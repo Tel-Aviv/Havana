@@ -101,7 +101,12 @@ body {
 .hvn-item-rtl {
   margin: 1% 5% !important;
   background-color: white;
-  padding: 10px  !important;
+  /* padding: 10px  !important; */
+  direction: rtl;
+}
+
+.hvn-table-rtl {
+  background-color: white;
   direction: rtl;
 }
 

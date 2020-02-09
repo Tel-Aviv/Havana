@@ -14,17 +14,15 @@ import { useTranslation } from "react-i18next";
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
 
-import { Divider, Tag, Button, List, Modal } from 'antd';
-import { Typography } from 'antd';
+import { Divider, Tag, Button, List, Modal,
+        Typography } from 'antd';
 const { Title, Paragraph, Text } = Typography;
 
 import { Tabs } from 'antd-rtl';
 const { TabPane } = Tabs;
 
-import { Calendar, Badge, Card } from 'antd';
-import { Row, Col } from 'antd';
-
-import { Alert } from 'antd';
+import { Calendar, Badge, Alert, Card, 
+        Row, Col, Upload } from 'antd';
 
 import ReactToPrint from 'react-to-print';
 
@@ -271,73 +269,133 @@ const Home = () => {
                             <Button type="primary" onClick={onSubmit}
                                                    disabled={ isReportSubmitted || !reportDataValid}
                                 style={{
-                                    marginLeft: '8px'
+                                    marginRight: '6px'
                                 }}>
                                 {t('submit')}
                             </Button>
                             <Button type="primary" onClick={onShowPDF}>PDF</Button>
                         </div>;
 
+    const removeDoc = async(event) => {
+        
+        console.log(event.target);
+        event.stopPropagation();
+
+        try {
+            await axios.delete(`http://${context.host}/me/reports/${reportId}/docs/`, {
+                withCredentials: true
+            })
+        } catch(err) {
+            console.error(err)
+        }
+        
+    }
+
+    const docsUploadProps = {
+
+        action: `http://${dataContext.host}/me/reports/${reportId}/docs/`,
+        onChange({ file, fileList }) {
+            if (file.status !== 'uploading') {
+                console.log(file, fileList);
+            }
+        },
+        withCredentials: true,
+        defaultFileList: [
+        ],
+        onRemove: removeDoc
+
+    }
+
     return (
         <Content>
-            { showAlert ? (<Alert closable={false}
+            <Row className='hvn-item-ltr' align={'middle'} type='flex'>
+                <Col span={4} >
+                    {operations}
+                </Col>
+                <Col span={2} offset={18}>
+                    <MonthPicker onChange={onMonthChange}
+                                            disabledDate={disabledDate}
+                                            className='ltr'
+                                            value={calendarDate}
+                                            allowClear={false}
+                                            defaultValue={moment()} />
+                </Col>
+                 
+            </Row>
+            {/* { showAlert ? (<Alert closable={false}
                                     message={alertMessage}
                                     className='hvn-item-rtl' 
                                     showIcon 
                                     type={alertType} />
                 ) : null
-            }
-            <Tabs defaultActiveKey="1" 
-                  tabBarExtraContent={operations}
-                  type="line"
-                  className='hvn-item-rtl'>
-                <TabPane tab={
-                            <span>
-                                <Icon type="bars" />
-                                <span>
-                                    {t('plain')}
-                                </span>
-                            </span>
-                        }
-                        key="1">
-                    <MonthPicker onChange={onMonthChange}
-                                 disabledDate={disabledDate}
-                                 className='ltr'
-                                 style={{
-                                     float: 'left',
-                                     marginBottom: '8px'
-                                 }}
-                                 value={calendarDate}
-                                 allowClear={false}
-                                 defaultValue={moment()} />
-                    <TableReport dataSource={reportData}
-                                 loading={loadingData}
-                                 scroll={{y: '600px'}}
-                                 onChange={( item ) => dispatch(action_updateItem(item)) } 
-                                 editable={isReportEditable} />
-                </TabPane>
-                <TabPane tab={<span>
-                                <Icon type="schedule" />
-                                <span>
-                                    {t('calendar')}
-                                </span>
-                            </span>
-                            } 
-                        key="2">
-                    <CalendarReport tableData={reportData} value={calendarDate}/>
-                </TabPane>
-                <TabPane tab={<span>
-                                <Icon type="fund" />
-                                <span>
-                                    {t('yearly')}
-                                </span>
-                            </span>
-                            }
-                            key='3'>
-                    <YearReport />        
-                </TabPane>
-            </Tabs>
-            
+            } */}
+            <Row gutter={[32, 32]} style={{
+                    margin: '1% 4%' 
+                }}>
+                <Col span={8}>
+                    <Row gutter={[32, 32]}>
+                        <Col>
+                            <Card title='סיכומים' bordered={true}
+                                className='rtl'>
+                                <div>127:30</div>
+                            </Card>
+                        </Col>
+                    </Row>
+                    <Row gutter={[32, 32]}>
+                        <Col>
+                            <Card title='מסמכי העדרות' bordered={true}
+                                className='rtl'>
+                                <Upload {...docsUploadProps} className='ltr'>
+                                    <Button>
+                                        <Icon type="upload" /> Upload
+                                    </Button>
+                                </Upload>
+                            </Card>
+                        </Col>
+                    </Row>
+                </Col>
+                <Col span={16}>
+                    <Tabs defaultActiveKey="1" 
+                        type="line"
+                        className='hvn-table-rtl'>
+                        <TabPane tab={
+                                    <span>
+                                        <Icon type="bars" />
+                                        <span>
+                                            {t('plain')}
+                                        </span>
+                                    </span>
+                                }
+                                key="1">
+                            <TableReport dataSource={reportData}
+                                        loading={loadingData}
+                                        scroll={{y: '600px'}}
+                                        onChange={( item ) => dispatch(action_updateItem(item)) } 
+                                        editable={isReportEditable} />
+                        </TabPane>
+                        <TabPane tab={<span>
+                                        <Icon type="schedule" />
+                                        <span>
+                                            {t('calendar')}
+                                        </span>
+                                    </span>
+                                    } 
+                                key="2">
+                            <CalendarReport tableData={reportData} value={calendarDate}/>
+                        </TabPane>
+                        <TabPane tab={<span>
+                                        <Icon type="fund" />
+                                        <span>
+                                            {t('yearly')}
+                                        </span>
+                                    </span>
+                                    }
+                                    key='3'>
+                            <YearReport />        
+                        </TabPane>
+                    </Tabs>
+                </Col>
+            </Row>
             <Modal title="Print Report"
                     visible={printModalVisible}
                     closable={true}
