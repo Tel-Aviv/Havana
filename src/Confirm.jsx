@@ -1,15 +1,23 @@
+// @flow
 import React, { useState, useEffect, useContext } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import uniqid from 'uniqid';
 
 import { useTranslation, Trans } from "react-i18next";
 
 import Pdf from 'react-to-pdf'
 
-import {  Divider, Tag, Button, Modal } from 'antd';
+import {  Divider, Tag, Button, Typography, Modal } from 'antd';
+import { Input } from 'antd-rtl';
+
+const { Title } = Typography;          
 
 import { DataContext } from './DataContext';
 import TableReport from './components/Reports/TableReport';
+
+import { DECREASE_NOTIFICATIONS_COUNT } from "./redux/actionTypes";
 
 type Props = {
     month: number,
@@ -23,13 +31,19 @@ const Confirm = (props: Props) => {
     const [month, setMonth] = useState();
     const [year, setYear] = useState();
     const [tableData, setTableData] = useState([])
+    const [title, setTitle] = useState();
     const [loadingData, setLoadingData] = useState(false)
+    const [notesModalVisible, setNotesModalVisible] = useState(false)
+    const [note, setNote] = useState('');
+    const [toPdfHandler, setToPdfHandler] = useState();
 
     const dataContext = useContext(DataContext)
 
     const { t } = useTranslation();
 
     const routeParams = useParams();
+
+    const dispatch = useDispatch();
 
     useEffect( () => {
         async function fetchData() {
@@ -39,12 +53,12 @@ const Confirm = (props: Props) => {
 
             setLoadingData(true)
             try {
-                const url = `http://${dataContext.host}/me/employees/reports/${routeParams.userid}/${routeParams.reportId}`;
+                let url = `http://${dataContext.host}/me/employees/reports/${routeParams.reportId}`;
                 const resp = await axios(url, {
                     withCredentials: true
                 }); 
                 let reportId = 0;
-                const data = resp.data.map( (item, index ) => {
+                const data = resp.data.items.map( (item, index ) => {
                         const _item = {...item, key: index};
                         if( reportId === 0 )
                             reportId = item.reportId;
@@ -52,6 +66,7 @@ const Confirm = (props: Props) => {
                 })
 
                 setTableData(data)
+                setTitle(`דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
 
             } catch(err) {
                 console.error(err);
@@ -63,38 +78,87 @@ const Confirm = (props: Props) => {
         fetchData();
     }, []);
 
-    const onApprove = async(toPdf) => {
+    const action_decreaseNotificationCount = () => ({
+        type: DECREASE_NOTIFICATIONS_COUNT
+    })
+
+    const onContinue = (toPdf) => {
+
+        setToPdfHandler({toPdf});
+        setNotesModalVisible(true);
+    }    
+
+
+    const onApprove = async() => {
 
         try {
-            const url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}`;
+            const url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}?note=${note}`;
             await axios(url, {
                 method: "PATCH",
                 withCredentials: true
             })
+
+            dispatch(action_decreaseNotificationCount());
         } catch( err ) {
             console.error(err)
         }
 
-        if( toPdf ) {
-            toPdf();
-        }
+        if( toPdfHandler )
+            toPdfHandler.toPdf();
+
+    }
+    
+    const onNotesModalClosed = () => {
+        setNotesModalVisible(false)
+    }
+
+    const onNotesChanged = evt => {
+        setNote(evt.target.value)
     }
 
     return (
-        <div className='hvn-item-ltr'>
-            <Pdf targetRef={ref} filename="report.pdf">
-                {({ toPdf }) => <Button type="primary"
-                                        onClick={ () => onApprove(toPdf) }>
-                                    {t('approve')}
-                                </Button>}
-            </Pdf>
-            <div ref={ref}>
-                <TableReport dataSource={tableData} 
-                            loading={loadingData} 
-                            editable={false} />
+        <>
+            <Title className='hvn-title'>{title}</Title>
+            <div className='hvn-item-ltr'>
+                <Pdf targetRef={ref} filename="report.pdf">
+                    {({ toPdf }) => <Button type="primary"
+                                            style={{
+                                                marginBottom: '8px'
+                                            }}   
+                                            onClick={ () => onContinue(toPdf) }>
+                                        {t('continue')}
+                                    </Button>}
+                </Pdf>
+                <div ref={ref}>
+                    <TableReport dataSource={tableData} 
+                                loading={loadingData} 
+                                editable={false} />
 
+                </div>
             </div>
-        </div>
+            <Modal closable={false} 
+                    className='rtl'
+                    visible={notesModalVisible}
+                    title={t('notes_for_report')}
+                    footer={
+                        [
+                            <Button key='approve' type="primary" onClick={onApprove} >{t('approve')}</Button>,
+                            <Button key='cancel' onClick={onNotesModalClosed} style={{
+                                marginRight: '8px'
+                            }}>{t('cancel')}</Button>
+                        ]
+                    }
+                   >
+                <div>   
+                    <Input placeholder='הזן הערות במידת הצורך'
+                        className='rtl' 
+                        onChange={onNotesChanged} />
+                    <div style={{
+                        marginTop: '8px'
+                    }}>הערות שלחנה בדוא"ל לבעל הדוח</div>
+                </div>       
+            </Modal>
+        </>
     )
 }
 

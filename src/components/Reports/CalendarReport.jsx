@@ -133,21 +133,17 @@ const CalendarReport = (props: Props) => {
                 tableDataItems.map( (tableDataItem, index) => {
 
                     const { total, notes, exit, entry } = tableDataItem;
-                    let badge = <Badge status='error' text={notes} />;
-                    if( notes ===  '') {
-                        const _text = `סה"כ: ${total}`;
+                    const tagColor = ( notes ===  '')? 'green' : 'volcano';
+                    const _text = ( notes ===  '')? `סה"כ: ${total}` : notes;
 
-
-                        badge = <Badge status='success' text={_text} />
-                    } 
-
-                    return <li key={index}
-                                style={{
-                                        float: 'right',
-                                        marginRight: '13%'
-                                }}>
-                            {badge}      
-                    </li>
+                    return (
+                        <li key={index}
+                                    style={{
+                                            float: 'right',
+                                            marginRight: '13%'
+                                    }}>
+                                <Tag color={tagColor}>{_text}</Tag>
+                        </li>)
 
                 })
             }
@@ -186,8 +182,9 @@ const CalendarReport = (props: Props) => {
                 footer={
                     [
                         <Button key='approve' type="primary" onClick={dayModalOK}>{t('approve')}</Button>,
-                        <span key={uniqid()}>&nbsp;</span>,
-                        <Button key='cancel' onClick={dayModalCancel}>{t('cancel')}</Button>
+                        <Button key='cancel' onClick={dayModalCancel} style={{
+                                marginRight: '8px'
+                            }}>{t('cancel')}</Button>
                     ]
                 }
                 >

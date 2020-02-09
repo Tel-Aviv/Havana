@@ -1,6 +1,7 @@
 // @flow
 import React, { useState, useEffect } from 'react';
-import { Route, Switch, withRouter, Link, useHistory } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import moment from 'moment';
 import i18n from 'i18next';
@@ -32,6 +33,8 @@ import { DataContext } from "./DataContext";
 import { getUserFromHtml, getHost } from './utils';
 import translations from './translations';
 
+import { SET_NOTIFICATIONS_COUNT } from './redux/actionTypes';
+
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
@@ -47,11 +50,12 @@ const App = () => {
     const [month, setMonth] = useState(moment().month());
     const [year, setYear] = useState(moment().year());
     const [displayNotifications, setDisplayNotificatios] = useState(false);
-    const [pendingsCount, setPendingsCount] = useState(0)
     const context = {
         user : getUserFromHtml(),
         host : getHost()
     }
+
+    const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
@@ -68,11 +72,15 @@ const App = () => {
                 res = await axios(`http://${context.host}/me/pendings/count`,{
                     withCredentials: true
                 })
-                setPendingsCount(res.data);
+                dispatch(action_setNotificationCount(res.data));
             }
         }
         fetchData();
     }, [displayNotifications])
+
+    const notificationsCount = useSelector(
+        store => store.notificationsCountReducer.notificationsCount
+    )
 
     const onMonthChange = (date, dateString) => {
         if( date ) {
@@ -83,6 +91,11 @@ const App = () => {
             setYear(year)
         }
     }
+
+    const action_setNotificationCount = (count: number) => ({
+        type: SET_NOTIFICATIONS_COUNT,
+        data: count
+    })
 
     const onApprovalClicked = () => {
         history.push(`/confirmlist`);
@@ -147,7 +160,7 @@ const App = () => {
                             float: 'left',
                             display: displayNotifications
                         }}>
-                               <Badge count={pendingsCount} onClick={onApprovalClicked} 
+                               <Badge count={notificationsCount} onClick={onApprovalClicked} 
                                    className='ltr' >
                                 <Tooltip title={t('notifications')}>
                                     <Icon type="bell" theme="outlined" 
