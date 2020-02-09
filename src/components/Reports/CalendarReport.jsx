@@ -182,8 +182,9 @@ const CalendarReport = (props: Props) => {
                 footer={
                     [
                         <Button key='approve' type="primary" onClick={dayModalOK}>{t('approve')}</Button>,
-                        <span key={uniqid()}>&nbsp;</span>,
-                        <Button key='cancel' onClick={dayModalCancel}>{t('cancel')}</Button>
+                        <Button key='cancel' onClick={dayModalCancel} style={{
+                                marginRight: '8px'
+                            }}>{t('cancel')}</Button>
                     ]
                 }
                 >

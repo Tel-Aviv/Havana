@@ -146,3 +146,11 @@ body {
   background: #fafafa !important;
 }
 
+.ant-modal-footer {
+    padding: 10px 16px;
+    text-align: left !important;
+    background: transparent;
+    border-top: 1px solid #e8e8e8;
+    border-radius: 0 0 4px 4px;
+}
+

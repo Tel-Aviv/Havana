@@ -347,7 +347,7 @@ const Home = () => {
                             <ReactToPrint key={uniqid()}
                                 copyStyles={true}
                                 removeAfterPrint={true}
-                                trigger={() => <Button type="primary">Print</Button>}
+                                trigger={() => <Button type="primary">{t('print')}</Button>}
                                 content={() => componentRef.current}
                             />,
                             <Button key={uniqid()} onClick={handlePrintCancel}>{t('cancel')}</Button>
