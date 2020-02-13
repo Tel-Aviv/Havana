@@ -11,8 +11,8 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { useTranslation } from "react-i18next";
 
-import { Layout, Menu, Breadcrumb, Icon } from 'antd';
-const { Header, Content, Footer, Sider } = Layout;
+import { Layout, Icon } from 'antd';
+const { Content } = Layout;
 
 import { Divider, Tag, Button, List, Modal,
         Typography } from 'antd';
@@ -22,7 +22,7 @@ import { Tabs } from 'antd-rtl';
 const { TabPane } = Tabs;
 
 import { Calendar, Badge, Alert, Card, 
-        Row, Col, Upload } from 'antd';
+        Row, Col } from 'antd';
 
 import ReactToPrint from 'react-to-print';
 
@@ -31,6 +31,7 @@ import CalendarReport from './components/Reports/CalendarReport';
 import YearReport from './components/Reports/YearReport';
 import { DataContext } from "./DataContext";
 import ReportPDF from './ReportPDF';
+import DocsUploader from './components/DocsUploader';
 
 import { UPDATE_ITEM } from "./redux/actionTypes"
 
@@ -39,20 +40,20 @@ const { MonthPicker } = DatePicker;
 
 const Home = () => {
 
-    const [month, setMonth] = useState(moment().month()+1);
-    const [year, setYear] = useState(moment().year());
+    const [month, setMonth] = useState<number>(moment().month()+1);
+    const [year, setYear] = useState<number>(moment().year());
     const [reportData, setReportData] = useState([])
-    const [reportDataValid, setReportDataValid] = useState(false);
-    const [isReportSubmitted, setReportSubmitted] = useState(false);
-    const [isReportEditable, setIsReportEditable] = useState(true);
-    const [reportId, setReportId] = useState();
-    const [loadingData, setLoadingData] = useState(false)
-    const [calendarDate, setCalendarDate] = useState(moment());
-    const [printModalVisible, setPrintModalVisible] = useState(false);
-    const [signature, setSignature] = useState();
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertType, setAlertType] = useState();
-    const [alertMessage, setAlertMessage] = useState();
+    const [reportDataValid, setReportDataValid] = useState<boolean>(false);
+    const [isReportSubmitted, setReportSubmitted] = useState<boolean>(false);
+    const [isReportEditable, setIsReportEditable] = useState<boolean>(true);
+    const [reportId, setReportId] = useState<number>(0);
+    const [loadingData, setLoadingData] = useState<boolean>(false)
+    const [calendarDate, setCalendarDate] = useState<moment>(moment());
+    const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
+    const [signature, setSignature] = useState<string>('');
+    const [showAlert, setShowAlert] = useState<boolean>(false);
+    const [alertType, setAlertType] = useState<string>('info');
+    const [alertMessage, setAlertMessage] = useState<string>('');
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
@@ -276,36 +277,6 @@ const Home = () => {
                             <Button type="primary" onClick={onShowPDF}>PDF</Button>
                         </div>;
 
-    const removeDoc = async(event) => {
-        
-        console.log(event.target);
-        event.stopPropagation();
-
-        try {
-            await axios.delete(`http://${context.host}/me/reports/${reportId}/docs/`, {
-                withCredentials: true
-            })
-        } catch(err) {
-            console.error(err)
-        }
-        
-    }
-
-    const docsUploadProps = {
-
-        action: `http://${dataContext.host}/me/reports/${reportId}/docs/`,
-        onChange({ file, fileList }) {
-            if (file.status !== 'uploading') {
-                console.log(file, fileList);
-            }
-        },
-        withCredentials: true,
-        defaultFileList: [
-        ],
-        onRemove: removeDoc
-
-    }
-
     return (
         <Content>
             <Row className='hvn-item-ltr' align={'middle'} type='flex'>
@@ -322,20 +293,22 @@ const Home = () => {
                 </Col>
                  
             </Row>
-            {/* { showAlert ? (<Alert closable={false}
+            <Row>
+            { showAlert ? (<Alert closable={false}
                                     message={alertMessage}
                                     className='hvn-item-rtl' 
                                     showIcon 
                                     type={alertType} />
                 ) : null
-            } */}
+            }
+            </Row>
             <Row gutter={[32, 32]} style={{
-                    margin: '1% 4%' 
+                    margin: '0% 4%' 
                 }}>
                 <Col span={8}>
-                    <Row gutter={[32, 32]}>
+                    <Row gutter={[40, 32]}>
                         <Col>
-                            <Card title='סיכומים' bordered={true}
+                            <Card title='סיכומים' bordered={false}
                                 className='rtl'>
                                 <div>127:30</div>
                             </Card>
@@ -345,11 +318,7 @@ const Home = () => {
                         <Col>
                             <Card title='מסמכי העדרות' bordered={true}
                                 className='rtl'>
-                                <Upload {...docsUploadProps} className='ltr'>
-                                    <Button>
-                                        <Icon type="upload" /> Upload
-                                    </Button>
-                                </Upload>
+                                <DocsUploader reportId={reportId}/>
                             </Card>
                         </Col>
                     </Row>

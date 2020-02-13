@@ -2,11 +2,20 @@
 import moment from 'moment';
 import { SET_NOTIFICATIONS_COUNT, DECREASE_NOTIFICATIONS_COUNT } from "../actionTypes";
 
+type State = {
+    notificationsCount: number
+}
+
 const initialState = {
   notificationsCount: 0,
 };
 
-export default function(state = initialState, action) {
+type Action = {
+    type: string,
+    data: number
+}
+
+export default function(state: State = initialState, action: Action): State {
     switch (action.type) {
         case SET_NOTIFICATIONS_COUNT: {
             return {

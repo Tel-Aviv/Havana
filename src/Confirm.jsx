@@ -9,10 +9,14 @@ import { useTranslation, Trans } from "react-i18next";
 
 import Pdf from 'react-to-pdf'
 
-import {  Divider, Tag, Button, Typography, Modal } from 'antd';
+import {  Divider, Tag, Button, Typography, 
+        Row, Col, Card, Modal } from 'antd';
 import { Input } from 'antd-rtl';
 
-const { Title } = Typography;          
+const { Title } = Typography;    
+
+import { Layout } from 'antd';
+const { Content } = Layout;
 
 import { DataContext } from './DataContext';
 import TableReport from './components/Reports/TableReport';
@@ -117,25 +121,54 @@ const Confirm = (props: Props) => {
     }
 
     return (
-        <>
+        <Content>
             <Title className='hvn-title'>{title}</Title>
-            <div className='hvn-item-ltr'>
-                <Pdf targetRef={ref} filename="report.pdf">
-                    {({ toPdf }) => <Button type="primary"
-                                            style={{
-                                                marginBottom: '8px'
-                                            }}   
-                                            onClick={ () => onContinue(toPdf) }>
-                                        {t('continue')}
-                                    </Button>}
-                </Pdf>
-                <div ref={ref}>
-                    <TableReport dataSource={tableData} 
-                                loading={loadingData} 
-                                editable={false} />
+            <Row  className='hvn-item-ltr' align={'middle'} type='flex'>
+                <Col span={4} >
+                    <Pdf targetRef={ref} filename="report.pdf">
+                        {({ toPdf }) => <Button type="primary"
+                                                style={{
+                                                    marginBottom: '8px'
+                                                }}   
+                                                onClick={ () => onContinue(toPdf) }>
+                                            {t('continue')}
+                                        </Button>}
+                    </Pdf>                
+                </Col>
+            </Row>
+            <Row gutter={[32, 32]} style={{
+                    margin: '0% 4%' 
+                }}>
+                <Col span={8}>
+                    <Row gutter={[40, 32]}>
+                        <Col>
+                            <Card title='סיכומים' bordered={false}
+                                className='rtl'>
+                                <div>127:30</div>
+                            </Card>                
+                        </Col>
+                    </Row>
+                    <Row gutter={[32, 32]}>
+                        <Col>
+                            <Card title='מסמכי העדרות' bordered={true}
+                                className='rtl'>
+                              
+                            </Card>
+                        </Col>                    
+                    </Row>
+                </Col>
+                <Col span={16}>
+                    <div className='hvn-item-ltr'>
+        
+                        <div ref={ref}>
+                            <TableReport dataSource={tableData} 
+                                        loading={loadingData} 
+                                        editable={false} />
 
-                </div>
-            </div>
+                        </div>
+                    </div>
+                </Col>
+            </Row>
             <Modal closable={false} 
                     className='rtl'
                     visible={notesModalVisible}
@@ -158,7 +191,7 @@ const Confirm = (props: Props) => {
                     }}>הערות שלחנה בדוא"ל לבעל הדוח</div>
                 </div>       
             </Modal>
-        </>
+        </Content>
     )
 }
 
