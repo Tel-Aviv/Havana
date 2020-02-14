@@ -318,7 +318,8 @@ const Home = () => {
                         <Col>
                             <Card title='מסמכי העדרות' bordered={true}
                                 className='rtl'>
-                                <DocsUploader reportId={reportId}/>
+                                <DocsUploader reportId={reportId} 
+                                              isOperational={true}/>
                             </Card>
                         </Col>
                     </Row>

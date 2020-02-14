@@ -20,6 +20,7 @@ const { Content } = Layout;
 
 import { DataContext } from './DataContext';
 import TableReport from './components/Reports/TableReport';
+import DocsUploader from './components/DocsUploader';
 
 import { DECREASE_NOTIFICATIONS_COUNT } from "./redux/actionTypes";
 
@@ -32,13 +33,14 @@ const ref = React.createRef();
 
 const Confirm = (props: Props) => {
     
-    const [month, setMonth] = useState();
-    const [year, setYear] = useState();
+    const [month, setMonth] = useState<number>();
+    const [year, setYear] = useState<number>();
+    const [reportId, setReportId] = useState<number>(0);
     const [tableData, setTableData] = useState([])
-    const [title, setTitle] = useState();
-    const [loadingData, setLoadingData] = useState(false)
-    const [notesModalVisible, setNotesModalVisible] = useState(false)
-    const [note, setNote] = useState('');
+    const [title, setTitle] = useState<string>();
+    const [loadingData, setLoadingData] = useState<boolean>(false)
+    const [notesModalVisible, setNotesModalVisible] = useState<boolean>(false)
+    const [note, setNote] = useState<string>('');
     const [toPdfHandler, setToPdfHandler] = useState();
 
     const dataContext = useContext(DataContext)
@@ -69,6 +71,7 @@ const Confirm = (props: Props) => {
                         return _item;
                 })
 
+                setReportId(reportId);
                 setTableData(data)
                 setTitle(`דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
 
@@ -152,7 +155,8 @@ const Confirm = (props: Props) => {
                         <Col>
                             <Card title='מסמכי העדרות' bordered={true}
                                 className='rtl'>
-                              
+                                <DocsUploader reportId={reportId} 
+                                            isOperational={false}/>
                             </Card>
                         </Col>                    
                     </Row>

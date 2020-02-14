@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver';
 
 import { DataContext } from "../DataContext";
 
-const DocsUploader = ({reportId}: {reportId : number}) => {
+const DocsUploader = ({reportId, isOperational}: {reportId : number, isOperational: boolean}) => {
 
     const [docs, setDocs] = useState([]);
     const dataContext = useContext(DataContext);
@@ -130,10 +130,15 @@ const DocsUploader = ({reportId}: {reportId : number}) => {
     return (
         <Upload fileList={docs} className='rtl'
                 listType='text'
+                disabled={!isOperational}
                 {...docsUploadProps} className='ltr'>
-            <Button>
-                <Icon type="upload" /> {t('upload')}
-            </Button>
+            { 
+                isOperational ? 
+                    <Button>
+                        <Icon type="upload" /> {t('upload')}
+                    </Button> :
+                    null
+            }
         </Upload>
     )
 
