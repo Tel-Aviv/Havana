@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from "react-i18next";
 import { Upload, Button, Icon, message } from 'antd'
-// import { Upload } from 'antd-rtl';
+import { saveAs } from 'file-saver';
 
 import { DataContext } from "../DataContext";
 
@@ -54,6 +54,26 @@ const DocsUploader = ({reportId}: {reportId : number}) => {
         
     } 
 
+    const previewDoc = (file) => {
+        console.log(file);
+    }
+
+    const downloadDoc = async (file) => {
+        console.log(file);
+        try {
+            const sas = await axios(`http://${dataContext.host}/me/reports/${reportId}/docs/${file.name}`, {
+                withCredentials: true
+            });
+            
+            let url = `${sas.data.URL}?${sas.data.SAS_STRING}`;
+
+            saveAs(`${sas.data.URL}?${sas.data.SAS_STRING}`, file.name);
+
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
     const beforeUpload = (file) => {
 
         // prevent uploading files with the same name
@@ -95,15 +115,22 @@ const DocsUploader = ({reportId}: {reportId : number}) => {
                 setDocs(fileList);
         },
         withCredentials: true,
+        showUploadList: {
+            showDownloadIcon: true,
+            showPreviewIcon: true,
+            showRemoveIcon: true
+        },
         defaultFileList: docs,
         beforeUpload: beforeUpload,
-        onRemove: removeDoc
-
+        onRemove: removeDoc,
+        onPreview: previewDoc,
+        onDownload: downloadDoc
     }
 
     return (
         <Upload fileList={docs} className='rtl'
-                    {...docsUploadProps} className='ltr'>
+                listType='text'
+                {...docsUploadProps} className='ltr'>
             <Button>
                 <Icon type="upload" /> {t('upload')}
             </Button>
