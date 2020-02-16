@@ -7,7 +7,7 @@ import uniqid from 'uniqid';
 
 import { useTranslation, Trans } from "react-i18next";
 
-import Pdf from 'react-to-pdf'
+import ReactToPdf from 'react-to-pdf'
 
 import {  Divider, Tag, Button, Typography, 
         Row, Col, Card, Modal } from 'antd';
@@ -128,7 +128,8 @@ const Confirm = (props: Props) => {
             <Title className='hvn-title'>{title}</Title>
             <Row  className='hvn-item-ltr' align={'middle'} type='flex'>
                 <Col span={4} >
-                    <Pdf targetRef={ref} filename="report.pdf">
+                    <ReactToPdf targetRef={ref} filename="report.pdf"
+                                x={.5} y={.5}>
                         {({ toPdf }) => <Button type="primary"
                                                 style={{
                                                     marginBottom: '8px'
@@ -136,7 +137,7 @@ const Confirm = (props: Props) => {
                                                 onClick={ () => onContinue(toPdf) }>
                                             {t('continue')}
                                         </Button>}
-                    </Pdf>                
+                    </ReactToPdf>                
                 </Col>
             </Row>
             <Row gutter={[32, 32]} style={{
@@ -153,7 +154,7 @@ const Confirm = (props: Props) => {
                     </Row>
                     <Row gutter={[32, 32]}>
                         <Col>
-                            <Card title='מסמכי העדרות' bordered={true}
+                            <Card title={t('abs_docs')} bordered={true}
                                 className='rtl'>
                                 <DocsUploader reportId={reportId} 
                                             isOperational={false}/>
@@ -192,7 +193,7 @@ const Confirm = (props: Props) => {
                         onChange={onNotesChanged} />
                     <div style={{
                         marginTop: '8px'
-                    }}>הערות שלחנה בדוא"ל לבעל הדוח</div>
+                    }}>הערות תשלחנה בדוא"ל לבעל הדוח</div>
                 </div>       
             </Modal>
         </Content>

@@ -27,7 +27,7 @@ const DocsUploader = ({reportId, isOperational}: {reportId : number, isOperation
                     return {
                         uid: index,
                         status: 'done',
-                        name: item.name
+                        name: item
                     }
                 })
                 setDocs(_docs);

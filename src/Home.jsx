@@ -316,7 +316,7 @@ const Home = () => {
                     </Row>
                     <Row gutter={[32, 32]}>
                         <Col>
-                            <Card title='מסמכי העדרות' bordered={true}
+                            <Card title={t('abs_docs')} bordered={true}
                                 className='rtl'>
                                 <DocsUploader reportId={reportId} 
                                               isOperational={true}/>

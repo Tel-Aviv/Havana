@@ -30,7 +30,8 @@ const translations = {
             "not_submitted": "This report was not submitted yet",
             "print": "Print",
             "continue": "Continue",
-            "upload": "Upload"
+            "upload": "Upload",
+            "abs_docs": "Absense Docs"
         }
     },
     he: {
@@ -64,7 +65,8 @@ const translations = {
             "not_submitted": "דוח זה לא נשלח לאישור",  
             "print": "הדפס",
             "continue": "המשך",
-            "upload": "העלאה"
+            "upload": "העלאה",
+            "abs_docs": "מסמכי היעדרות"
         }
     }
 }    
