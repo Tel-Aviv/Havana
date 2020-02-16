@@ -33,11 +33,11 @@ const ref = React.createRef();
 
 const Confirm = (props: Props) => {
     
-    const [month, setMonth] = useState<number>();
-    const [year, setYear] = useState<number>();
+    const [month, setMonth] = useState<number>(0);
+    const [year, setYear] = useState<number>(0);
     const [reportId, setReportId] = useState<number>(0);
     const [tableData, setTableData] = useState([])
-    const [title, setTitle] = useState<string>();
+    const [title, setTitle] = useState<string>('');
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [notesModalVisible, setNotesModalVisible] = useState<boolean>(false)
     const [note, setNote] = useState<string>('');
@@ -157,6 +157,7 @@ const Confirm = (props: Props) => {
                             <Card title={t('abs_docs')} bordered={true}
                                 className='rtl'>
                                 <DocsUploader reportId={reportId} 
+                                            employeeId={routeParams.userid}
                                             isOperational={false}/>
                             </Card>
                         </Col>                    

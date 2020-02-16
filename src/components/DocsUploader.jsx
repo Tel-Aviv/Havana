@@ -7,7 +7,8 @@ import { saveAs } from 'file-saver';
 
 import { DataContext } from "../DataContext";
 
-const DocsUploader = ({reportId, isOperational}: {reportId : number, isOperational: boolean}) => {
+const DocsUploader = ({reportId, isOperational, employeeId}: 
+                        {reportId : number, isOperational: boolean, employeeId: string}) => {
 
     const [docs, setDocs] = useState([]);
     const dataContext = useContext(DataContext);
@@ -19,8 +20,10 @@ const DocsUploader = ({reportId, isOperational}: {reportId : number, isOperation
         async function fetchData() {
 
             try {
-
-                const res = await axios(`http://${dataContext.host}/me/reports/${reportId}/docs/`, {
+                const url = (isOperational) ?
+                    `http://${dataContext.host}/me/reports/${reportId}/docs/` :
+                    `http://${dataContext.host}/me/employees/${employeeId}/reports/${reportId}/docs`;
+                const res = await axios(url, {
                     withCredentials: true
                 })
                 const _docs = res.data.map( (item, index) => {
@@ -45,7 +48,7 @@ const DocsUploader = ({reportId, isOperational}: {reportId : number, isOperation
         
         try {
             const docName = file.name;
-            await axios.delete(`http://${dataContext.host}/me/reports/${reportId}/docs/${docName}`, {
+            await axios.delete(`http://${dataContext.host}/me/reports/${reportId}/docs?docName=${docName}`, {
                 withCredentials: true
             })
         } catch(err) {
@@ -61,8 +64,9 @@ const DocsUploader = ({reportId, isOperational}: {reportId : number, isOperation
     const downloadDoc = async (file) => {
         console.log(file);
         try {
-            const sas = await axios(`http://${dataContext.host}/me/reports/${reportId}/docs/${file.name}`, {
-                withCredentials: true
+            const sas = await axios(`http://${dataContext.host}/me/reports/${reportId}/doc?docName=${file.name}`, {
+                withCredentials: true,
+                maxRedirects: 3,
             });
             
             let url = `${sas.data.URL}?${sas.data.SAS_STRING}`;
