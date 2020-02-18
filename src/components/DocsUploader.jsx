@@ -64,14 +64,16 @@ const DocsUploader = ({reportId, isOperational, employeeId}:
     const downloadDoc = async (file) => {
         console.log(file);
         try {
-            const sas = await axios(`http://${dataContext.host}/me/reports/${reportId}/doc?docName=${file.name}`, {
+            let url = (isOperational) ?
+                `http://${dataContext.host}/me/reports/${reportId}/doc?docName=${file.name}` :
+                `http://${dataContext.host}/me/employees/${employeeId}/reports/${reportId}/doc?docName=${file.name}`;
+            let res = await axios(url, {
                 withCredentials: true,
-                maxRedirects: 3,
             });
             
-            let url = `${sas.data.URL}?${sas.data.SAS_STRING}`;
+            url = res.data;
 
-            saveAs(`${sas.data.URL}?${sas.data.SAS_STRING}`, file.name);
+            saveAs(url, file.name);
 
         } catch(err) {
             console.error(err);

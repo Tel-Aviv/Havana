@@ -100,8 +100,10 @@ const Confirm = (props: Props) => {
 
         try {
             const url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}?note=${note}`;
-            await axios(url, {
-                method: "PATCH",
+            await axios.patch(url, {html: ref.current.outerHTML}, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 withCredentials: true
             })
 
