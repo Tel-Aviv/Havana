@@ -47,6 +47,7 @@ const Home = () => {
     const [isReportSubmitted, setReportSubmitted] = useState<boolean>(false);
     const [isReportEditable, setIsReportEditable] = useState<boolean>(true);
     const [reportId, setReportId] = useState<number>(0);
+    const [totals, setTotals] = useState<number>(0);
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [calendarDate, setCalendarDate] = useState<moment>(moment());
     const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
@@ -141,7 +142,7 @@ const Home = () => {
                 let data = [];
                 
                 if( statusResp.data ) {
-                    // The status was returned, i.e. there were an updates to the original report
+                    // The status was returned, i.e. there was an updates to the original report
                     // Get them!
                     reportId = statusResp.data.reportId;
                     url = `http://${dataContext.host}/me/reports/${reportId}/updates`;
@@ -153,6 +154,7 @@ const Home = () => {
                         const _item = {...item, key: index};
                         return _item;
                     })
+                    setTotals(_resp.data.totalHours);
                     setIsReportEditable(false)
 
                 } else {
@@ -174,6 +176,7 @@ const Home = () => {
                                 return _item;
                         })
                         
+                        setTotals(resp.data.totalHours);
                         setIsReportEditable(true)
 
                     }
@@ -310,7 +313,7 @@ const Home = () => {
                         <Col>
                             <Card title='סיכומים' bordered={false}
                                 className='rtl'>
-                                <div>127:30</div>
+                                <div>סה"כ { totals } שעות</div>
                             </Card>
                         </Col>
                     </Row>
