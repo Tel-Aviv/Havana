@@ -36,6 +36,7 @@ const Confirm = (props: Props) => {
     const [month, setMonth] = useState<number>(0);
     const [year, setYear] = useState<number>(0);
     const [reportId, setReportId] = useState<number>(0);
+    const [totals, setTotals] = useState<number>(0);
     const [tableData, setTableData] = useState([])
     const [title, setTitle] = useState<string>('');
     const [loadingData, setLoadingData] = useState<boolean>(false)
@@ -72,6 +73,7 @@ const Confirm = (props: Props) => {
                 })
 
                 setReportId(reportId);
+                setTotals(resp.data.totalHours);
                 setTableData(data)
                 setTitle(`דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
 
@@ -150,7 +152,7 @@ const Confirm = (props: Props) => {
                         <Col>
                             <Card title='סיכומים' bordered={false}
                                 className='rtl'>
-                                <div>127:30</div>
+                                    <div>סה"כ { totals } שעות</div>
                             </Card>                
                         </Col>
                     </Row>
