@@ -168,7 +168,7 @@ const Confirm = (props: Props) => {
                     </Row>
                 </Col>
                 <Col span={16}>
-                    <div className='hvn-item-ltr'>
+                    <div className='hvn-item'>
         
                         <div ref={ref}>
                             <TableReport dataSource={tableData} 
