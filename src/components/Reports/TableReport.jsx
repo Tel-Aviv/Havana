@@ -195,7 +195,11 @@ const EditableTable = (props) => {
     <ReportContext.Provider value={props.form}>
       <Table
         {...props}
-        style={{ direction: 'rtl', heigth: '600px' }}
+        style={{ 
+                direction: 'rtl', 
+                heigth: '600px',
+                margin: '12px' 
+                }}
         tableLayout='auto'
         bordered={false}
         components={components}

@@ -7,15 +7,20 @@ import uniqid from 'uniqid';
 
 import { useTranslation, Trans } from "react-i18next";
 
-import Pdf from 'react-to-pdf'
+import ReactToPdf from 'react-to-pdf'
 
-import {  Divider, Tag, Button, Typography, Modal } from 'antd';
+import {  Divider, Tag, Button, Typography, 
+        Row, Col, Card, Modal } from 'antd';
 import { Input } from 'antd-rtl';
 
-const { Title } = Typography;          
+const { Title } = Typography;    
+
+import { Layout } from 'antd';
+const { Content } = Layout;
 
 import { DataContext } from './DataContext';
 import TableReport from './components/Reports/TableReport';
+import DocsUploader from './components/DocsUploader';
 
 import { DECREASE_NOTIFICATIONS_COUNT } from "./redux/actionTypes";
 
@@ -28,13 +33,15 @@ const ref = React.createRef();
 
 const Confirm = (props: Props) => {
     
-    const [month, setMonth] = useState();
-    const [year, setYear] = useState();
+    const [month, setMonth] = useState<number>(0);
+    const [year, setYear] = useState<number>(0);
+    const [reportId, setReportId] = useState<number>(0);
+    const [totals, setTotals] = useState<number>(0);
     const [tableData, setTableData] = useState([])
-    const [title, setTitle] = useState();
-    const [loadingData, setLoadingData] = useState(false)
-    const [notesModalVisible, setNotesModalVisible] = useState(false)
-    const [note, setNote] = useState('');
+    const [title, setTitle] = useState<string>('');
+    const [loadingData, setLoadingData] = useState<boolean>(false)
+    const [notesModalVisible, setNotesModalVisible] = useState<boolean>(false)
+    const [note, setNote] = useState<string>('');
     const [toPdfHandler, setToPdfHandler] = useState();
 
     const dataContext = useContext(DataContext)
@@ -65,6 +72,8 @@ const Confirm = (props: Props) => {
                         return _item;
                 })
 
+                setReportId(reportId);
+                setTotals(resp.data.totalHours);
                 setTableData(data)
                 setTitle(`דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
 
@@ -93,8 +102,10 @@ const Confirm = (props: Props) => {
 
         try {
             const url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}?note=${note}`;
-            await axios(url, {
-                method: "PATCH",
+            await axios.patch(url, {html: ref.current.outerHTML}, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 withCredentials: true
             })
 
@@ -117,25 +128,57 @@ const Confirm = (props: Props) => {
     }
 
     return (
-        <>
+        <Content>
             <Title className='hvn-title'>{title}</Title>
-            <div className='hvn-item-ltr'>
-                <Pdf targetRef={ref} filename="report.pdf">
-                    {({ toPdf }) => <Button type="primary"
-                                            style={{
-                                                marginBottom: '8px'
-                                            }}   
-                                            onClick={ () => onContinue(toPdf) }>
-                                        {t('continue')}
-                                    </Button>}
-                </Pdf>
-                <div ref={ref}>
-                    <TableReport dataSource={tableData} 
-                                loading={loadingData} 
-                                editable={false} />
+            <Row  className='hvn-item-ltr' align={'middle'} type='flex'>
+                <Col span={4} >
+                    <ReactToPdf targetRef={ref} filename="report.pdf"
+                                x={.5} y={.5}>
+                        {({ toPdf }) => <Button type="primary"
+                                                style={{
+                                                    marginBottom: '8px'
+                                                }}   
+                                                onClick={ () => onContinue(toPdf) }>
+                                            {t('continue')}
+                                        </Button>}
+                    </ReactToPdf>                
+                </Col>
+            </Row>
+            <Row gutter={[32, 32]} style={{
+                    margin: '0% 4%' 
+                }}>
+                <Col span={8}>
+                    <Row gutter={[40, 32]}>
+                        <Col>
+                            <Card title='סיכומים' bordered={false}
+                                className='rtl'>
+                                    <div>סה"כ { totals } שעות</div>
+                            </Card>                
+                        </Col>
+                    </Row>
+                    <Row gutter={[32, 32]}>
+                        <Col>
+                            <Card title={t('abs_docs')} bordered={true}
+                                className='rtl'>
+                                <DocsUploader reportId={reportId} 
+                                            employeeId={routeParams.userid}
+                                            isOperational={false}/>
+                            </Card>
+                        </Col>                    
+                    </Row>
+                </Col>
+                <Col span={16}>
+                    <div className='hvn-item'>
+        
+                        <div ref={ref}>
+                            <TableReport dataSource={tableData} 
+                                        loading={loadingData} 
+                                        editable={false} />
 
-                </div>
-            </div>
+                        </div>
+                    </div>
+                </Col>
+            </Row>
             <Modal closable={false} 
                     className='rtl'
                     visible={notesModalVisible}
@@ -155,10 +198,10 @@ const Confirm = (props: Props) => {
                         onChange={onNotesChanged} />
                     <div style={{
                         marginTop: '8px'
-                    }}>הערות שלחנה בדוא"ל לבעל הדוח</div>
+                    }}>הערות תשלחנה בדוא"ל לבעל הדוח</div>
                 </div>       
             </Modal>
-        </>
+        </Content>
     )
 }
 

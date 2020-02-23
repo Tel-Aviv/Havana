@@ -29,7 +29,9 @@ const translations = {
             "was_approved": "This report was approved at ",
             "not_submitted": "This report was not submitted yet",
             "print": "Print",
-            "continue": "Continue"
+            "continue": "Continue",
+            "upload": "Upload",
+            "abs_docs": "Absense Docs"
         }
     },
     he: {
@@ -62,7 +64,9 @@ const translations = {
             "was_approved": "הדוח הזה אושר בתקריך",
             "not_submitted": "דוח זה לא נשלח לאישור",  
             "print": "הדפס",
-            "continue": "המשך"
+            "continue": "המשך",
+            "upload": "העלאה",
+            "abs_docs": "מסמכי היעדרות"
         }
     }
 }    
