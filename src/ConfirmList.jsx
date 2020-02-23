@@ -76,7 +76,7 @@ const ConfirmList = () => {
                         direction: 'ltr'
                     }}>
             <Table dataSource={tableData} 
-                    style={{ direction: 'rtl', heigth: '600px' }}
+                    style={{ direction: 'rtl', heigth: '600px', cursor: 'pointer' }}
                     columns={columns} 
                     size="middle" 
                     bordered={false}
