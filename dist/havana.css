@@ -118,6 +118,12 @@ body {
   direction: ltr;
 }
 
+.hvn-item {
+  background-color: white;
+  padding: 10px  !important;
+  direction: ltr;
+}
+
 .hvn-title {
   text-align: center;
   background-color: transparent;
