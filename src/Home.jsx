@@ -11,14 +11,14 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { useTranslation } from "react-i18next";
 
-import { Layout, Icon } from 'antd';
+import { Layout, Icon,  } from 'antd';
 const { Content } = Layout;
 
-import { Divider, Tag, Button, List, Modal,
-        Typography } from 'antd';
+import { Divider, Tag, Button, List, Modal, 
+        Typography, } from 'antd';
 const { Title, Paragraph, Text } = Typography;
 
-import { Tabs } from 'antd-rtl';
+import { Tabs, Dropdown, Menu, message  } from 'antd-rtl';
 const { TabPane } = Tabs;
 
 import { Calendar, Badge, Alert, Card, 
@@ -38,11 +38,22 @@ import { UPDATE_ITEM } from "./redux/actionTypes"
 import { DatePicker } from 'antd';
 const { MonthPicker } = DatePicker;
 
+
+
+
+function handleButtonClick(e) {
+  message.info('Click on left button.');
+  console.log('click left button', e);
+}
+
+
+
 const Home = () => {
 
     const [month, setMonth] = useState<number>(moment().month()+1);
     const [year, setYear] = useState<number>(moment().year());
     const [reportData, setReportData] = useState([])
+    const [managers, setManagers] = useState([])
     const [reportDataValid, setReportDataValid] = useState<boolean>(false);
     const [isReportSubmitted, setReportSubmitted] = useState<boolean>(false);
     const [isReportEditable, setIsReportEditable] = useState<boolean>(true);
@@ -125,6 +136,23 @@ const Home = () => {
 
         setShowAlert(true);
     }
+
+    useEffect( () => {
+        async function fetchData() {
+
+            try {
+                const resp = await axios(`http://${dataContext.host}/me/managers/`, {
+                    withCredentials: true
+                });
+
+                setManagers(resp.data);
+
+            } catch(err) {
+                console.error(err);
+            }
+        }
+        fetchData()
+    }, [])
 
     useEffect( () => {
         async function fetchData() {
@@ -269,14 +297,29 @@ const Home = () => {
                 || (current < moment().add(-12, 'month'))
     }
 
+    const handleMenuClick = (e) => {
+        message.info(`הדוח יועבר לאישור ${managers[e.key].userName}`);
+    }
+    const menu = <Menu onClick={handleMenuClick}>
+        {managers.map((manager, index) => (
+                <Menu.Item  key={index}>
+                    <Icon type="user" />
+                    {manager.userName}
+                </Menu.Item>
+        ))}
+    </Menu>
+    
+    
+    
+    
     const operations = <div>
-                            <Button type="primary" onClick={onSubmit}
+                            <Dropdown.Button type="primary" onClick={onSubmit}  overlay={menu}
                                                    disabled={ isReportSubmitted || !reportDataValid}
                                 style={{
                                     marginRight: '6px'
                                 }}>
                                 {t('submit')}
-                            </Button>
+                            </Dropdown.Button>
                             <Button type="primary" onClick={onShowPDF}>PDF</Button>
                         </div>;
 
