@@ -11,20 +11,18 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { useTranslation } from "react-i18next";
 
-import { Layout, Menu, Breadcrumb, Icon } from 'antd';
-const { Header, Content, Footer, Sider } = Layout;
+import { Layout, Icon,  } from 'antd';
+const { Content } = Layout;
 
-import { Divider, Tag, Button, List, Modal } from 'antd';
-import { Typography } from 'antd';
+import { Divider, Tag, Button, List, Modal, 
+        Typography, } from 'antd';
 const { Title, Paragraph, Text } = Typography;
 
-import { Tabs } from 'antd-rtl';
+import { Tabs, Dropdown, Menu, message  } from 'antd-rtl';
 const { TabPane } = Tabs;
 
-import { Calendar, Badge, Card } from 'antd';
-import { Row, Col } from 'antd';
-
-import { Alert } from 'antd';
+import { Calendar, Badge, Alert, Card, 
+        Row, Col } from 'antd';
 
 import ReactToPrint from 'react-to-print';
 
@@ -33,28 +31,41 @@ import CalendarReport from './components/Reports/CalendarReport';
 import YearReport from './components/Reports/YearReport';
 import { DataContext } from "./DataContext";
 import ReportPDF from './ReportPDF';
+import DocsUploader from './components/DocsUploader';
 
 import { UPDATE_ITEM } from "./redux/actionTypes"
 
 import { DatePicker } from 'antd';
 const { MonthPicker } = DatePicker;
 
+
+
+
+function handleButtonClick(e) {
+  message.info('Click on left button.');
+  console.log('click left button', e);
+}
+
+
+
 const Home = () => {
 
-    const [month, setMonth] = useState(moment().month()+1);
-    const [year, setYear] = useState(moment().year());
+    const [month, setMonth] = useState<number>(moment().month()+1);
+    const [year, setYear] = useState<number>(moment().year());
     const [reportData, setReportData] = useState([])
-    const [reportDataValid, setReportDataValid] = useState(false);
-    const [isReportSubmitted, setReportSubmitted] = useState(false);
-    const [isReportEditable, setIsReportEditable] = useState(true);
-    const [reportId, setReportId] = useState();
-    const [loadingData, setLoadingData] = useState(false)
-    const [calendarDate, setCalendarDate] = useState(moment());
-    const [printModalVisible, setPrintModalVisible] = useState(false);
-    const [signature, setSignature] = useState();
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertType, setAlertType] = useState();
-    const [alertMessage, setAlertMessage] = useState();
+    const [managers, setManagers] = useState([])
+    const [reportDataValid, setReportDataValid] = useState<boolean>(false);
+    const [isReportSubmitted, setReportSubmitted] = useState<boolean>(false);
+    const [isReportEditable, setIsReportEditable] = useState<boolean>(true);
+    const [reportId, setReportId] = useState<number>(0);
+    const [totals, setTotals] = useState<number>(0);
+    const [loadingData, setLoadingData] = useState<boolean>(false)
+    const [calendarDate, setCalendarDate] = useState<moment>(moment());
+    const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
+    const [signature, setSignature] = useState<string>('');
+    const [showAlert, setShowAlert] = useState<boolean>(false);
+    const [alertType, setAlertType] = useState<string>('info');
+    const [alertMessage, setAlertMessage] = useState<string>('');
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
@@ -129,6 +140,23 @@ const Home = () => {
     useEffect( () => {
         async function fetchData() {
 
+            try {
+                const resp = await axios(`http://${dataContext.host}/me/managers/`, {
+                    withCredentials: true
+                });
+
+                setManagers(resp.data);
+
+            } catch(err) {
+                console.error(err);
+            }
+        }
+        fetchData()
+    }, [])
+
+    useEffect( () => {
+        async function fetchData() {
+
             setLoadingData(true)
             try {
 
@@ -142,7 +170,7 @@ const Home = () => {
                 let data = [];
                 
                 if( statusResp.data ) {
-                    // The status was returned, i.e. there were an updates to the original report
+                    // The status was returned, i.e. there was an updates to the original report
                     // Get them!
                     reportId = statusResp.data.reportId;
                     url = `http://${dataContext.host}/me/reports/${reportId}/updates`;
@@ -154,6 +182,7 @@ const Home = () => {
                         const _item = {...item, key: index};
                         return _item;
                     })
+                    setTotals(_resp.data.totalHours);
                     setIsReportEditable(false)
 
                 } else {
@@ -175,6 +204,7 @@ const Home = () => {
                                 return _item;
                         })
                         
+                        setTotals(resp.data.totalHours);
                         setIsReportEditable(true)
 
                     }
@@ -267,19 +297,49 @@ const Home = () => {
                 || (current < moment().add(-12, 'month'))
     }
 
+    const handleMenuClick = (e) => {
+        message.info(`הדוח יועבר לאישור ${managers[e.key].userName}`);
+    }
+    const menu = <Menu onClick={handleMenuClick}>
+        {managers.map((manager, index) => (
+                <Menu.Item  key={index}>
+                    <Icon type="user" />
+                    {manager.userName}
+                </Menu.Item>
+        ))}
+    </Menu>
+    
+    
+    
+    
     const operations = <div>
-                            <Button type="primary" onClick={onSubmit}
+                            <Dropdown.Button type="primary" onClick={onSubmit}  overlay={menu}
                                                    disabled={ isReportSubmitted || !reportDataValid}
                                 style={{
-                                    marginLeft: '8px'
+                                    marginRight: '6px'
                                 }}>
                                 {t('submit')}
-                            </Button>
+                            </Dropdown.Button>
                             <Button type="primary" onClick={onShowPDF}>PDF</Button>
                         </div>;
 
     return (
         <Content>
+            <Row className='hvn-item-ltr' align={'middle'} type='flex'>
+                <Col span={4} >
+                    {operations}
+                </Col>
+                <Col span={2} offset={18}>
+                    <MonthPicker onChange={onMonthChange}
+                                            disabledDate={disabledDate}
+                                            className='ltr'
+                                            value={calendarDate}
+                                            allowClear={false}
+                                            defaultValue={moment()} />
+                </Col>
+                 
+            </Row>
+            <Row>
             { showAlert ? (<Alert closable={false}
                                     message={alertMessage}
                                     className='hvn-item-rtl' 
@@ -287,57 +347,71 @@ const Home = () => {
                                     type={alertType} />
                 ) : null
             }
-            <Tabs defaultActiveKey="1" 
-                  tabBarExtraContent={operations}
-                  type="line"
-                  className='hvn-item-rtl'>
-                <TabPane tab={
-                            <span>
-                                <Icon type="bars" />
-                                <span>
-                                    {t('plain')}
-                                </span>
-                            </span>
-                        }
-                        key="1">
-                    <MonthPicker onChange={onMonthChange}
-                                 disabledDate={disabledDate}
-                                 className='ltr'
-                                 style={{
-                                     float: 'left',
-                                     marginBottom: '8px'
-                                 }}
-                                 value={calendarDate}
-                                 allowClear={false}
-                                 defaultValue={moment()} />
-                    <TableReport dataSource={reportData}
-                                 loading={loadingData}
-                                 scroll={{y: '600px'}}
-                                 onChange={( item ) => dispatch(action_updateItem(item)) } 
-                                 editable={isReportEditable} />
-                </TabPane>
-                <TabPane tab={<span>
-                                <Icon type="schedule" />
-                                <span>
-                                    {t('calendar')}
-                                </span>
-                            </span>
-                            } 
-                        key="2">
-                    <CalendarReport tableData={reportData} value={calendarDate}/>
-                </TabPane>
-                <TabPane tab={<span>
-                                <Icon type="fund" />
-                                <span>
-                                    {t('yearly')}
-                                </span>
-                            </span>
-                            }
-                            key='3'>
-                    <YearReport />        
-                </TabPane>
-            </Tabs>
-            
+            </Row>
+            <Row gutter={[32, 32]} style={{
+                    margin: '0% 4%' 
+                }}>
+                <Col span={8}>
+                    <Row gutter={[40, 32]}>
+                        <Col>
+                            <Card title='סיכומים' bordered={false}
+                                className='rtl'>
+                                <div>סה"כ { totals } שעות</div>
+                            </Card>
+                        </Col>
+                    </Row>
+                    <Row gutter={[32, 32]}>
+                        <Col>
+                            <Card title={t('abs_docs')} bordered={true}
+                                className='rtl'>
+                                <DocsUploader reportId={reportId} 
+                                              isOperational={true}/>
+                            </Card>
+                        </Col>
+                    </Row>
+                </Col>
+                <Col span={16}>
+                    <Tabs defaultActiveKey="1" 
+                        type="line"
+                        className='hvn-table-rtl'>
+                        <TabPane tab={
+                                    <span>
+                                        <Icon type="bars" />
+                                        <span>
+                                            {t('plain')}
+                                        </span>
+                                    </span>
+                                }
+                                key="1">
+                            <TableReport dataSource={reportData}
+                                        loading={loadingData}
+                                        scroll={{y: '600px'}}
+                                        onChange={( item ) => dispatch(action_updateItem(item)) } 
+                                        editable={isReportEditable} />
+                        </TabPane>
+                        <TabPane tab={<span>
+                                        <Icon type="schedule" />
+                                        <span>
+                                            {t('calendar')}
+                                        </span>
+                                    </span>
+                                    } 
+                                key="2">
+                            <CalendarReport tableData={reportData} value={calendarDate}/>
+                        </TabPane>
+                        <TabPane tab={<span>
+                                        <Icon type="fund" />
+                                        <span>
+                                            {t('yearly')}
+                                        </span>
+                                    </span>
+                                    }
+                                    key='3'>
+                            <YearReport />        
+                        </TabPane>
+                    </Tabs>
+                </Col>
+            </Row>
             <Modal title="Print Report"
                     visible={printModalVisible}
                     closable={true}

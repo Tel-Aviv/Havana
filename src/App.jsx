@@ -172,7 +172,7 @@ const App = () => {
                     </Menu.Item> 
                 </Menu>                      
             </Layout.Header>
-            <Layout style={{ padding: '24px' }}>
+            <Layout style={{ padding: '17px 24px 24px 24px' }}>
                 <DataContext.Provider value={context}>
                     <Switch>
                         <Route exact path='/'
