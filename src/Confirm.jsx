@@ -7,8 +7,6 @@ import uniqid from 'uniqid';
 
 import { useTranslation, Trans } from "react-i18next";
 
-import ReactToPdf from 'react-to-pdf'
-
 import {  Divider, Tag, Button, Typography, 
         Row, Col, Card, Modal } from 'antd';
 import { Input } from 'antd-rtl';
@@ -42,7 +40,6 @@ const Confirm = (props: Props) => {
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [notesModalVisible, setNotesModalVisible] = useState<boolean>(false)
     const [note, setNote] = useState<string>('');
-    const [toPdfHandler, setToPdfHandler] = useState();
 
     const dataContext = useContext(DataContext)
 
@@ -91,12 +88,9 @@ const Confirm = (props: Props) => {
         type: DECREASE_NOTIFICATIONS_COUNT
     })
 
-    const onContinue = (toPdf) => {
-
-        setToPdfHandler({toPdf});
+    const onContinue = () => {
         setNotesModalVisible(true);
     }    
-
 
     const onApprove = async() => {
 
@@ -110,12 +104,11 @@ const Confirm = (props: Props) => {
             })
 
             dispatch(action_decreaseNotificationCount());
+
+            setNotesModalVisible(false)
         } catch( err ) {
             console.error(err)
         }
-
-        if( toPdfHandler )
-            toPdfHandler.toPdf();
 
     }
     
@@ -132,16 +125,13 @@ const Confirm = (props: Props) => {
             <Title className='hvn-title'>{title}</Title>
             <Row  className='hvn-item-ltr' align={'middle'} type='flex'>
                 <Col span={4} >
-                    <ReactToPdf targetRef={ref} filename="report.pdf"
-                                x={.5} y={.5}>
-                        {({ toPdf }) => <Button type="primary"
-                                                style={{
-                                                    marginBottom: '8px'
-                                                }}   
-                                                onClick={ () => onContinue(toPdf) }>
-                                            {t('continue')}
-                                        </Button>}
-                    </ReactToPdf>                
+                    <Button type="primary"
+                            style={{
+                                marginBottom: '8px'
+                            }}   
+                            onClick={ () => onContinue() }>
+                                {t('continue')}
+                    </Button>                
                 </Col>
             </Row>
             <Row gutter={[32, 32]} style={{

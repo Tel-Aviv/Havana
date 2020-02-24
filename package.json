@@ -1,7 +1,7 @@
 {
   "name": "Havana",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Tel-Aviv/Havana.git"
@@ -11,17 +11,6 @@
   },
   "author": "shukiBenishty <shuki.benishty@gmail.com>",
   "license": "MIT",
-  "babel": {
-    "plugins": [
-      "@babel/plugin-proposal-class-properties",
-      "@babel/transform-runtime"
-    ],
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-react",
-      "@babel/preset-flow"
-    ]
-  },
   "scripts": {
     "build": "webpack -d --watch",
     "prod": "webpack -p",
@@ -40,19 +29,13 @@
     "antd-rtl": "^3.11.14",
     "axios": "^0.19.1",
     "bizcharts": "^3.5.6",
-    "clean-css": "^4.1.11",
     "cors": "^2.8.5",
-    "cryptiles": "^4.1.2",
     "dotenv": "^8.2.0",
-    "email-builder-core": "^2.1.2",
     "express": "^4.17.1",
     "express-ntlm": "^2.5.0",
     "file-saver": "^2.0.2",
-    "hawk": "^3.1.3",
-    "hoek": "^4.2.1",
     "i18next": "^19.0.3",
     "less-loader": "^5.0.0",
-    "mime": "^1.4.1",
     "moment": "^2.24.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
@@ -61,19 +44,15 @@
     "react-image": "^2.2.2",
     "react-redux": "^7.1.3",
     "react-router-dom": "^5.1.2",
-    "react-to-pdf": "^0.0.8",
     "react-to-print": "^2.5.1",
     "redux": "^4.0.5",
-    "request": "^2.68.0",
     "style-loader": "^1.1.2",
-    "tunnel-agent": "^0.6.0",
     "uniqid": "^5.2.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-flow": "^7.8.0",
     "@babel/preset-react": "^7.8.0",
-    "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
     "css-loader": "^3.4.2",
     "faker": "^4.1.0",
