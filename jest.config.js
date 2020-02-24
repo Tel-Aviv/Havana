@@ -1,5 +1,10 @@
 // For a detailed explanation regarding each configuration property, visit:
 // https://jestjs.io/docs/en/configuration.html
+// const { readFileSync } = require('fs')
+// const babelConfig = JSON.parse(readFileSync('./.babelrc', 'utf8'))
+
+// require('babel-register')(babelConfig)
+// require('babel-polyfill')
 
 module.exports = {
   // All imported modules in your tests should be mocked automatically

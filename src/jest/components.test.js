@@ -1,7 +1,7 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import MonthlyReport from '../src/Home';
+import Home from '../Home';
 
 test('sss', () => {
     const component = renderer.create(
