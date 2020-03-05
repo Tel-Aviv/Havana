@@ -45,14 +45,24 @@ const DocsUploader = ({reportId, isOperational, employeeId}:
     }, [reportId])
 
     const removeDoc = async(file) => {
-        
+
         try {
             const docName = file.name;
             await axios.delete(`http://${dataContext.host}/me/reports/${reportId}/docs?docName=${docName}`, {
                 withCredentials: true
             })
         } catch(err) {
-            console.error(err)
+
+            const _doc = docs.find( doc => 
+                doc.uid === file.uid
+            )
+            if( _doc ) {
+                _doc.status = 'error';
+                _doc.response = err.response.data; // string-formatted content
+                setDocs([...docs]);
+            }
+
+            throw err;
         }
         
     } 
@@ -127,6 +137,7 @@ const DocsUploader = ({reportId, isOperational, employeeId}:
             showRemoveIcon: true
         },
         defaultFileList: docs,
+        fileList: docs,
         beforeUpload: beforeUpload,
         onRemove: removeDoc,
         onPreview: previewDoc,

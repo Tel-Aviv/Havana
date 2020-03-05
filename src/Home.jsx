@@ -218,7 +218,7 @@ const Home = () => {
 
             } catch(err) {
                 console.error(err);
-                setAlertMessage(err.message);
+                setAlertMessage(err.response.data);
                 setAlertType('error');
                 setShowAlert(true);
             }  finally {
