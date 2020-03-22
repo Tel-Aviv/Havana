@@ -1,11 +1,12 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import Home from '../Home';
+import LinkX from '../LinkX';
 
 test('sss', () => {
     const component = renderer.create(
-        <Home />
+        <LinkX />
     )
     let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
 })

@@ -8,7 +8,12 @@ import i18n from 'i18next';
 import { useTranslation, initReactI18next } from "react-i18next";
 import { Helmet } from 'react-helmet';
 
-import { Layout, Menu, Breadcrumb, Icon } from 'antd';
+import {
+    BellOutlined,
+    HomeOutlined
+} from '@ant-design/icons';
+
+import { Layout, Menu, Breadcrumb } from 'antd';
 const { Header, Content, Footer, Sider } = Layout;
 
 import { version } from 'antd';
@@ -146,8 +151,7 @@ const App = () => {
                         marginTop: '12px'
                         }}>
                         <Tooltip title={t('home')}>
-                            <Icon type="home" 
-                                theme="outlined"
+                            <HomeOutlined 
                                 style={{
                                     fontSize: '24px'
                                 }} 
@@ -163,7 +167,7 @@ const App = () => {
                                <Badge count={notificationsCount} onClick={onApprovalClicked} 
                                    className='ltr' >
                                 <Tooltip title={t('notifications')}>
-                                    <Icon type="bell" theme="outlined" 
+                                    <BellOutlined
                                         style={{
                                             fontSize: '24px'
                                         }}/>

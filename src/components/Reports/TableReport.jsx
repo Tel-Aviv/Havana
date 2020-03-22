@@ -2,7 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'antd/dist/antd.css';
-import { Table, Popconfirm, Form, Icon, Button, Tag } from 'antd';
+
+import { Icon, Form } from '@ant-design/compatible';
+import { Table, Popconfirm, Button, Tag } from 'antd';
 var moment = require('moment');
 
 import { ReportContext } from "./table-context";

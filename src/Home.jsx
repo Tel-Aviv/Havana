@@ -11,7 +11,14 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { useTranslation } from "react-i18next";
 
-import { Layout, Icon,  } from 'antd';
+import {
+    BarsOutlined,
+    FundOutlined,
+    ScheduleOutlined,
+    UserOutlined
+} from '@ant-design/icons';
+
+import { Layout } from 'antd';
 const { Content } = Layout;
 
 import { Divider, Tag, Button, List, Modal, 
@@ -303,7 +310,7 @@ const Home = () => {
     const menu = <Menu onClick={handleMenuClick}>
         {managers.map((manager, index) => (
                 <Menu.Item  key={index}>
-                    <Icon type="user" />
+                    <UserOutlined />
                     {manager.userName}
                 </Menu.Item>
         ))}
@@ -376,7 +383,7 @@ const Home = () => {
                         className='hvn-table-rtl'>
                         <TabPane tab={
                                     <span>
-                                        <Icon type="bars" />
+                                        <BarsOutlined />
                                         <span>
                                             {t('plain')}
                                         </span>
@@ -390,7 +397,7 @@ const Home = () => {
                                         editable={isReportEditable} />
                         </TabPane>
                         <TabPane tab={<span>
-                                        <Icon type="schedule" />
+                                        <ScheduleOutlined />
                                         <span>
                                             {t('calendar')}
                                         </span>
@@ -400,7 +407,7 @@ const Home = () => {
                             <CalendarReport tableData={reportData} value={calendarDate}/>
                         </TabPane>
                         <TabPane tab={<span>
-                                        <Icon type="fund" />
+                                        <FundOutlined />
                                         <span>
                                             {t('yearly')}
                                         </span>

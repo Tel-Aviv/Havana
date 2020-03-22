@@ -3,7 +3,15 @@ import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from "react-i18next";
 
-import { Upload, Button, Icon, message } from 'antd';
+import {
+    DeleteOutlined,
+    EditOutlined,
+    LoadingOutlined,
+    PlusOutlined,
+    SettingOutlined
+} from '@ant-design/icons';    
+
+import { Upload, Button, message } from 'antd';
 import { Row, Col, Card, Avatar } from 'antd';
 const { Meta } = Card;
 
@@ -150,7 +158,9 @@ const Settings = () => {
 
     const uploadButton = (
         <>
-            <Icon type={loading ? 'loading' : 'plus'} />
+            {
+                loading? <LoadingOutlined /> : <PlusOutlined />
+            }
             <div className="ant-upload-text">Upload</div>
         </>
     )
@@ -162,9 +172,9 @@ const Settings = () => {
                 <Col span={8}>
                     <Card title={t('stamp')}
                     actions={[
-                        <Icon type="setting" key="setting" />,
-                        <Icon type="edit" key="edit" />,
-                        <Icon type="delete" onClick={ e => removeStamp(e) }/>,
+                        <SettingOutlined key="setting" />,
+                        <EditOutlined key="edit" />,
+                        <DeleteOutlined onClick={ e => removeStamp(e) }/>,
                     ]}>
                         <Upload {...uploadStampProps}>
                             { stamp? <img src={stamp}  className='avatar-uploader' onClick={e => dummyClick(e) }/>
@@ -176,9 +186,9 @@ const Settings = () => {
                 <Col span={8}>
                     <Card title={t('signature')}
                     actions={[
-                            <Icon type="setting" key="setting" />,
-                            <Icon type="edit" key="edit" />,
-                            <Icon type="delete" onClick={ e => removeSignature(e) }/>,
+                            <SettingOutlined key="setting" />,
+                            <EditOutlined key="edit" />,
+                            <DeleteOutlined onClick={ e => removeSignature(e) }/>,
                         ]}>
                         <Upload {...uploadProps}>
                             { signature?  <img src={signature} className='avatar-uploader' onClick={e => dummyClick(e) }/> 

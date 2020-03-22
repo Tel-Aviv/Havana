@@ -6,7 +6,12 @@ import uniqid from 'uniqid';
 import { useSelector, useDispatch } from 'react-redux';
 import { SET_REPORT_DATE, UPDATE_ITEM } from '../../redux/actionTypes';
 
-import { Divider, Tag, Button, Modal, Icon,
+import {
+    LoginOutlined,
+    LogoutOutlined
+} from '@ant-design/icons';
+
+import { Divider, Tag, Button, Modal,
         Calendar, Badge, Card,
         Row, Col, TimePicker, Input
 } from 'antd';
@@ -200,7 +205,7 @@ const CalendarReport = (props: Props) => {
                                                 display: 'flex'
                                             }}>
                                                 <Col span={2}>
-                                                    <Icon type="logout" />
+                                                    <LogoutOutlined />
                                                 </Col>
                                                 <Col span={5}>
                                                     {t('out')}
@@ -217,7 +222,7 @@ const CalendarReport = (props: Props) => {
                                                 display: 'flex'
                                             }}>
                                                 <Col span={2}>
-                                                    <Icon type="login" />
+                                                    <LoginOutlined />
                                                 </Col>
                                                 <Col span={5}>
                                                     {t('in')}

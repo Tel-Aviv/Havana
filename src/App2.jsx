@@ -3,7 +3,12 @@ import React from 'react';
 import { Layout } from 'antd';
 const { Header, Footer, Sider, Content } = Layout;
 
-import { Menu, Icon } from 'antd';
+import {
+    BarsOutlined,
+    NotificationOutlined,
+    ScheduleOutlined
+} from '@ant-design/icons';    
+import { Menu } from 'antd';
 import { Tabs } from 'antd';
 const { TabPane } = Tabs;
 
@@ -31,7 +36,7 @@ const App2 = () => {
                         }}>
                             <Badge count='25'>
                                 <Tooltip title='Notifications'>
-                                    <Icon type="notification" theme="outlined" 
+                                    <NotificationOutlined
                                         style={{
                                             fontSize: '24px'
                                         }}/>
@@ -43,11 +48,10 @@ const App2 = () => {
                             marginTop: '12px'
                             }}>
                             <Tooltip title='Settings'>
-                                <Icon type="setting" 
-                                    theme="outlined"
-                                    style={{
-                                        fontSize: '24px'
-                                    }}/>
+                                <SettingOutlined
+                                style={{
+                                    fontSize: '24px'
+                                }}/>
                             </Tooltip>      
                         </Menu.Item>
                     </Menu>
@@ -61,14 +65,14 @@ const App2 = () => {
                         }}>
                             <TabPane tab={
                                 <span>
-                                    <Icon type="bars" />
+                                    <BarsOutlined />
                                     טבלה
                                 </span>
                                 } key="1">
                                 <Table />
                             </TabPane>
                             <TabPane tab={<span>
-                                <Icon type="schedule" />
+                                <ScheduleOutlined />
                                 לוח חודשי
                             </span>
                             } key="2">

@@ -2,7 +2,10 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from "react-i18next";
-import { Upload, Button, Icon, message } from 'antd'
+import {
+    UploadOutlined
+} from '@ant-design/icons';
+import { Upload, Button, message } from 'antd'
 import { saveAs } from 'file-saver';
 
 import { DataContext } from "../DataContext";
@@ -141,7 +144,7 @@ const DocsUploader = ({reportId, isOperational, employeeId}:
             { 
                 isOperational ? 
                     <Button>
-                        <Icon type="upload" /> {t('upload')}
+                        <UploadOutlined />{t('upload')}
                     </Button> :
                     null
             }

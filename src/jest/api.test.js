@@ -8,7 +8,7 @@ test('get monthly report', async() => {
     
     try {
         const resp = await axios(url, {
-            withCredentials: true
+            Authorization: 'NTLM TlRMTVNTUAABAAAAA7IAAAoACgApAAAACQAJACAAAABMSUdIVENJVFlVUlNBLU1JTk9S'
         }); 
     } catch(err) {
         console.error(err.message);
