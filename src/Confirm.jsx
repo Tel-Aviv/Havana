@@ -1,7 +1,7 @@
 // @flow
 import React, { useState, useEffect, useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import uniqid from 'uniqid';
 
@@ -37,9 +37,12 @@ const Confirm = (props: Props) => {
     const [totals, setTotals] = useState<number>(0);
     const [tableData, setTableData] = useState([])
     const [title, setTitle] = useState<string>('');
-    const [loadingData, setLoadingData] = useState<boolean>(false)
-    const [notesModalVisible, setNotesModalVisible] = useState<boolean>(false)
+    const [loadingData, setLoadingData] = useState<boolean>(false);
+    const [notesModalVisible, setNotesModalVisible] = useState<boolean>(false);
     const [note, setNote] = useState<string>('');
+    const [approvalSending, setApprovalSending] = useState<boolean>(false);
+
+    const history = useHistory();
 
     const dataContext = useContext(DataContext)
 
@@ -50,6 +53,7 @@ const Confirm = (props: Props) => {
     const dispatch = useDispatch();
 
     useEffect( () => {
+
         async function fetchData() {
 
             setMonth(props.month)
@@ -95,6 +99,17 @@ const Confirm = (props: Props) => {
     const onApprove = async() => {
 
         try {
+
+            setApprovalSending(true);
+            const timer = setTimeout(() => {
+                setApprovalSending(false);
+                setNotesModalVisible(false);
+
+                clearTimeout(timer);
+                
+                history.push(`/confirmlist`);
+            }, 2500);
+
             const url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}?note=${note}`;
             await axios.patch(url, {html: ref.current.outerHTML}, {
                 headers: {
@@ -105,7 +120,7 @@ const Confirm = (props: Props) => {
 
             dispatch(action_decreaseNotificationCount());
 
-            setNotesModalVisible(false)
+            
         } catch( err ) {
             console.error(err)
         }
@@ -175,7 +190,11 @@ const Confirm = (props: Props) => {
                     title={t('notes_for_report')}
                     footer={
                         [
-                            <Button key='approve' type="primary" onClick={onApprove} >{t('approve')}</Button>,
+                            <Button key='approve' type="primary" loading={approvalSending} 
+                                    style={{
+                                        direction: 'ltr'
+                                    }}
+                                     onClick={onApprove} >{t('approve')}</Button>,
                             <Button key='cancel' onClick={onNotesModalClosed} style={{
                                 marginRight: '8px'
                             }}>{t('cancel')}</Button>

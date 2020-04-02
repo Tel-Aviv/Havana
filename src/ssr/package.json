@@ -1,0 +1,27 @@
+{
+  "name": "HavanaServer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tel-Aviv/Havana.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Tel-Aviv/Havana/issues"
+  },
+  "author": "shukiBenishty <shuki.benishty@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "activedirectory": "^0.7.2",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-ntlm": "^2.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
