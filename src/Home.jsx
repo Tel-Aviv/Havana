@@ -251,7 +251,11 @@ const Home = () => {
     })
   
     const onSubmit = async () => {
+        
+        let message = `דוח שעות לחודש ${month}/${year} נשלח לאישור`;
+        
         try {
+            
             await axios({
                 url: `http://${dataContext.host}/me/reports?month=${month}&year=${year}&reportid=${reportId}`, 
                 method: 'post',
@@ -261,10 +265,14 @@ const Home = () => {
             //TODO: set success Alert
             setReportSubmitted(true);
             setIsReportEditable(false)
+            setAlertType("info");
+            
         } catch(err) {
-            setAlertMessage(err.message);
-            setShowAlert(true);
+            message = err.message;
         }
+
+        setAlertMessage(message);
+        setShowAlert(true);
     }
 
     const onShowPDF = () => {

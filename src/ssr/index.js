@@ -29,7 +29,7 @@ app.use(ntlm());
 
 const template = fs.readFileSync('./templates/index.html', "utf8")
 
-app.get('/', async  function(request, response, next) {
+app.get('/hr', function(request, response, next) {
 
         return ad.findUser( `${request.ntlm.UserName}@tlv.gov.il` , function(err, user) {
             let rsp;
@@ -57,9 +57,9 @@ app.get('/', async  function(request, response, next) {
         });
 })
 
-app.use(express.static("./dist"))
+app.use('/hr', express.static("./dist"))
 
 
-app.listen(8080);    
+app.listen(3000);    
     
 
