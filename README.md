@@ -10,3 +10,6 @@ In two distinct termnals run
 The first script will produce bundle.js with entire React app.
 The second script will run SSR that populate index.html template and return it for browser
 
+``` html
+<base href = "/hr/" />
+```
