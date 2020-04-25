@@ -1,9 +1,14 @@
 require('dotenv').config({ path: './src/ssr/.env' });
 const fs = require('fs'),
+    os = require("os"),
+    crypto = require("crypto"),
     express = require('express'),
     ntlm = require('express-ntlm'),
     cors = require('cors'),
     ActiveDirectory = require('activedirectory');
+
+const PORT = 3000;
+const VPATH = '/hr';
 
 
 function customEntryParser(entry, raw, callback){
@@ -29,7 +34,19 @@ app.use(ntlm());
 
 const template = fs.readFileSync('./templates/index.html', "utf8")
 
-app.get('/hr', function(request, response, next) {
+app.get(VPATH, function(request, response, next) {
+
+        // Create a completely random secret
+        const sharedSecret = crypto.randomBytes(16); // 128-bits === 16-bytes,  
+        const textSecret = sharedSecret.toString('base64');
+        console.log(`Shared secret: ${textSecret}`)
+
+        const initializationVector = crypto.randomBytes(16); // IV is always 16-bytes
+        const cipher = crypto.Cipheriv('aes-128-cbc', sharedSecret, initializationVector);
+        const plaintext = "Everything's gonna be 200 OK!";
+        let encrypted = cipher.update(plaintext, 'utf8', 'base64');
+        encrypted += cipher.final('base64');
+        console.log(`Encrypted: ${encrypted}`)
 
         return ad.findUser( `${request.ntlm.UserName}@tlv.gov.il` , function(err, user) {
             let rsp;
@@ -57,9 +74,10 @@ app.get('/hr', function(request, response, next) {
         });
 })
 
-app.use('/hr', express.static("./dist"))
+app.use(VPATH, // mount path
+        express.static("./dist"))
 
-
-app.listen(3000);    
+app.listen(PORT,
+    () => console.log(`Listening at http://${os.hostname()}:${PORT}${VPATH}`));    
     
 

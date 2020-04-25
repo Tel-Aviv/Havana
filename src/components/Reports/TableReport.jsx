@@ -2,12 +2,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'antd/dist/antd.css';
-import { Table, Popconfirm, Form, Icon, Button, Tag } from 'antd';
+import { Table, Form, Popconfirm, Icon, Button, Tag, Modal,
+        Card, Row, Col, Input } from 'antd';
+// import Form from '@ant-design/compatible'
 var moment = require('moment');
+import { useTranslation } from "react-i18next";
 
 import { ReportContext } from "./table-context";
 import EditableCell from './EditableCell'
 import EditIcons from './EditIcons';
+import AddIcon from './AddIcon';
+import XTimePicker from '../XTimePicker'
 
 const format = 'H:mm';
 
@@ -15,6 +20,13 @@ const EditableTable = (props) => {
   const [data, setData] = useState([])
   const [originalData, setOriginalData] = useState([])
   const [editingKey, setEditingKey] = useState('')
+  const [addModalVisible, setAddModalVisible] = useState<boolean>(false)
+  const [recordToAdd, setRecordToAdd] = useState();
+  const [newRecordInTime, setNewRecordInTime] = useState<string>('')
+  const [newRecordOutTime, setNewRecordOutTime] = useState<string>('')
+  const [addRecordNote, setAddRecordNote] = useState<string>('')
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     setOriginalData(props.dataSource)
@@ -72,6 +84,53 @@ const EditableTable = (props) => {
     });
   }
 
+  const handleAddRow = (record) => {
+    console.log(record.rdate + record.dayOfWeek);
+    setRecordToAdd(record)
+    setAddModalVisible(true)
+  }
+
+  const onTimeChanged = (direction, time) => {
+    if( direction === 'in' )
+      setNewRecordInTime(time)
+    else 
+      setNewRecordOutTime(time)
+  }
+
+  const getTimeField = (item, time) => (
+    <XTimePicker item={item} onTimeSelected={onTimeChanged}/>
+  )
+
+  const addModalCancel = () => {
+      setAddModalVisible(false);
+  }
+
+  const addRecord = () => {
+
+    const index = 2
+
+    let newItem = {
+        ...recordToAdd,
+        key: recordToAdd.key + '_' + (parseInt(recordToAdd.key) + 1),
+        notes: addRecordNote,
+        entry: newRecordInTime,
+        exit: newRecordOutTime,
+    }
+    newItem.total = moment.utc(moment(newItem.exit, format).diff(moment(newItem.entry, format))).format(format)
+
+    const newData = [
+      ...data.slice(0, index),
+      newItem,
+      ...data.slice(index)
+    ]
+    setData(newData);
+    setAddModalVisible(false);
+  }
+
+  const addCommentChange = (value) => {
+    setAddRecordNote(value)
+  }
+
   const components = {
     body: {
       cell: EditableCell,
@@ -79,6 +138,16 @@ const EditableTable = (props) => {
   };
   
   let columns = [
+      {
+        title: '',
+        dataIndex: 'add',
+        align: 'center',
+        dataIndex: 'add',
+        render: (text, record) => (
+          <Icon type="plus-circle" theme="twoTone" 
+            onClick={() => handleAddRow(record)}/>
+        )
+      },
       {
         title: 'יום',
         dataIndex: 'day',
@@ -164,35 +233,82 @@ const EditableTable = (props) => {
               cancel={cancel}
             />): {}
       },
+      
     ];
 
 
-  columns = columns.map(col => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record, rowIndex) => ({
-        record,
-        inputType: (col.dataIndex === 'exit' ||
-          col.dataIndex === 'entry') ? 'time' : 'text',
-        dataIndex: col.dataIndex,
-        title: col.title,
-        rowEditing: isRowEditing(record),
-        cellEditbale: col.dataIndex === 'notes' || 
-                      originalData[rowIndex][col.dataIndex] === '0:00',
-      }),
-    };
-  });
+  // columns = columns.map(col => {
+  //   if (!col.editable) {
+  //     return col;
+  //   }
+  //   return {
+  //     ...col,
+  //     onCell: (record, rowIndex) => ({
+  //       record,
+  //       inputType: (col.dataIndex === 'exit' ||
+  //         col.dataIndex === 'entry') ? 'time' : 'text',
+  //       dataIndex: col.dataIndex,
+  //       title: col.title,
+  //       rowEditing: isRowEditing(record),
+  //       cellEditbale: col.dataIndex === 'notes' || 
+  //                     originalData[rowIndex][col.dataIndex] === '0:00',
+  //     }),
+  //   };
+  // });
 
   const isValid = !data.some(r => !r.valid)
   if (isValid) {
     props.onValidated && props.onValidated(data)
   }
+
   
   return (
     <ReportContext.Provider value={props.form}>
+      <Modal visible={addModalVisible}
+            title={'No date'}
+            footer={[
+               <Button key='approve' type="primary" onClick={addRecord}>{t('approve')}</Button>,
+               <Button key='cancel' onClick={addModalCancel}>{t('cancel')}</Button>
+            ]}
+            >
+            <Card type="inner" hoverable>
+
+              <Row>
+                <Col span={18}>
+                {
+                    getTimeField('in')
+                }
+                </Col>               
+                <Col span={4}>
+                    {t('in')}
+                </Col> 
+                <Col span={2}>
+                  <Icon type="login" />
+                </Col>
+              </Row>            
+              <Row>
+                <Col span={18}>
+                {
+                    getTimeField('out')
+                }
+                </Col>               
+                <Col span={4}>
+                    {t('out')}
+                </Col> 
+                <Col span={2}>
+                  <Icon type="logout" />
+                </Col>
+              </Row>
+              <Row>
+                <Col span={20}>
+                  <Input size='small' onChange={ event => addCommentChange(event.target.value)}/>
+                </Col>
+                <Col span={4}>
+                    <div className='rtl'>{t('notes')}</div>
+                </Col>
+              </Row>
+            </Card>
+      </Modal>      
       <Table
         {...props}
         style={{ 
