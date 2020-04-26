@@ -133,18 +133,25 @@ const EditableTable = (props: Props) => {
     if( !newRecordInTime ) {
       setAddEntryTimeError(true)
       return false;
+    } else {
+      setAddEntryTimeError(false)
     }
 
     if( !newRecordOutTime ) {
       setAddExitTimeError(true);
       return false;
+    } else {
+      setAddExitTimeError(false);
     }
 
     if( !addRecordNote ) {
       setAddNotesError(true)
       return false
+    } else {
+      setAddNotesError(false)
     }
 
+    return true
   }
 
   const addRecord = () => {
