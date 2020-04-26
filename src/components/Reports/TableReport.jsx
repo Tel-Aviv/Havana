@@ -1,11 +1,11 @@
 // @flow
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import axios from 'axios';
 import 'antd/dist/antd.css';
 import { Table, Form, Popconfirm, Icon, Button, Tag, Modal,
-        Card, Row, Col, Input } from 'antd';
+        Card, Row, Col, Input, TimePicker } from 'antd';
 // import Form from '@ant-design/compatible'
-var moment = require('moment');
+import moment from 'moment'
 import { useTranslation } from "react-i18next";
 
 import { ReportContext } from "./table-context";
@@ -16,7 +16,27 @@ import XTimePicker from '../XTimePicker'
 
 const format = 'H:mm';
 
-const EditableTable = (props) => {
+type ReportRecord = {
+  rdate: string,
+  key: number,
+  entry: moment,
+  exit: moment,
+  total: moment,
+  notes: string,
+  valid?: boolean,
+  requireChange:? boolean
+}
+
+type Props = {
+  form: Object,
+  dataSource: [ReportRecord],
+  editable: boolean,
+}
+
+const EditableTable = (props: Props) => {
+
+  const { getFieldDecorator } = props.form;
+
   const [data, setData] = useState([])
   const [originalData, setOriginalData] = useState([])
   const [editingKey, setEditingKey] = useState('')
@@ -25,6 +45,10 @@ const EditableTable = (props) => {
   const [newRecordInTime, setNewRecordInTime] = useState<string>('')
   const [newRecordOutTime, setNewRecordOutTime] = useState<string>('')
   const [addRecordNote, setAddRecordNote] = useState<string>('')
+
+  const [addEntryTimeError, setAddEntryTimeError] = useState<boolean>(false)
+  const [addExitTimeError, setAddExitTimeError] = useState<boolean>(false)
+  const [addNotesError, setAddNotesError] = useState<boolean>(false)
 
   const { t } = useTranslation();
 
@@ -105,13 +129,45 @@ const EditableTable = (props) => {
       setAddModalVisible(false);
   }
 
+  const validateAddRecord = () => {
+    if( !newRecordInTime ) {
+      setAddEntryTimeError(true)
+      return false;
+    }
+
+    if( !newRecordOutTime ) {
+      setAddExitTimeError(true);
+      return false;
+    }
+
+    if( !addRecordNote ) {
+      setAddNotesError(true)
+      return false
+    }
+
+  }
+
   const addRecord = () => {
 
-    const index = 2
+    if( !validateAddRecord() )
+      return;
+
+    let addedPositions = data.reduce( (accu, current, index) => {
+      return {
+         key: Math.max(accu.key, parseInt(current.key)),
+         position: index
+      }
+    }, {key:0,
+        position: 0});
+
+    const index = data.findIndex( item => 
+      item.key == recordToAdd.key
+    ) + 1
 
     let newItem = {
         ...recordToAdd,
-        key: recordToAdd.key + '_' + (parseInt(recordToAdd.key) + 1),
+        key: addedPositions.key + 1,
+        isAdded: true,
         notes: addRecordNote,
         entry: newRecordInTime,
         exit: newRecordOutTime,
@@ -126,6 +182,16 @@ const EditableTable = (props) => {
     setData(newData);
     setAddModalVisible(false);
   }
+
+  const handleRemoveRecord = (record) => {
+
+    const index = data.findIndex( item => 
+      item.key == record.key
+    )
+
+    const newData = [...data.slice(0, index), ...data.slice(index + 1)];
+    setData(newData);
+  }  
 
   const addCommentChange = (value) => {
     setAddRecordNote(value)
@@ -144,8 +210,24 @@ const EditableTable = (props) => {
         align: 'center',
         dataIndex: 'add',
         render: (text, record) => (
-          <Icon type="plus-circle" theme="twoTone" 
-            onClick={() => handleAddRow(record)}/>
+
+          <Row>
+            <Col>
+              <Icon type="plus-circle" theme="twoTone" 
+                onClick={() => handleAddRow(record)}/>
+            </Col>
+            <Col>  
+              {
+                record.isAdded ? 
+                  <Popconfirm
+                    title={t('sure')}
+                    onConfirm={() => handleRemoveRecord(record)}>
+                      <Icon type='minus-circle' theme='twoTone' />  
+                  </Popconfirm>    
+                : null
+              }
+            </Col>  
+          </Row>
         )
       },
       {
@@ -265,16 +347,42 @@ const EditableTable = (props) => {
   return (
     <ReportContext.Provider value={props.form}>
       <Modal visible={addModalVisible}
-            title={'No date'}
+            title={recordToAdd? recordToAdd.rdate: null}
+            onCancel={() => {}}
             footer={[
                <Button key='approve' type="primary" onClick={addRecord}>{t('approve')}</Button>,
                <Button key='cancel' onClick={addModalCancel}>{t('cancel')}</Button>
-            ]}
-            >
-            <Card type="inner" hoverable>
+            ]}>
 
-              <Row>
-                <Col span={18}>
+            {/* <Form layout="vertical" className='rtl'>
+                <Form.Item label={t('in')} className='rtl'>
+                {
+                  getFieldDecorator("xTimePicker", {
+                    rules: [{ 
+                              required: true, 
+                              message: t('add_entry_error') 
+                            }],
+                  })(<XTimePicker />)
+                }
+               </Form.Item>
+               <Form.Item label={t('out')}>
+               </Form.Item>
+               <Form.Item label={t('notes')}>
+                {
+                    getFieldDecorator(t('notes'), {
+                    rules: [{ 
+                              required: true, 
+                              message: t('add_notes_error') 
+                            }],
+                  })(<Input size='small' onChange={ event => addCommentChange(event.target.value)}/>)
+                }
+               </Form.Item>
+            </Form> */}
+
+            <Card type="inner">
+
+              <Row gutter={[16, 16]}>
+                <Col span={8} offset={10}>
                 {
                     getTimeField('in')
                 }
@@ -285,9 +393,16 @@ const EditableTable = (props) => {
                 <Col span={2}>
                   <Icon type="login" />
                 </Col>
-              </Row>            
-              <Row>
-                <Col span={18}>
+              </Row>
+              {
+                addEntryTimeError? 
+                  <Row>
+                    <Col>{t('add_entry_error')}</Col>
+                  </Row>: 
+                  null
+              }
+              <Row gutter={[16, 16]}>
+                <Col span={8} offset={10}>
                 {
                     getTimeField('out')
                 }
@@ -299,7 +414,14 @@ const EditableTable = (props) => {
                   <Icon type="logout" />
                 </Col>
               </Row>
-              <Row>
+              {
+                addExitTimeError? 
+                  <Row>
+                    <Col>{t('add_exit_error')}</Col>
+                  </Row>:                 
+                null
+              }
+              <Row gutter={[16, 16]}>
                 <Col span={20}>
                   <Input size='small' onChange={ event => addCommentChange(event.target.value)}/>
                 </Col>
@@ -307,6 +429,13 @@ const EditableTable = (props) => {
                     <div className='rtl'>{t('notes')}</div>
                 </Col>
               </Row>
+              {
+                addRecordNote? 
+                  <Row>
+                    <Col>{t('add_notes_error')}</Col>
+                  </Row>:                   
+                null
+              }
             </Card>
       </Modal>      
       <Table

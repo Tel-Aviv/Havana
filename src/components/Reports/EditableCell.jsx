@@ -11,11 +11,7 @@ type Props = {
     inputType: string
 }
 
-type State = {
-
-}
-
-const EditableCell = (props) => {
+const EditableCell = (props: Props) => {
 
     const getInput = () => ( props.inputType !== 'time') ?
         <Input /> :

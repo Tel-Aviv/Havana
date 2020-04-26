@@ -198,7 +198,10 @@ const Home = () => {
                         && resp.data.items.length > 0  ) {
 
                         data = resp.data.items.map( (item, index ) => {
-                                const _item = {...item, key: index};
+                                const _item = {...item, 
+                                                key: index,
+                                                isAdded: false
+                                            };
                                 if( reportId === 0 )
                                     reportId = item.reportId;
                                 return _item;
