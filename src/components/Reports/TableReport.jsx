@@ -215,27 +215,29 @@ const EditableTable = (props: Props) => {
         title: '',
         dataIndex: 'add',
         align: 'center',
-        dataIndex: 'add',
-        render: (text, record) => (
+        width: '10%',
+        editable: false,
+        render: (text, record) => 
 
-          <Row>
-            <Col>
-              <Icon type="plus-circle" theme="twoTone" 
-                onClick={() => handleAddRow(record)}/>
-            </Col>
-            <Col>  
-              {
-                record.isAdded ? 
-                  <Popconfirm
-                    title={t('sure')}
-                    onConfirm={() => handleRemoveRecord(record)}>
-                      <Icon type='minus-circle' theme='twoTone' />  
-                  </Popconfirm>    
-                : null
-              }
-            </Col>  
-          </Row>
-        )
+          props.editable? 
+            (<Row>
+                <Col>
+                  <Icon type="plus-circle" theme="twoTone" 
+                    onClick={() => handleAddRow(record)}/>
+                </Col>
+                <Col>  
+                  {
+                    record.isAdded ? 
+                      <Popconfirm
+                        title={t('sure')}
+                        onConfirm={() => handleRemoveRecord(record)}>
+                          <Icon type='minus-circle' theme='twoTone' />  
+                      </Popconfirm>    
+                    : null
+                  }
+                </Col>  
+              </Row>              
+            ) : null
       },
       {
         title: 'יום',
@@ -252,7 +254,7 @@ const EditableTable = (props: Props) => {
         editable: false,
       },    
       {
-        title: 'כניסה',
+        title: t('in'),
         dataIndex: 'entry',
         align: 'right',
         editable: true,
@@ -270,7 +272,7 @@ const EditableTable = (props: Props) => {
         }          
       },
       {
-        title: 'יציאה',
+        title: t('out'), 
         dataIndex: 'exit',
         align: 'right',
         editable: true,
@@ -294,7 +296,7 @@ const EditableTable = (props: Props) => {
         editable: false,
       },
       {
-        title: 'הערות',
+        title: t('notes'),
         dataIndex: 'notes',
         align: 'right',
         editable: true,
@@ -320,36 +322,35 @@ const EditableTable = (props: Props) => {
               edit={edit} 
               save={save} 
               cancel={cancel}
-            />): {}
+            />): null
       },
       
     ];
 
 
-  // columns = columns.map(col => {
-  //   if (!col.editable) {
-  //     return col;
-  //   }
-  //   return {
-  //     ...col,
-  //     onCell: (record, rowIndex) => ({
-  //       record,
-  //       inputType: (col.dataIndex === 'exit' ||
-  //         col.dataIndex === 'entry') ? 'time' : 'text',
-  //       dataIndex: col.dataIndex,
-  //       title: col.title,
-  //       rowEditing: isRowEditing(record),
-  //       cellEditbale: col.dataIndex === 'notes' || 
-  //                     originalData[rowIndex][col.dataIndex] === '0:00',
-  //     }),
-  //   };
-  // });
+  columns = columns.map(col => {
+    if (!col.editable) {
+      return col;
+    }
+    return {
+      ...col,
+      onCell: (record, rowIndex) => ({
+        record,
+        inputType: (col.dataIndex === 'exit' ||
+            col.dataIndex === 'entry') ? 'time' : 'text',  
+        title: col.title, 
+        dataIndex: col.dataIndex,
+        rowEditing: isRowEditing(record),   
+        cellEditbale: col.dataIndex === 'notes' || 
+                       data[rowIndex][col.dataIndex] === '0:00',
+      })
+    };
+  });
 
   const isValid = !data.some(r => !r.valid)
   if (isValid) {
     props.onValidated && props.onValidated(data)
   }
-
   
   return (
     <ReportContext.Provider value={props.form}>
