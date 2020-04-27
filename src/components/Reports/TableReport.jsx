@@ -3,7 +3,7 @@ import React, { useState, useEffect, forwardRef } from 'react';
 import axios from 'axios';
 import 'antd/dist/antd.css';
 import { Table, Form, Popconfirm, Icon, Button, Tag, Modal,
-        Card, Row, Col, Input, TimePicker } from 'antd';
+        Card, Row, Col, Input, DatePicker } from 'antd';
 // import Form from '@ant-design/compatible'
 import moment from 'moment'
 import { useTranslation } from "react-i18next";
@@ -13,6 +13,7 @@ import EditableCell from './EditableCell'
 import EditIcons from './EditIcons';
 import AddIcon from './AddIcon';
 import XTimePicker from '../XTimePicker'
+import CustomTimePicker from '../CustomTimePicker'
 
 const format = 'H:mm';
 
@@ -351,7 +352,11 @@ const EditableTable = (props: Props) => {
   if (isValid) {
     props.onValidated && props.onValidated(data)
   }
-  
+
+  const config = {
+    rules: [{ type: 'object', required: true, message: 'Please select date!' }],
+  };
+
   return (
     <ReportContext.Provider value={props.form}>
       <Modal visible={addModalVisible}
@@ -362,32 +367,45 @@ const EditableTable = (props: Props) => {
                <Button key='cancel' onClick={addModalCancel}>{t('cancel')}</Button>
             ]}>
 
-            {/* <Form layout="vertical" className='rtl'>
-                <Form.Item label={t('in')} className='rtl'>
-                {
-                  getFieldDecorator("xTimePicker", {
-                    rules: [{ 
-                              required: true, 
-                              message: t('add_entry_error') 
-                            }],
-                  })(<XTimePicker />)
-                }
-               </Form.Item>
-               <Form.Item label={t('out')}>
-               </Form.Item>
-               <Form.Item label={t('notes')}>
-                {
-                    getFieldDecorator(t('notes'), {
-                    rules: [{ 
-                              required: true, 
-                              message: t('add_notes_error') 
-                            }],
-                  })(<Input size='small' onChange={ event => addCommentChange(event.target.value)}/>)
-                }
-               </Form.Item>
-            </Form> */}
+            <Form layout="inline">
+              <Form.Item label={t('in')} labelAlign="left">
+              {getFieldDecorator('date-picker-in', {
+                rules: [{ 
+                        type: 'object', 
+                        required: true, 
+                        message: t('add_entry_error') 
+                        }],
+              })(
+                  <CustomTimePicker />
+              )}
+              </Form.Item>
+              <Form.Item label={t('out')} labelAlign="right">
+              {getFieldDecorator('date-picker-out', {
+                rules: [{ 
+                        type: 'object', 
+                        required: true, 
+                        message: t('add_exit_error') 
+                        }],                
+              })(
+                  <CustomTimePicker />
+              )}
+              </Form.Item>
+              <Form.Item label={t('notes')}>
+              {
+                getFieldDecorator('notes', {
+                  rules: [
+                    {
+                      type: 'object',
+                      required: true,
+                      message: t('add_notes_error')
+                    }
+                  ]
+                })(<Input size="small"/>)
+              }
+              </Form.Item>
+            </Form> 
 
-            <Card type="inner">
+            {/* <Card type="inner">
 
               <Row gutter={[16, 16]}>
                 <Col span={8} offset={10}>
@@ -444,7 +462,7 @@ const EditableTable = (props: Props) => {
                   </Row>:                   
                 null
               }
-            </Card>
+            </Card> */}
       </Modal>      
       <Table
         {...props}
