@@ -6,18 +6,21 @@ import { ChartCard, Bar, WaterWave, Field } from 'ant-design-pro/lib/Charts';
 import { Row, Col, Card, Icon } from 'antd';
 
 const data = [
-  { genre: 'יאנואר', hours: 205 },
-  { genre: 'פברואר', hours: 215},
-  { genre: 'מרץ', hours: 220 },
-  { genre: 'אפריל', hours: 150 },
-  { genre: 'מאי', hours: 168 }
+  { month: 'יאנואר', hours: 205.3 },
+  { month: 'פברואר', hours: 215},
+  { month: 'מרץ', hours: 220 },
+  { month: 'אפריל', hours: 150 },
+  { month: 'מאי', hours: 168.4 }
 ];
 
-const cols = {
+const scale = {
   hours: { 
             alias: 'hours',
-            tickInterval: 20 },
-  genre: { alias: 'months' }
+            tickInterval: 20 
+        },
+  month: { 
+      alias: 'months' 
+  }
 };
 
 const YearReport = () => {
@@ -29,12 +32,13 @@ const YearReport = () => {
                 </ChartCard>
             </Col>
             <Col span={12}>
-                <Chart width={600} height={400} data={data} scale={cols}>
-                    <Axis name="genre" title/>
+                <Chart width={600} height={400} data={data} scale={scale}>
+                {/* <Chart width={600} height={400} data={data}> */}
+                    <Axis name="month" title/>
                     <Axis name="hours" title/>
                     <Legend position="top" dy={-20} />
                     <Tooltip />
-                    <Geom type="interval" position="genre*hours" color="genre" />
+                    <Geom type="interval" position="month*hours" color="month" />
                 </Chart>
                 {/* <Bar height={200} data={data}/> */}
             </Col>
