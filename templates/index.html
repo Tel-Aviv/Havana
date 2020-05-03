@@ -13,7 +13,12 @@
         <div id='USER_ID' hidden>{USER_ID}</div>
         <div id='USER_THUMBNAIL' hidden>{USER_THUMBNAIL}</div>
         <div id='HOST' hidden>{HOST}</div>
-        <div id='root'></div>
+        <div id='root'>
+            <div class='bar'>
+                <div class="circle"></div>
+                <p>Loading</p>
+            </div>
+        </div>
         <script>
         //Polyfill for IE 6
         if (!String.prototype.startsWith) {
