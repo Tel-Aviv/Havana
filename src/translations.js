@@ -9,6 +9,7 @@ const translations = {
             "signature": "Signature",
             "stamp": "Stamp",
             "setting_title": "Your Pesrsonal Info",
+            "details": "Info",
             "notifications": "Notifications",
             "plain": "Plain",
             "calendar": "Calendar",
@@ -31,7 +32,18 @@ const translations = {
             "print": "Print",
             "continue": "Continue",
             "upload": "Upload",
-            "abs_docs": "Absense Docs"
+            "abs_docs": "Absense Docs",
+            "save": "Save",
+            "save_tooltip": "Save interim",
+            "saved": "Your changes were saved",
+            "hours": "hours",
+            "months": "months",
+            "send_to_approval": "Are you sure?",
+            "validate": "validate",
+            "close": "close",
+            "invalid_items": "Invalid items",
+            "validate_report": "Validate report",
+            "report_validated": "Report is valid"
         }
     },
     he: {
@@ -44,13 +56,14 @@ const translations = {
             "signature": "חתימה",
             "stamp": "חותמת",
             "setting_title": "הגדרות אישיות",
+            "details": "פרטים",
             "notifications": "הודעות",
             "plain": "טבלה",
             "calendar": "לוח חודשי",
             "yearly": "לוח שנתי",
             "no_entry": "כניסה חסרה",
             "no_exit": "יציאה חסרה",
-            "submit": "שלח",
+            "submit": "העבר לאישור",
             "approve": "אישור",
             "for_month": " לחודש",
             "miising_in": "חסרה כניסה",
@@ -66,7 +79,18 @@ const translations = {
             "print": "הדפס",
             "continue": "המשך",
             "upload": "העלאה",
-            "abs_docs": "מסמכי היעדרות"
+            "abs_docs": "מסמכי היעדרות",
+            "save": "שמור",
+            "save_tooltip": "שמור זמנית",
+            "saved": "השינויים נשמרו",
+            "hours": "שעות",
+            "months": "חודשים",
+            "send_to_approval": "הדוח שלך יישלח לאישור על ידי מנהל הישיר. לא ייתאפשרו עדכונים בדוח לפני האישור. לשלוח?",
+            "validate": "בדוק",
+            "close": "סגור",
+            "invalid_items": "רשומות לא תקינות",
+            "validate_report": "אמת נתונים",
+            "report_validated": "נתונים הדוח תקיניים"
         }
     }
 }    
