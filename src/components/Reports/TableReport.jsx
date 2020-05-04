@@ -32,9 +32,10 @@ const EditableTable = (props) => {
   const isRowEditing = record => {
     return record.key === editingKey
   }
+
   const isRowEditable = record => {
-    return props.editable &&  // not manager
-            record.notes !== ''
+    return props.editable 
+            //&&  record.notes !== ''
   }
 
   const edit = (key) => {
@@ -156,13 +157,13 @@ const EditableTable = (props) => {
         render: (text, record) => 
            (record.requireChange)? 
             (<EditIcons 
-              recordId={record.key}
-              editing={isRowEditing(record)} 
-              disable={editingKey !== ''} 
-              edit={edit} 
-              save={save} 
-              cancel={cancel}
-            />): {}
+                recordId={record.key}
+                editing={isRowEditing(record)} 
+                disable={editingKey !== ''} 
+                edit={edit} 
+                save={save} 
+                cancel={cancel}
+            />): null
       },
     ];
 
@@ -181,7 +182,7 @@ const EditableTable = (props) => {
         title: col.title,
         rowEditing: isRowEditing(record),
         cellEditbale: col.dataIndex === 'notes' || 
-                      originalData[rowIndex][col.dataIndex] === '0:00',
+             data[rowIndex][col.dataIndex] === '0:00'
       }),
     };
   });
