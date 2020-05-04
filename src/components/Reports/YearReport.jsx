@@ -1,49 +1,80 @@
-import React from 'react';
+// @flow
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { useTranslation } from "react-i18next";
 import { Chart, Axis, Geom, Legend, Coord, Tooltip } from 'bizcharts';
 import 'ant-design-pro/dist/ant-design-pro.css';
 import { ChartCard, Bar, WaterWave, Field } from 'ant-design-pro/lib/Charts';
 
 import { Row, Col, Card, Icon } from 'antd';
 
-const data = [
-  { month: 'יאנואר', hours: 205.3 },
-  { month: 'פברואר', hours: 215},
-  { month: 'מרץ', hours: 220 },
-  { month: 'אפריל', hours: 150 },
-  { month: 'מאי', hours: 168.4 }
-];
-
+import { DataContext } from "../../DataContext";
+  
 const scale = {
-  hours: { 
-            alias: 'hours',
-            tickInterval: 20 
-        },
-  month: { 
-      alias: 'months' 
-  }
-};
+    hours: { 
+              alias: 'hours',
+              tickInterval: 20 
+          },
+    month: { 
+        alias: 'months' 
+    }
+  };
 
-const YearReport = () => {
+type Props = {
+    year: number
+}
+
+const YearReport = (props: Props) => {
+
+    const [reportData, setReportData] = useState([]);
+    const [annualLeft, setAnnualLett] = useState<string>();
+    const [annualLeftPecentage, setAnnualLeftPercentage] = useState<number>();
+
+    const { t } = useTranslation();
+
+    const dataContext = useContext(DataContext);
+
+    useEffect( () => {
+        async function fetchData() {
+            try {
+                const resp = await axios(`http://${dataContext.host}/me/reports/yearly?year=${props.year}`, {
+                    withCredentials: true
+                });
+                const data = resp.data.items.map( item => ({
+                    month: item.month,
+                    hours: item.hours ? parseFloat(item.hours) : 0
+                }))
+                
+                setReportData(data);
+                const totalAnnual = parseFloat(resp.data.annualHoursBar)
+                const hours = parseFloat(resp.data.hoursTotal);
+                const perc = Math.floor( hours /totalAnnual * 100 );
+                setAnnualLeftPercentage(perc);
+                setAnnualLett(resp.data.annualHoursLeft);
+ 
+            } catch(err) {
+                console.error(err);
+            }
+        }
+        fetchData()
+    }, [props.year])
+
     return (
         <Row>
-            <Col offset={4} span={4}>
+            <Col offset={1} span={7}>
                 <ChartCard className='ltr'>
-                    <WaterWave height={161} title="נשאר בסל השעות" percent={34} />
+                    <WaterWave height={161} title="ניצול תקן שנתי" percent={annualLeftPecentage} />
                 </ChartCard>
             </Col>
-            <Col span={12}>
-                <Chart width={600} height={400} data={data} scale={scale}>
-                {/* <Chart width={600} height={400} data={data}> */}
-                    <Axis name="month" title/>
-                    <Axis name="hours" title/>
+            <Col span={16}>
+                <Chart width={600} height={400} data={reportData} scale={scale} forceFit={true}>
+                    <Axis name="חודשים" title/>
+                    <Axis name="שעות" title/>
                     <Legend position="top" dy={-20} />
                     <Tooltip />
                     <Geom type="interval" position="month*hours" color="month" />
                 </Chart>
-                {/* <Bar height={200} data={data}/> */}
             </Col>
-            <Col span={4}>
-            </Col>   
         </Row>        
     )
 }
