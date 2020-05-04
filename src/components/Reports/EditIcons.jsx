@@ -12,7 +12,8 @@ const iconStyle = {
 export default ({recordId, display, editing, disable, edit, save, cancel}) => {
     return editing ? (
       <span>
-        <Popconfirm title="האם ברצונך לבטל את השינויים ?" onConfirm={() => cancel(recordId)}>
+        <Popconfirm title="האם ברצונך לבטל את השינויים ?" onConfirm={() => cancel(recordId)}
+                    className='rtl'>
           <Icon type="close-circle" theme="twoTone" twoToneColor="#eb2f96" style={iconStyle} />
         </Popconfirm>
         <ReportContext.Consumer>
