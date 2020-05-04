@@ -40,7 +40,7 @@ i18n
   .init({
     resources: translations,
     lng: "he",
-    debug: true
+    debug: false
   })
 
 const App = () => {
