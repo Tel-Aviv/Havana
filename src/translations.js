@@ -43,7 +43,8 @@ const translations = {
             "close": "close",
             "invalid_items": "Invalid items",
             "validate_report": "Validate report",
-            "report_validated": "Report is valid"
+            "report_validated": "Report is valid",
+            "print_report": "Print Report"
         }
     },
     he: {
@@ -90,7 +91,8 @@ const translations = {
             "close": "סגור",
             "invalid_items": "רשומות לא תקינות",
             "validate_report": "אמת נתונים",
-            "report_validated": "נתונים הדוח תקיניים"
+            "report_validated": "נתונים הדוח תקיניים",
+            "print_report": "הדפסת דוח"
         }
     }
 }    

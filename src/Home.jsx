@@ -218,48 +218,49 @@ const Home = () => {
     }, [])
 
     useEffect( () => {
+
         async function fetchData() {
 
             setReportDataValid( false );
-            setLoadingData(true)
+            setLoadingData(true);
+
             try {
 
-                let _resp;
                 let data = [];
 
-                let url = `http://${dataContext.host}/daysoff?year=${year}&month=${month}`;
-                _resp = await axios(url);
-                data = _resp.data.items.map( item => 
+                let respArr = await axios.all([
+                    axios(`http://${dataContext.host}/daysoff?year=${year}&month=${month}`),
+                    axios(`http://${dataContext.host}/me/reports/status?month=${month}&year=${year}`, {
+                                    withCredentials: true
+                    })
+                ]);
+                data = respArr[0].data.items.map( item => 
                     new Date( Date.parse(item.date) )
                 );
                 setDaysOff( data );
-
-                // Get report's status of requested month
-                url = `http://${dataContext.host}/me/reports/status?month=${month}&year=${year}`;
-                let statusResp = await axios(url, {
-                    withCredentials: true
-                });
-
+ 
                 let reportId = 0;
                 
-                if( statusResp.data ) {
+                if( respArr[1].data ) {
+
+                    const saveReportId = respArr[1].data.saveReportId;
+
+                    let _resp;
 
                     // The status was returned, i.e. there was an updates to the original report
-                    if( statusResp.data.saveReportId ) {
+                    if( saveReportId ) {
 
-                        // There is interim report found. Actually the following call gets
+                        // Interim report found. Actually the following call gets
                         // the merged report: saved changes over the original data
-                        url = `http://${dataContext.host}/me/reports/saved?savedReportGuid=${statusResp.data.saveReportId}`;  
-                        _resp = await axios(url, {
+                        _resp = await axios(`http://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
                             withCredentials: true
                         })  
                         // Enable further saves
                         setIsReportEditable(true);
                     }  else {
   
-                        reportId = statusResp.data.reportId;
-                        url = `http://${dataContext.host}/me/reports/${reportId}/updates`;
-                        _resp = await axios(url, {
+                        reportId = respArr[1].data.reportId;
+                        _resp = await axios(`http://${dataContext.host}/me/reports/${reportId}/updates`, {
                             withCredentials: true
                         });
                         // Disable the changes to assigned report
@@ -275,8 +276,7 @@ const Home = () => {
                 } else {
 
                     // The status of the report is unknown, i.e. get the original report    
-                    url = `http://${dataContext.host}/me/reports/?month=${month}&year=${year}`;
-                    const resp = await axios(url, {
+                    const resp = await axios(`http://${dataContext.host}/me/reports/?month=${month}&year=${year}`, {
                         withCredentials: true
                     }); 
 
@@ -297,11 +297,11 @@ const Home = () => {
                     }
                 }
 
-                setLoadingData(false);
+                //setLoadingData(false);
                 setReportId(reportId);
                 setReportData(data);
 
-                defineAlert(statusResp.data);
+                defineAlert(respArr[1].data);
 
             } catch(err) {
                 console.error(err);
@@ -542,7 +542,15 @@ const Home = () => {
         dataIndex: 'operation'
         }
     ];                        
-                        
+                    
+    const printReportTitle = () => (
+        <div style={{
+            margin: '0 auto'
+        }}>
+            {t('print_report')}
+        </div>
+    )
+
     return (
         <Content>
             <Modal visible={validateModalOpen}
@@ -672,7 +680,7 @@ const Home = () => {
                     </Tabs>
                 </Col>
             </Row>
-            <Modal title="Print Report"
+            <Modal title={printReportTitle()}
                     visible={printModalVisible}
                     closable={true}
                     forceRender={true}
