@@ -1,7 +1,8 @@
 // @flow
 import React from 'react';
-import { Table, Popconfirm, Modal, Form, Icon, Button, 
-    Title, Input, Tag, Row, Col } from 'antd';
+import { Popconfirm, Modal, Form, Icon, Button, 
+    Typography , Input, Row, Col } from 'antd';
+const { Title } = Typography;    
 import { useTranslation } from "react-i18next";   
 
 import CustomTimePicker from '../CustomTimePicker'
@@ -42,12 +43,12 @@ const AddRecordModal = (props) => {
         <Modal visible={visible}
               closable={false}
               footer={[]}>
-        {/* <Title className='rtl'
-            style={{
-                marginTop: '12px'
-            }}>
-            {t('add_record')}
-        </Title> */}
+            <Title className='rtl'
+                style={{
+                    marginTop: '12px'
+                }}>
+                {t('add_record')}
+            </Title> 
 
             <Form layout="vertical"
                     onSubmit={_onSubmit}>
