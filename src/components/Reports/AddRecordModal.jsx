@@ -21,7 +21,7 @@ const AddRecordModal = (props) => {
         e.preventDefault();
         props.form.validateFields( (err, values) => {
 
-            if (error) {
+            if (err) {
                 return;
             }
 
