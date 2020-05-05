@@ -98,15 +98,21 @@ const Home = () => {
 
             const workingDay = isWorkingDay(item);
             const hasBoth = hasBothEntryExit(item);
-            if( workingDay && !hasBoth && !item.notes ) // must explain missing working day
-            {
-                invalidItemIndex = index;
-                return true;
-            }
+            // if( workingDay && !hasBoth && !item.notes ) // must explain missing working day
+            // {
+            //     invalidItemIndex = index;
+            //     return true;
+            // }
 
-            const isItemInvalid = workingDay && !hasBoth;
-            if( isItemInvalid )
+            let isItemInvalid = workingDay && !hasBoth;
+            if( isItemInvalid ) {
                 invalidItemIndex = index;
+
+                if( isItemInvalid && item.notes) { // invalid till now but has explanation provided 
+                    isItemInvalid = false; 
+                    invalidItemIndex = -1;
+                }
+            }
 
             return isItemInvalid;
         })
@@ -115,18 +121,6 @@ const Home = () => {
             isValid: !res,
             invalidItemIndex: invalidItemIndex
         } 
-
-        // reportData.every( (item) => {
-
-        //     console.log(item)
-
-        //     const res = (item.dayOfWeek === 'ש' || item.dayOfWeek === 'ו') ||
-        //                 ( item.entry !== '0:00' && item.exit !== '0:00' ) ||
-        //                 ( item.entry === '0:00' && item.exit === '0:00' );
-
-        //     return res;
-            
-        // })
     }
 
     const isWorkingDay = (item) => {

@@ -2,19 +2,32 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'antd/dist/antd.css';
-import { Table, Popconfirm, Form, Icon, Button, Tag } from 'antd';
+import { Table, Popconfirm, Modal, Form, Icon, Button, 
+  Title, Input, Tag, Row, Col } from 'antd';
 var moment = require('moment');
+import { useTranslation } from "react-i18next";
 
 import { ReportContext } from "./table-context";
 import EditableCell from './EditableCell'
 import EditIcons from './EditIcons';
+import CustomTimePicker from '../CustomTimePicker'
+import AddRecordModal from './AddRecordModal';
 
 const format = 'H:mm';
 
 const EditableTable = (props) => {
+
+  const { getFieldDecorator, getFieldError, isFieldTouched } = props.form;
+
   const [data, setData] = useState([])
   const [originalData, setOriginalData] = useState([])
   const [editingKey, setEditingKey] = useState('')
+
+  // States for adding nee record
+  const [addModalVisible, setAddModalVisible] = useState<boolean>(false)
+  const [recordToAdd, setRecordToAdd] = useState();
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     setOriginalData(props.dataSource)
@@ -73,6 +86,11 @@ const EditableTable = (props) => {
     });
   }
 
+  const handleAddRow = (record) => {
+    setRecordToAdd(record);
+    setAddModalVisible(true)
+  }
+
   const components = {
     body: {
       cell: EditableCell,
@@ -80,6 +98,33 @@ const EditableTable = (props) => {
   };
   
   let columns = [
+    {
+      title: '',
+      dataIndex: 'add',
+      align: 'center',
+      width: '5%',
+      editable: false,
+      render: (text, record) => 
+        props.editable? (
+          <Row>
+            <Col span={12}>
+              <Icon type="plus-circle" theme="twoTone" 
+                    onClick={() => handleAddRow(record)}/>
+            </Col>
+            <Col span={12}>
+            {
+                record.isAdded ? 
+                  <Popconfirm
+                    title={t('sure')}
+                    onConfirm={() => handleRemoveRecord(record)}>
+                      <Icon type='minus-circle' theme='twoTone' />  
+                  </Popconfirm>    
+                : null
+            }
+            </Col>
+          </Row>
+        ) : null
+    },
       {
         title: 'יום',
         dataIndex: 'day',
@@ -191,28 +236,107 @@ const EditableTable = (props) => {
   if (isValid) {
     props.onValidated && props.onValidated(data)
   }
+
+  const handleAddSubmit = e => {
+
+    e.preventDefault();
+    props.form.validateFields( (err, values) => {
+      
+      console.log(values);
+      
+      if( !err ) {
+        setAddModalVisible(false);
+        const _values = {
+          inTime: values["date-picker-in"],
+          outTime: values["date-picker-out"],
+          note: values["notes"]
+        }
+        addRecord(_values);
+      }
+      
+    })
+  }
+
+  const onCancelAdd = () => 
+    setAddModalVisible(false);
+
+  const addRecord = ({inTime, outTime, note}) => {
+    
+    setAddModalVisible(false);
+
+    let addedPositions = data.reduce( (accu, current, index) => {
+      return {
+        key: Math.max(accu.key, parseInt(current.key)),
+        position: index
+     }      
+    },  {key:0,
+      position: 0})
+
+    const index = data.findIndex( item => 
+        item.key == recordToAdd.key
+      ) + 1     
+      
+    let newItem = {
+        ...recordToAdd,
+        key: addedPositions.key + 1,
+        isAdded: true,
+        notes: note,
+        entry: inTime.format(format),
+        exit: outTime.format(format)
+    }      
+
+    newItem.total = moment.utc(moment(newItem.exit, format).diff(moment(newItem.entry, format))).format(format)    
+
+    const newData = [
+      ...data.slice(0, index),
+      newItem,
+      ...data.slice(index)
+    ]    
+
+    setData(newData);
+  }
+
+  const handleRemoveRecord = (record) => {
+    
+    const index = data.findIndex( item => 
+      item.key == record.key
+    )    
+
+    const newData = [...data.slice(0, index), ...data.slice(index + 1)];
+    setData(newData);
+  }
   
   return (
-    <ReportContext.Provider value={props.form}>
-      <Table
-        {...props}
-        style={{ 
-                direction: 'rtl', 
-                heigth: '600px',
-                margin: '12px' 
-                }}
-        tableLayout='auto'
-        bordered={false}
-        components={components}
-        dataSource={data}
-        columns={columns}
-        rowClassName="editable-row"
-        pagination={false}
-        size="small"
-        tableLayout={undefined}
-      />
-    </ReportContext.Provider>
+      <>
+        <AddRecordModal 
+              visible={addModalVisible}
+              onCancel={onCancelAdd}
+              onAddRecord={addRecord}
+        />
+
+        <ReportContext.Provider value={props.form}>
+          <Table
+              {...props}
+              style={{ 
+                      direction: 'rtl', 
+                      heigth: '600px',
+                      margin: '12px' 
+                      }}
+              tableLayout='auto'
+              bordered={false}
+              components={components}
+              dataSource={data}
+              columns={columns}
+              rowClassName="editable-row"
+              pagination={false}
+              size="small"
+              tableLayout={undefined}
+            />
+        </ReportContext.Provider>
+    </>
   );
 }
 
-export default Form.create()(EditableTable)
+export default Form.create({
+  name: "report_table"
+})(EditableTable)
