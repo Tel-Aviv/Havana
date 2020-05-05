@@ -61,7 +61,12 @@ const Confirm = (props: Props) => {
 
             setLoadingData(true)
             try {
+
                 let url = `http://${dataContext.host}/me/employees/reports/${routeParams.reportId}`;
+                if( routeParams.reportId == 0 ) {
+                    url = `http://${dataContext.host}/me/reports/saved?savedReportGuid=${routeParams.saveReportId}`;
+                }
+                
                 const resp = await axios(url, {
                     withCredentials: true
                 }); 

@@ -180,7 +180,7 @@ const App = () => {
                                     <Home />
                                 }/>
                         <Route path='/confirmlist' component={ConfirmList} />
-                        <Route path='/confirm/:userid/:reportId/' component={Confirm}/>
+                        <Route path='/confirm/:userid/:reportId/:saveReportId' component={Confirm}/>
                         <Route path='/pdf' 
                                 render={ (props) => 
                                     <ReportPDF tableData={props} />
