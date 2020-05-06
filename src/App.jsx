@@ -160,8 +160,10 @@ const App = () => {
                             float: 'left',
                             display: displayNotifications
                         }}>
-                               <Badge count={notificationsCount} onClick={onApprovalClicked} 
-                                   className='ltr' >
+                            <Badge count={notificationsCount} onClick={onApprovalClicked} 
+                                   className='ltr' 
+                                   showZero
+                                   overflowCount={50}>
                                 <Tooltip title={t('notifications')}>
                                     <Icon type="bell" theme="outlined" 
                                         style={{

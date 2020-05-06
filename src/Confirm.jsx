@@ -15,6 +15,7 @@ const { Title } = Typography;
 
 import { Layout } from 'antd';
 const { Content } = Layout;
+import { Pie } from 'ant-design-pro/lib/Charts';        
 
 import { DataContext } from './DataContext';
 import TableReport from './components/Reports/TableReport';
@@ -140,6 +141,10 @@ const Confirm = (props: Props) => {
         setNote(evt.target.value)
     }
 
+    const getTotalHoursPercentage = () => {
+        return Math.floor( parseFloat(totals) / 160. * 100 );
+    }
+
     return (
         <Content>
             <Title className='hvn-title'>{title}</Title>
@@ -161,8 +166,9 @@ const Confirm = (props: Props) => {
                     <Row gutter={[40, 32]}>
                         <Col>
                             <Card title='סיכומים' bordered={false}
-                                className='rtl'>
+                                className='rtl' loading={loadingData}>
                                     <div>סה"כ { totals } שעות</div>
+                                    <Pie percent={getTotalHoursPercentage()} total={getTotalHoursPercentage() + '%'} height={140} />
                             </Card>                
                         </Col>
                     </Row>

@@ -42,6 +42,7 @@ const AddRecordModal = (props) => {
     return (
         <Modal visible={visible}
               closable={false}
+              className='rtl'
               footer={[]}>
             <Title className='rtl'
                 style={{

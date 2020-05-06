@@ -22,7 +22,7 @@ const { TabPane } = Tabs;
 
 import { Alert, Card, 
         Row, Col } from 'antd';
- import { ChartCard, Bar, WaterWave, Pie, Field } from 'ant-design-pro/lib/Charts';        
+import { Pie } from 'ant-design-pro/lib/Charts';        
 
 import ReactToPrint from 'react-to-print';
 
@@ -609,7 +609,7 @@ const Home = () => {
                 <Col span={5}>
                     <Row gutter={[40, 32]}>
                         <Col>
-                        <Card title='סיכומים' bordered={false}
+                            <Card title='סיכומים' bordered={false}
                                 className='rtl' loading={loadingData}>
                                 <div>סה"כ { totals } שעות</div>
                                 <Pie percent={getTotalHoursPercentage()} total={getTotalHoursPercentage() + '%'} height={140} />
