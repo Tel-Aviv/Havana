@@ -49,7 +49,8 @@ const translations = {
             "add_record": "Add record",
             "add_entry_error": "Entry time is mandatory",
             "add_exit_error": "Exit time is mandatory",            
-            "add_notes_error": "Please provide your notes"
+            "add_notes_error": "Please provide your notes",
+            "move_to": "Forward"
         }
     },
     he: {
@@ -102,7 +103,8 @@ const translations = {
             "add_record": "הוסף רשומה",
             "add_entry_error": "שכחת זמן כניסה?",
             "add_exit_error": "שכחת זמן יציאה?",            
-            "add_notes_error": "אנא ספק הערות"
+            "add_notes_error": "אנא ספק הערות",
+            "move_to": "העבר"
         }
     }
 }    
