@@ -291,18 +291,24 @@ const Home = () => {
                     }
                 }
 
-                //setLoadingData(false);
                 setReportId(reportId);
                 setReportData(data);
 
                 defineAlert(respArr[1].data);
 
-            } catch(err) {
-                console.error(err);
-                setAlertMessage(err.response.data);
+            } catch( error ) { // 😨
+
+                console.log(error.message);
+                
+                if (error.mesage) {
+                    setAlertMessage(error.mesage);
+                } else {
+                    setAlertMessage('Something went wrong')
+                }
+                
                 setAlertType('error');
                 setShowAlert(true);
-            }  finally {
+            } finally {
                 setLoadingData(false)
             }
 
