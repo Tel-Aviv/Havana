@@ -7,11 +7,17 @@ import { saveAs } from 'file-saver';
 
 import { DataContext } from "../DataContext";
 
-const DocsUploader = ({year, month, isOperational, employeeId}: 
-                        {year : number, month: number, isOperational: boolean, employeeId: string}) => {
+type Props = {
+    year : number, 
+    month: number, 
+    isOperational: boolean, 
+    employeeId: string
+}
+
+const DocsUploader = ({year, month, isOperational, employeeId}: Props) => {
 
     const [docs, setDocs] = useState([]);
-    const [_year, _setYear] = useState<number>(year);
+    const [_year, _setYear] = useState<number>( year);
     const [_month, _setMonth] = useState<number>(month);
 
     const dataContext = useContext(DataContext);
@@ -20,7 +26,7 @@ const DocsUploader = ({year, month, isOperational, employeeId}:
 
     useEffect( () => {
 
-        async function fetchData() {
+        const fetchData = async () => {            
 
             try {
                 const url = (isOperational) ?
@@ -42,6 +48,9 @@ const DocsUploader = ({year, month, isOperational, employeeId}:
                 console.error(err);
             }
         }
+
+        _setYear(year);
+        _setMonth(month);
 
         fetchData();
     }, [year, month])

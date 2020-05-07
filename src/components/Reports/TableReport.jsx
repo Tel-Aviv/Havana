@@ -1,6 +1,7 @@
 // @flow
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { ADD_ITEM } from '../../redux/actionTypes';
 import 'antd/dist/antd.css';
 import { Table, Popconfirm, Modal, Form, Icon, Button, 
         Tag, Row, Col } from 'antd';
@@ -22,6 +23,14 @@ const EditableTable = (props) => {
   const [data, setData] = useState([])
   const [originalData, setOriginalData] = useState([])
   const [editingKey, setEditingKey] = useState('')
+
+  const dispatch = useDispatch();
+
+  const action_ItemAdded = (item, index) => ({
+    type: ADD_ITEM,
+    addIndex: index,
+    addItem: item
+  });  
 
   // States for adding nee record
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false)
@@ -286,6 +295,10 @@ const EditableTable = (props) => {
     }      
 
     newItem.total = moment.utc(moment(newItem.exit, format).diff(moment(newItem.entry, format))).format(format)    
+
+    dispatch(
+      action_ItemAdded(newItem, index)
+    );  
 
     const newData = [
       ...data.slice(0, index),

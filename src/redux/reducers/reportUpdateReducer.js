@@ -1,8 +1,9 @@
-import { UPDATE_ITEM } from "../actionTypes";
+import { ADD_ITEM, UPDATE_ITEM } from "../actionTypes";
 
 const initialState = {
   updatedData: [],
-  lastUpdatedItem: null
+  addedData: null,
+  lastUpdatedItem: null,
 };
 
 export default function(state = initialState, action) {
@@ -16,6 +17,16 @@ export default function(state = initialState, action) {
                     action.item
                 ],
                 lastUpdatedItem: action.item
+            }
+        }
+
+        case ADD_ITEM: {
+            return {
+                ...state,
+                addedData: {
+                    index: action.addIndex,
+                    item: action.addItem
+                }
             }
         }
 

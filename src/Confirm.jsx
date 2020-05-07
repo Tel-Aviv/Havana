@@ -279,7 +279,7 @@ const Confirm = (props: Props) => {
                         onChange={onNotesChanged} />
                     <div style={{
                         marginTop: '8px'
-                    }}>הערות תשלחנה בדוא"ל לבעל הדוח רק מקרה של אישור</div>
+                    }}>הערות תשלחנה בדוא"ל לבעל הדוח רק במקרה של אישור</div>
                 </div>       
             </Modal>
         </Content>

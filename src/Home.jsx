@@ -161,6 +161,25 @@ const Home = () => {
         }
     }, [_updatedItem])
 
+    const _addedData= useSelector(
+        store => store.reportUpdateReducer.addedData
+    )
+
+    useEffect( () => {
+
+        if( _addedData ) {
+
+            const index = _addedData.index;
+
+            const newData = [
+                ...reportData.slice(0, index),
+                _addedData.item,
+                ...reportData.slice(index)
+            ];
+            setReportData(newData);
+        }
+    }, [_addedData])    
+
 
     useEffect( () => {
 
@@ -198,11 +217,23 @@ const Home = () => {
         async function fetchData() {
 
             try {
-                const resp = await axios(`http://${dataContext.host}/me/managers/`, {
+                let resp = await axios(`http://${dataContext.host}/me/managers/`, {
                     withCredentials: true
                 });
 
                 setManagers(resp.data);
+
+                resp = await axios(`http://${dataContext.host}/me/signature`, {
+                    withCredentials: true
+                });
+            
+                const signature = resp.data;
+                if( signature.startsWith('data:') ) {
+                    setSignature(signature);
+                }
+                else {    
+                    setSignature(`data:/image/*;base64,${signature}`);
+                }    
 
             } catch(err) {
                 console.error(err);
@@ -213,7 +244,7 @@ const Home = () => {
 
     useEffect( () => {
 
-        async function fetchData() {
+        const fetchData = async () => { 
 
             setReportDataValid( false );
             setLoadingData(true);
@@ -270,7 +301,7 @@ const Home = () => {
                 } else {
 
                     // The status of the report is unknown, i.e. get the original report    
-                    const resp = await axios(`http://${dataContext.host}/me/reports/?month=${month}&year=${year}`, {
+                    const resp = await axios(`http://${dataContext.host}/me/reports/${year}/${month}/`, {
                         withCredentials: true
                     }); 
 
@@ -312,23 +343,8 @@ const Home = () => {
                 setLoadingData(false)
             }
 
-            try {
-                const resp = await axios(`http://${dataContext.host}/me/signature`, {
-                    withCredentials: true
-                });
-            
-                const signature = resp.data;
-                if( signature.startsWith('data:') ) {
-                    setSignature(signature);
-                }
-                else {    
-                    setSignature(`data:/image/*;base64,${signature}`);
-                }                
-
-            } catch(err) {
-                console.error(err);
-            }
         }
+        
         fetchData()
     }, [month, year])
 
@@ -626,7 +642,9 @@ const Home = () => {
                         <Col>
                             <Card title={t('abs_docs')} bordered={true}
                                 className='rtl' loading={loadingData}>
-                                <div>ניתן להעלות רק קבצי PNG / PDF</div>
+                                <div style={{
+                                    marginBottom: '12px'
+                                }}>ניתן להעלות קבצי JPG/PNG/PDF</div>
                                 <DocsUploader year={year} month={month} 
                                               isOperational={true}/>
                             </Card>
