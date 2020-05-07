@@ -627,7 +627,7 @@ const Home = () => {
                             <Card title={t('abs_docs')} bordered={true}
                                 className='rtl' loading={loadingData}>
                                 <div>ניתן להעלות רק קבצי PNG / PDF</div>
-                                <DocsUploader reportId={reportId} 
+                                <DocsUploader year={year} month={month} 
                                               isOperational={true}/>
                             </Card>
                         </Col>

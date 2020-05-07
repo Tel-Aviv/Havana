@@ -123,10 +123,17 @@ const Confirm = (props: Props) => {
         try {
         
             const _note = note || '';
-            let url = `http://${dataContext.host}/me/forwardReport?reportId=${routeParams.reportId}&note=${_note}`;
-            const resp = await axios(url, {
-                withCredentials: true
-            })
+            if( reportId == 0 ) {
+                await axios( `http://${dataContext.host}/me/forwardSavedReport?savedReportGuid=${savedReportId}&note=${_note}`, {
+                    withCredentials: true
+                })
+
+            }
+            else {
+                await axios( `http://${dataContext.host}/me/forwardReport?reportId=${routeParams.reportId}&note=${_note}`, {
+                    withCredentials: true
+                })
+            }
 
             dispatch(action_decreaseNotificationCount());
 
@@ -255,7 +262,7 @@ const Confirm = (props: Props) => {
                                         direction: 'ltr'
                                     }}
                                      onClick={onApprove} >{t('approve')}</Button>,
-                            <Button key='forward'
+                            <Button key='forward' type="danger"
                                     style={{
                                         direction: 'ltr',
                                         marginRight: '8px'
@@ -272,7 +279,7 @@ const Confirm = (props: Props) => {
                         onChange={onNotesChanged} />
                     <div style={{
                         marginTop: '8px'
-                    }}>הערות תשלחנה בדוא"ל לבעל הדוח</div>
+                    }}>הערות תשלחנה בדוא"ל לבעל הדוח רק מקרה של אישור</div>
                 </div>       
             </Modal>
         </Content>
