@@ -260,6 +260,7 @@ const Confirm = (props: Props) => {
                             <Button key='cancel' onClick={onNotesModalClosed} style={{
                                 marginRight: '8px'
                             }}>{t('cancel')}</Button>,
+
                             <Button key='forward' type="primary"
                                     style={{
                                         direction: 'ltr',
