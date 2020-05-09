@@ -7,9 +7,9 @@ import uniqid from 'uniqid';
 
 import { useTranslation, Trans } from "react-i18next";
 
-import {  Divider, Tag, Button, Typography, 
-        Row, Col, Card, Modal } from 'antd';
-import { Input } from 'antd-rtl';
+import { Button, Typography, 
+        Row, Col, Card } from 'antd';
+import { Input, Modal } from 'antd-rtl';
 
 const { Title } = Typography;    
 
@@ -232,7 +232,7 @@ const Confirm = (props: Props) => {
                         <Col>
                             <Card title={t('abs_docs')} bordered={true}
                                 className='rtl'>
-                                <DocsUploader reportId={reportId} 
+                                <DocsUploader year={year} month={month} 
                                             employeeId={routeParams.userid}
                                             isOperational={false}/>
                             </Card>
@@ -257,19 +257,20 @@ const Confirm = (props: Props) => {
                     title={t('notes_for_report')}
                     footer={
                         [
-                            <Button key='approve' type="primary" 
-                                    style={{
-                                        direction: 'ltr'
-                                    }}
-                                     onClick={onApprove} >{t('approve')}</Button>,
+                            <Button key='cancel' onClick={onNotesModalClosed} style={{
+                                marginRight: '8px'
+                            }}>{t('cancel')}</Button>,
+
                             <Button key='forward' type="primary"
                                     style={{
                                         direction: 'ltr',
                                         marginRight: '8px'
                                     }} onClick={onForward}>{t('move_to')}</Button>,
-                            <Button key='cancel' onClick={onNotesModalClosed} style={{
-                                marginRight: '8px'
-                            }}>{t('cancel')}</Button>
+                            <Button key='approve' type="primary" 
+                                    style={{
+                                        direction: 'ltr'
+                                    }}
+                                     onClick={onApprove} >{t('approve')}</Button>                            
                         ]
                     }
                    >
