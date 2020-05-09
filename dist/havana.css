@@ -209,5 +209,19 @@ p {
   100% {right: 100%;}
 } 
 
+.ant-modal-title {
+  margin: 0 auto;
+  width: 20%;
+  
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 22px;
+  word-wrap: break-word;
+}  
+
+/* .ant-form-item-label {
+
+} */
 
 

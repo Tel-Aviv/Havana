@@ -31,7 +31,9 @@ const template = fs.readFileSync('./templates/index.html', "utf8")
 
 app.get('/hr', function(request, response, next) {
 
-        return ad.findUser( `${request.ntlm.UserName}@tlv.gov.il` , function(err, user) {
+        console.log(`Looking for ${request.ntlm.UserName}`);
+
+         return ad.findUser( `${request.ntlm.UserName}@tlv.gov.il` , function(err, user) {
             let rsp;
             if (err) {
                 console.error('ERROR: ' + JSON.stringify(err));
@@ -57,9 +59,10 @@ app.get('/hr', function(request, response, next) {
         });
 })
 
-app.use('/hr', express.static("./dist"))
+app.use(express.static('dist'))
 
-
-app.listen(3000);    
+const PORT = 3000;
+app.listen(PORT, () => console.log(`HR app listening at port ${PORT}`))
+ 
     
 

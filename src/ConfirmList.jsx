@@ -65,7 +65,7 @@ const ConfirmList = () => {
     }, [])
 
     const onRowClick = (record, index, event) => {
-        history.push(`/confirm/${record.userId}/${record.reportId}`);
+        history.push(`/confirm/${record.userId}/${record.reportId}/${record.saveReportId}`);
     }
 
     return(

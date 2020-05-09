@@ -3,6 +3,7 @@ const translations = {
         translation: {
             "Switch": "English",
             "cancel": "Cancel",
+            "sure": "Are you sure?",
             "title": "Hours Report",
             "home": "Home",
             "settings": "Settings",
@@ -43,13 +44,20 @@ const translations = {
             "close": "close",
             "invalid_items": "Invalid items",
             "validate_report": "Validate report",
-            "report_validated": "Report is valid"
+            "report_validated": "Report is valid",
+            "print_report": "Print Report",
+            "add_record": "Add record",
+            "add_entry_error": "Entry time is mandatory",
+            "add_exit_error": "Exit time is mandatory",            
+            "add_notes_error": "Please provide your notes",
+            "move_to": "Forward"
         }
     },
     he: {
         translation: {
             "Switch": "Hebrew",
             "cancel": "ביטול",
+            "sure": "האם ברצונך לבטל את השינויים?",
             "title": "דוח שעות",
             "home": "דף ראשי",
             "settings": "הגדרות אישיות",
@@ -90,7 +98,13 @@ const translations = {
             "close": "סגור",
             "invalid_items": "רשומות לא תקינות",
             "validate_report": "אמת נתונים",
-            "report_validated": "נתונים הדוח תקיניים"
+            "report_validated": "נתונים הדוח תקיניים",
+            "print_report": "הדפסת דוח",
+            "add_record": "הוסף רשומה",
+            "add_entry_error": "שכחת זמן כניסה?",
+            "add_exit_error": "שכחת זמן יציאה?",            
+            "add_notes_error": "אנא ספק הערות",
+            "move_to": "העבר"
         }
     }
 }    

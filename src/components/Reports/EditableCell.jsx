@@ -18,7 +18,7 @@ type State = {
 const EditableCell = (props) => {
 
     const getInput = () => ( props.inputType !== 'time') ?
-        <Input /> :
+        <Input size="small"/> :
         <CustomTimePicker />
 
     return <ReportContext.Consumer>

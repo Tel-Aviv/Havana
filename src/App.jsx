@@ -160,8 +160,10 @@ const App = () => {
                             float: 'left',
                             display: displayNotifications
                         }}>
-                               <Badge count={notificationsCount} onClick={onApprovalClicked} 
-                                   className='ltr' >
+                            <Badge count={notificationsCount} onClick={onApprovalClicked} 
+                                   className='ltr' 
+                                   showZero
+                                   overflowCount={50}>
                                 <Tooltip title={t('notifications')}>
                                     <Icon type="bell" theme="outlined" 
                                         style={{
@@ -180,7 +182,7 @@ const App = () => {
                                     <Home />
                                 }/>
                         <Route path='/confirmlist' component={ConfirmList} />
-                        <Route path='/confirm/:userid/:reportId/' component={Confirm}/>
+                        <Route path='/confirm/:userid/:reportId/:saveReportId' component={Confirm}/>
                         <Route path='/pdf' 
                                 render={ (props) => 
                                     <ReportPDF tableData={props} />

@@ -15,6 +15,7 @@ const { Title } = Typography;
 
 import { Layout } from 'antd';
 const { Content } = Layout;
+import { Pie } from 'ant-design-pro/lib/Charts';        
 
 import { DataContext } from './DataContext';
 import TableReport from './components/Reports/TableReport';
@@ -34,6 +35,7 @@ const Confirm = (props: Props) => {
     const [month, setMonth] = useState<number>(0);
     const [year, setYear] = useState<number>(0);
     const [reportId, setReportId] = useState<number>(0);
+    const [savedReportId, setSavedReportId] = useState<number>(0);
     const [totals, setTotals] = useState<number>(0);
     const [tableData, setTableData] = useState([])
     const [title, setTitle] = useState<string>('');
@@ -61,21 +63,42 @@ const Confirm = (props: Props) => {
 
             setLoadingData(true)
             try {
-                let url = `http://${dataContext.host}/me/employees/reports/${routeParams.reportId}`;
-                const resp = await axios(url, {
-                    withCredentials: true
-                }); 
-                let reportId = 0;
-                const data = resp.data.items.map( (item, index ) => {
+
+                let resp;
+                if( routeParams.reportId == 0 ) {
+
+                    resp = await axios(`http://${dataContext.host}/me/reports/saved?savedReportGuid=${routeParams.saveReportId}`, {
+                        withCredentials: true
+                    }); 
+                    setSavedReportId(routeParams.saveReportId);
+
+                    const data = resp.data.items.map( (item, index ) => {
+                        const _item = {...item, key: index};
+                        // if( reportId === 0 )
+                        //     reportId = item.reportId;
+                        return _item;
+                    })
+                    setTableData(data);
+                    setReportId(0);
+
+                } else {
+
+                    resp = await axios(`http://${dataContext.host}/me/employees/reports/${routeParams.reportId}`, {
+                        withCredentials: true
+                    }); 
+
+                    let reportId = 0;
+                    const data = resp.data.items.map( (item, index ) => {
                         const _item = {...item, key: index};
                         if( reportId === 0 )
                             reportId = item.reportId;
                         return _item;
-                })
+                    })
+                    setTableData(data);               
+                    setReportId(reportId);
+                }
 
-                setReportId(reportId);
                 setTotals(resp.data.totalHours);
-                setTableData(data)
                 setTitle(`דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
 
             } catch(err) {
@@ -96,6 +119,40 @@ const Confirm = (props: Props) => {
         setNotesModalVisible(true);
     }    
 
+    const onForward = async() => {
+        try {
+        
+            const _note = note || '';
+            if( reportId == 0 ) {
+                await axios( `http://${dataContext.host}/me/forwardSavedReport?savedReportGuid=${savedReportId}&note=${_note}`, {
+                    withCredentials: true
+                })
+
+            }
+            else {
+                await axios( `http://${dataContext.host}/me/forwardReport?reportId=${routeParams.reportId}&note=${_note}`, {
+                    withCredentials: true
+                })
+            }
+
+            dispatch(action_decreaseNotificationCount());
+
+        } catch(err) {
+            console.error(err)
+        } finally {
+
+            const timer = setTimeout(() => {
+                setApprovalSending(false);
+                setNotesModalVisible(false);
+
+                clearTimeout(timer);
+                
+                history.push(`/confirmlist`);
+            }, 2500);            
+        }
+
+    }
+
     const onApprove = async() => {
 
         try {
@@ -110,7 +167,12 @@ const Confirm = (props: Props) => {
                 history.push(`/confirmlist`);
             }, 2500);
 
-            const url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}?note=${note}`;
+            let url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}?note=${note}`;
+            if( reportId == 0 )
+            {
+                url = `http://${dataContext.host}/me/pendings/saved/${savedReportId}?note=${note}`
+            }
+
             await axios.patch(url, {html: ref.current.outerHTML}, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -135,12 +197,16 @@ const Confirm = (props: Props) => {
         setNote(evt.target.value)
     }
 
+    const getTotalHoursPercentage = () => {
+        return Math.floor( parseFloat(totals) / 160. * 100 );
+    }
+
     return (
         <Content>
             <Title className='hvn-title'>{title}</Title>
             <Row  className='hvn-item-ltr' align={'middle'} type='flex'>
                 <Col span={4} >
-                    <Button type="primary"
+                    <Button type="primary" loading={approvalSending}
                             style={{
                                 marginBottom: '8px'
                             }}   
@@ -156,8 +222,9 @@ const Confirm = (props: Props) => {
                     <Row gutter={[40, 32]}>
                         <Col>
                             <Card title='סיכומים' bordered={false}
-                                className='rtl'>
+                                className='rtl' loading={loadingData}>
                                     <div>סה"כ { totals } שעות</div>
+                                    <Pie percent={getTotalHoursPercentage()} total={getTotalHoursPercentage() + '%'} height={140} />
                             </Card>                
                         </Col>
                     </Row>
@@ -190,11 +257,16 @@ const Confirm = (props: Props) => {
                     title={t('notes_for_report')}
                     footer={
                         [
-                            <Button key='approve' type="primary" loading={approvalSending} 
+                            <Button key='approve' type="primary" 
                                     style={{
                                         direction: 'ltr'
                                     }}
                                      onClick={onApprove} >{t('approve')}</Button>,
+                            <Button key='forward' type="primary"
+                                    style={{
+                                        direction: 'ltr',
+                                        marginRight: '8px'
+                                    }} onClick={onForward}>{t('move_to')}</Button>,
                             <Button key='cancel' onClick={onNotesModalClosed} style={{
                                 marginRight: '8px'
                             }}>{t('cancel')}</Button>
@@ -207,7 +279,7 @@ const Confirm = (props: Props) => {
                         onChange={onNotesChanged} />
                     <div style={{
                         marginTop: '8px'
-                    }}>הערות תשלחנה בדוא"ל לבעל הדוח</div>
+                    }}>הערות תשלחנה בדוא"ל לבעל הדוח רק במקרה של אישור</div>
                 </div>       
             </Modal>
         </Content>

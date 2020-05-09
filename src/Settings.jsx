@@ -170,7 +170,7 @@ const Settings = () => {
                             { stamp? <img src={stamp}  className='avatar-uploader' onClick={e => dummyClick(e) }/>
                                     : uploadButton }
                         </Upload> 
-                        <Meta title="Uploaded" description="from www.instagram.com" />
+                        <Meta title="Uploaded" description="from local store" />
                     </Card>
                 </Col>
                 <Col span={8}>
@@ -190,9 +190,8 @@ const Settings = () => {
                 <Col span={8}>
                     <Card title={context.user.name}>
                         <Avatar size={64} src={`data:image/jpeg;base64,${context.user.imageData}`}/>
-                        <br /><br /><br />
-                        <Meta title="Interaction Expert" 
-                            description='No one can do this like you'/>
+                        {/* <Meta title="Interaction Expert" 
+                            description='No one can do this like you'/> */}
                     </Card>
                 </Col>
             </Row>

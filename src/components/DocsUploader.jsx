@@ -7,22 +7,31 @@ import { saveAs } from 'file-saver';
 
 import { DataContext } from "../DataContext";
 
-const DocsUploader = ({reportId, isOperational, employeeId}: 
-                        {reportId : number, isOperational: boolean, employeeId: string}) => {
+type Props = {
+    year : number, 
+    month: number, 
+    isOperational: boolean, 
+    employeeId: string
+}
+
+const DocsUploader = ({year, month, isOperational, employeeId}: Props) => {
 
     const [docs, setDocs] = useState([]);
+    const [_year, _setYear] = useState<number>( year);
+    const [_month, _setMonth] = useState<number>(month);
+
     const dataContext = useContext(DataContext);
 
     const { t } = useTranslation();
 
     useEffect( () => {
 
-        async function fetchData() {
+        const fetchData = async () => {            
 
             try {
                 const url = (isOperational) ?
-                    `http://${dataContext.host}/me/reports/${reportId}/docs/` :
-                    `http://${dataContext.host}/me/employees/${employeeId}/reports/${reportId}/docs`;
+                    `http://${dataContext.host}/me/reports/${_year}/${_month}/docs/` :
+                    `http://${dataContext.host}/me/employees/${employeeId}/reports/${_year}/${_month}/docs`;
                 const res = await axios(url, {
                     withCredentials: true
                 })
@@ -40,15 +49,17 @@ const DocsUploader = ({reportId, isOperational, employeeId}:
             }
         }
 
-        if( reportId != 0 )
-            fetchData();
-    }, [reportId])
+        _setYear(year);
+        _setMonth(month);
+
+        fetchData();
+    }, [year, month])
 
     const removeDoc = async(file) => {
 
         try {
             const docName = file.name;
-            await axios.delete(`http://${dataContext.host}/me/reports/${reportId}/docs?docName=${docName}`, {
+            await axios.delete(`http://${dataContext.host}/me/reports/${_year}/${_month}/docs?docName=${docName}`, {
                 withCredentials: true
             })
         } catch(err) {
@@ -75,8 +86,8 @@ const DocsUploader = ({reportId, isOperational, employeeId}:
         console.log(file);
         try {
             let url = (isOperational) ?
-                `http://${dataContext.host}/me/reports/${reportId}/doc?docName=${file.name}` :
-                `http://${dataContext.host}/me/employees/${employeeId}/reports/${reportId}/doc?docName=${file.name}`;
+                `http://${dataContext.host}/me/reports/${_year}/${_month}/doc?docName=${file.name}` :
+                `http://${dataContext.host}/me/employees/${employeeId}/reports/${_year}/${_month}/doc?docName=${file.name}`;
             let res = await axios(url, {
                 withCredentials: true,
             });
@@ -117,7 +128,7 @@ const DocsUploader = ({reportId, isOperational, employeeId}:
 
     const docsUploadProps = {
 
-        action: `http://${dataContext.host}/me/reports/${reportId}/docs/`,
+        action: `http://${dataContext.host}/me/reports/${_year}/${_month}/docs/`,
         onChange({ file, fileList }) {
             fileList = fileList.map(file => {
                   if (file.response) {
