@@ -30,7 +30,6 @@ import TableReport from './components/Reports/TableReport';
 import CalendarReport from './components/Reports/CalendarReport';
 import YearReport from './components/Reports/YearReport';
 import { DataContext } from "./DataContext";
-//import ReportPDF from './ReportPDF';
 import DocsUploader from './components/DocsUploader';
 
 import { UPDATE_ITEM } from "./redux/actionTypes"

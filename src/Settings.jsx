@@ -12,6 +12,12 @@ const { Title, Paragraph, Text } = Typography;
 
 import { DataContext } from './DataContext';
 
+// Only let to webpack to know which file to consider,
+// but you neither can access its rules or its styles.
+// So we refer to CSS-class names like compiled CSS-rule
+import style from './less/components/settings.less';
+
+
 const Settings = () => {
 
     const [signature, setSignature] = useState()
@@ -167,7 +173,7 @@ const Settings = () => {
                         <Icon type="delete" onClick={ e => removeStamp(e) }/>,
                     ]}>
                         <Upload {...uploadStampProps}>
-                            { stamp? <img src={stamp}  className='avatar-uploader' onClick={e => dummyClick(e) }/>
+                            { stamp? <img src={stamp}  className='avatarUploader' onClick={e => dummyClick(e) }/>
                                     : uploadButton }
                         </Upload> 
                         <Meta title="Uploaded" description="from local store" />
@@ -181,7 +187,7 @@ const Settings = () => {
                             <Icon type="delete" onClick={ e => removeSignature(e) }/>,
                         ]}>
                         <Upload {...uploadProps}>
-                            { signature?  <img src={signature} className='avatar-uploader' onClick={e => dummyClick(e) }/> 
+                            { signature?  <img src={signature} className='avatarUploader' onClick={e => dummyClick(e) }/> 
                                         : uploadButton }
                         </Upload>
                         <Meta title="Uploaded" description="from local store" />
