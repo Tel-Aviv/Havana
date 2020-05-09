@@ -333,7 +333,7 @@ const EditableTable = (props) => {
               style={{ 
                       direction: 'rtl', 
                       heigth: '600px',
-                      margin: '12px' 
+                      margin: '12px'
                       }}
               tableLayout='auto'
               bordered={false}

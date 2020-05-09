@@ -99,7 +99,7 @@ const Confirm = (props: Props) => {
                 }
 
                 setTotals(resp.data.totalHours);
-                setTitle(`דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
+                setTitle(`אישור דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
 
             } catch(err) {
                 console.error(err);
@@ -203,7 +203,7 @@ const Confirm = (props: Props) => {
 
     return (
         <Content>
-            <Title className='hvn-title'>{title}</Title>
+            <Title level={1} className='hvn-title'>{title}</Title>
             <Row  className='hvn-item-ltr' align={'middle'} type='flex'>
                 <Col span={4} >
                     <Button type="primary" loading={approvalSending}

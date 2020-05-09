@@ -112,17 +112,13 @@ const App = () => {
     return (
         <>
             <Helmet>
-                <title>{t('title')}</title>
-                <meta name="description" content={t('title')} />
-            </Helmet>        
-            <Layout> 
-            <Layout.Header className='rtl' style={{
-                backgroundColor: 'white',
-                padding: '0',
-                height: '60px',
-                boxShadow: 'rgba(0, 0, 0, 0.15) 0px 2px 8px 0px'
-            }}>                
-                <Menu mode="horizontal" style={{
+                <title>{t('product_name')}</title>
+                <meta name="description" content={t('product_name')} />
+            </Helmet> 
+            <Layout title={t('product_name')}layout='topmenu' 
+                    locale='he-IL'> 
+                <Layout.Header className='ant-layout-header rtl'>                
+                <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-dark' style={{
                     padding: '0 6%'
                 }}>  
                     <Menu.Item key='settings' style={{
@@ -174,7 +170,9 @@ const App = () => {
                     </Menu.Item> 
                 </Menu>                      
             </Layout.Header>
-            <Layout style={{ padding: '17px 24px 24px 24px' }}>
+            <Layout style={{ 
+                    padding: '17px 24px 24px 24px'
+                }}>
                 <DataContext.Provider value={context}>
                     <Switch>
                         <Route exact path='/'

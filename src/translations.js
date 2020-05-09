@@ -2,6 +2,7 @@ const translations = {
     en: {
         translation: {
             "Switch": "English",
+            "product_name": "Attendance system",
             "cancel": "Cancel",
             "sure": "Are you sure?",
             "title": "Hours Report",
@@ -56,6 +57,7 @@ const translations = {
     he: {
         translation: {
             "Switch": "Hebrew",
+            "product_name": "מערכת נוכחות",
             "cancel": "ביטול",
             "sure": "האם ברצונך לבטל את השינויים?",
             "title": "דוח שעות",
