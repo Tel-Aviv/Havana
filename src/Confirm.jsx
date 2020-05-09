@@ -262,7 +262,7 @@ const Confirm = (props: Props) => {
                                         direction: 'ltr'
                                     }}
                                      onClick={onApprove} >{t('approve')}</Button>,
-                            <Button key='forward' type="danger"
+                            <Button key='forward' type="primary"
                                     style={{
                                         direction: 'ltr',
                                         marginRight: '8px'

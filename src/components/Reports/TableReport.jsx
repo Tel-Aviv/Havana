@@ -149,7 +149,7 @@ const EditableTable = (props) => {
         editable: false,
       },    
       {
-        title: 'כניסה',
+        title: t('in'),
         dataIndex: 'entry',
         align: 'right',
         editable: true,
@@ -167,7 +167,7 @@ const EditableTable = (props) => {
         }          
       },
       {
-        title: 'יציאה',
+        title: t('out'),
         dataIndex: 'exit',
         align: 'right',
         editable: true,
@@ -191,7 +191,7 @@ const EditableTable = (props) => {
         editable: false,
       },
       {
-        title: 'הערות',
+        title: t('notes'),
         dataIndex: 'notes',
         align: 'right',
         editable: true,
