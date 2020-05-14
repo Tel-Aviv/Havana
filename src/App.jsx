@@ -50,6 +50,8 @@ const App = () => {
     const [month, setMonth] = useState(moment().month());
     const [year, setYear] = useState(moment().year());
     const [displayNotifications, setDisplayNotificatios] = useState(false);
+    const [notificationsCount, setNotificationsCount] = useState(0);
+
     const context = {
         user : getUserFromHtml(),
         host : getHost()
@@ -78,9 +80,15 @@ const App = () => {
         fetchData();
     }, [displayNotifications])
 
-    const notificationsCount = useSelector(
+    const _notificationsCount = useSelector(
         store => store.notificationsCountReducer.notificationsCount
     )
+
+    useEffect(() => {
+        if( _notificationsCount ) {
+            setNotificationsCount(_notificationsCount);
+        }
+    }, [_notificationsCount])
 
     const onMonthChange = (date, dateString) => {
         if( date ) {
@@ -156,7 +164,7 @@ const App = () => {
                             float: 'left',
                             display: displayNotifications
                         }}>
-                            <Badge count={notificationsCount} onClick={onApprovalClicked} 
+                            <Badge count={parseInt(notificationsCount)} onClick={onApprovalClicked} 
                                    className='ltr' 
                                    showZero
                                    overflowCount={50}>

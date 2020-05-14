@@ -126,7 +126,7 @@ const Home = () => {
 
         const itemDate = new Date();
         itemDate.setMonth(month-1);
-        itemDate.setYear(year);
+        itemDate.setFullYear(year);
         itemDate.setDate(item.day);
         
         const index = daysOff.find( dayOff => (
@@ -266,36 +266,34 @@ const Home = () => {
                 let reportId = 0;
                 
                 if( respArr[1].data ) {
+                    // The status was returned, i.e. there was an updates to the original report
 
                     const saveReportId = respArr[1].data.saveReportId;
-
-                    let _resp;
-
-                    // The status was returned, i.e. there was an updates to the original report
                     if( saveReportId ) {
 
                         // Interim report found. Actually the following call gets
                         // the merged report: saved changes over the original data
-                        _resp = await axios(`http://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
+                        const resp = await axios(`http://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
                             withCredentials: true
                         })  
+                        data = resp.data.items.map( (item, index ) => {
+                            const _item = {...item, key: index};
+                            return _item;
+                        })
+                        setTotals(resp.data.totalHours);
+
                         // Enable further saves
                         setIsReportEditable(true);
-                    }  else {
+                    }  
+                    // else {
   
-                        reportId = respArr[1].data.reportId;
-                        _resp = await axios(`http://${dataContext.host}/me/reports/${reportId}/updates`, {
-                            withCredentials: true
-                        });
-                        // Disable the changes to assigned report
-                        setIsReportEditable(false);
-                    } 
-
-                    data = _resp.data.items.map( (item, index ) => {
-                        const _item = {...item, key: index};
-                        return _item;
-                    })
-                    setTotals(_resp.data.totalHours);
+                    //     reportId = respArr[1].data.reportId;
+                    //     _resp = await axios(`http://${dataContext.host}/me/reports/${reportId}/updates`, {
+                    //         withCredentials: true
+                    //     });
+                    //     // Disable the changes to assigned report
+                    //     setIsReportEditable(false);
+                    // } 
 
                 } else {
 

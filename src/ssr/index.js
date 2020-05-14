@@ -32,8 +32,8 @@ const template = fs.readFileSync('./templates/index.html', "utf8")
 app.get('/hr', function(request, response, next) {
 
         console.log(`Looking for ${request.ntlm.UserName}`);
-
-         return ad.findUser( `${request.ntlm.UserName}@tlv.gov.il` , function(err, user) {
+        const userNameToFind =  request.ntlm.UserName.toUpperCase();
+        return ad.findUser( `${userNameToFind}` , function(err, user) {
             let rsp;
             if (err) {
                 console.error('ERROR: ' + JSON.stringify(err));
@@ -41,7 +41,7 @@ app.get('/hr', function(request, response, next) {
             }
             
             if (!user){ 
-                console.log('User: ' + request.ntlm.UserName + ' not found in AD');
+                console.log(`User ${request.ntlm.UserName} not found in AD`);
 
                 rsp = template.replace('{USER_NAME}', request.ntlm.UserName)
                         .replace('{USER_THUMBNAIL}', null)
@@ -49,6 +49,8 @@ app.get('/hr', function(request, response, next) {
                         .replace('{HOST}', process.env.HOST)
 
             } else {
+                console.log(`Serving user ${request.ntlm.UserName} (${user.cn})`);
+
                 //TODO this operation take to match time
                 rsp = template.replace('{USER_NAME}', user.cn)
                         .replace('{USER_THUMBNAIL}', user.thumbnailPhoto)
@@ -56,7 +58,7 @@ app.get('/hr', function(request, response, next) {
                         .replace('{HOST}', process.env.HOST)
             }   
             response.end(rsp)
-        });
+    });
 })
 
 app.use(express.static('dist'))
