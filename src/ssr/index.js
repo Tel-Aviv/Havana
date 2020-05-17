@@ -1,3 +1,10 @@
+const moment = require('moment');
+
+const argv = require('minimist')(process.argv.slice(2));
+let PORT = parseInt(argv['port'])
+if( isNaN(PORT) )
+    PORT = 3000;
+
 require('dotenv').config({ path: './src/ssr/.env' });
 const fs = require('fs'),
     express = require('express'),
@@ -49,7 +56,8 @@ app.get('/hr', function(request, response, next) {
                         .replace('{HOST}', process.env.HOST)
 
             } else {
-                console.log(`Serving user ${request.ntlm.UserName} (${user.cn})`);
+                const now =  moment()
+                console.log(`${now.format('DD-MM-YYYY HH:mm')} Serving user ${request.ntlm.UserName} (${user.cn})`);
 
                 //TODO this operation take to match time
                 rsp = template.replace('{USER_NAME}', user.cn)
@@ -63,7 +71,6 @@ app.get('/hr', function(request, response, next) {
 
 app.use(express.static('dist'))
 
-const PORT = 3000;
 app.listen(PORT, () => console.log(`HR app listening at port ${PORT}`))
  
     

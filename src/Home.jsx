@@ -662,7 +662,7 @@ const Home = () => {
                             <TableReport dataSource={reportData}
                                         daysOff={daysOff}
                                         loading={loadingData}
-                                        scroll={{y: '600px'}}
+                                        scroll={{y: '400px'}}
                                         onChange={( item ) => dispatch(action_updateItem(item)) } 
                                         editable={isReportEditable}>
                                 <Affix target={() => container}>

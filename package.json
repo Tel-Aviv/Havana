@@ -14,7 +14,7 @@
   "scripts": {
     "build": "webpack -d --watch",
     "prod": "webpack -p",
-    "start": "nodemon ./src/ssr/index.js -e jsx",
+    "start": "nodemon ./src/ssr/index.js --port 3000 -e jsx",
     "find_user": "node ./src/ssr/findUser.js", 
     "test": "jest"
   },
