@@ -124,15 +124,12 @@ const Home = () => {
 
     const isWorkingDay = (item) => {
 
-        const itemDate = new Date();
-        itemDate.setMonth(month-1);
-        itemDate.setFullYear(year);
-        itemDate.setDate(item.day);
+        const itemDate = moment(item.rdate);
         
         const index = daysOff.find( dayOff => (
-             dayOff.getDate() == itemDate.getDate()   
-             && dayOff.getMonth() == itemDate.getMonth()
-             && dayOff.getFullYear() == itemDate.getFullYear()
+             dayOff.getDate() == itemDate.date()   
+             && dayOff.getMonth() == itemDate.month()
+             && dayOff.getFullYear() == itemDate.year()
         ))
         if( index ) 
             return false;
@@ -663,6 +660,7 @@ const Home = () => {
                                 key="1">
                                   
                             <TableReport dataSource={reportData}
+                                        daysOff={daysOff}
                                         loading={loadingData}
                                         scroll={{y: '600px'}}
                                         onChange={( item ) => dispatch(action_updateItem(item)) } 
