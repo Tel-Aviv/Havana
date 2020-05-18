@@ -52,8 +52,9 @@ const AddRecordModal = (props) => {
             </Title> 
 
             <Form layout="vertical"
+                    size='small'
                     onSubmit={_onSubmit}>
-                <Form.Item label={t('in')} labelAlign="right">
+                <Form.Item label={t('in')}>
                 {getFieldDecorator('date-picker-in', {
                     rules: [{ 
                             type: 'object', 
@@ -64,7 +65,7 @@ const AddRecordModal = (props) => {
                     <CustomTimePicker />
                 )}
                 </Form.Item>
-                <Form.Item label={t('out')} labelAlign="right">
+                <Form.Item label={t('out')}>
                     {getFieldDecorator('date-picker-out', {
                         rules: [{ 
                                 type: 'object', 
@@ -85,14 +86,14 @@ const AddRecordModal = (props) => {
                 <Form.Item>
                     <Row>
                         <Col offset={12} span={6}>
-                        <Button type="primary" htmlType="submit">
-                            {t('add_record')}
-                        </Button>
-                        </Col>
+                            <Button onClick={onCancel}>
+                                {t('cancel')}
+                            </Button>
+                        </Col>    
                         <Col span={6}>
-                        <Button onClick={onCancel}>
-                            {t('cancel')}
-                        </Button>
+                            <Button type="primary" htmlType="submit">
+                                {t('add_record')}
+                            </Button>
                         </Col>
                     </Row>
                 </Form.Item>                 

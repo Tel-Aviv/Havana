@@ -122,6 +122,7 @@ const App = () => {
             <Helmet>
                 <title>{t('product_name')}</title>
                 <meta name="description" content={t('product_name')} />
+                <style>{'body { background-color: rgb(240, 242, 245) !important; }'}</style>
             </Helmet> 
             <Layout title={t('product_name')}layout='topmenu' 
                     locale='he-IL'> 

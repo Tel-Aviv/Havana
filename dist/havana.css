@@ -9,7 +9,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgb(240, 242, 245) !important   */
-  /* background-color: black !important */
+  background-color: black !important
 } 
 
 .cbox {
@@ -118,6 +118,10 @@ body {
 
 /* Redefeinition from antd */
 
+.ant-form-item-label {
+    display: flex !important;
+}
+
 .ant-popover-message-title {
   padding-left: 22px;
   direction: rtl;
@@ -141,6 +145,7 @@ body {
   left: 0;
   background: #fff;
   border-radius: 30%;
+  animation: move 5s infinite;
   -webkit-animation: move 5s infinite;
 }
 
@@ -154,7 +159,7 @@ p {
   font-weight: bold;
 }
 
-@-webkit-keyframes move {
+@keyframes move {
   0% {left: 0;}
   50% {left: 100%; -webkit-transform: rotate(450deg); width: 150px; height: 150px;}
   75% {left: 100%; -webkit-transform: rotate(450deg); width: 150px; height: 150px;}
@@ -180,26 +185,3 @@ p {
   border-radius: 0 0 4px 4px;
   direction: ltr;
 }
-
-/* 
-  AntD Pro 
-} */
-
-/* .ant-layout-header {
-  height: 64px;
-  padding: 0 50px;
-  color: rgba(0,0,0,.65);
-  line-height: 64px;
-  background: #001529;
-  background-image: initial;
-  background-position-x: initial;
-  background-position-y: initial;
-  background-size: initial;
-  background-repeat-x: initial;
-  background-repeat-y: initial;
-  background-attachment: initial;
-  background-origin: initial;
-  background-clip: initial;
-  background-color: rgb(0, 21, 41);
-} */
-
