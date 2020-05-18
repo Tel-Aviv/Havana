@@ -1,7 +1,7 @@
 // @flow
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { ADD_ITEM } from '../../redux/actionTypes';
+import { ADD_ITEM, DELETE_ITEM } from '../../redux/actionTypes';
 import 'antd/dist/antd.css';
 import { Table, Popconfirm, Modal, Form, Icon, Button, 
         Tag, Row, Col } from 'antd';
@@ -32,6 +32,12 @@ const EditableTable = (props) => {
     addIndex: index,
     addItem: item
   });  
+
+  const action_ItemDeleted = (item, index) => ({
+    type: DELETE_ITEM,
+    deleteIndex: index,
+    deletedItem: item
+  })
 
   // States for adding nee record
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false)
@@ -105,7 +111,7 @@ const EditableTable = (props) => {
           exit:  (row.exit) ? row.exit.format(format) : item.exit, 
         }
         newItem.total = moment.utc(moment(newItem.exit, format).diff(moment(newItem.entry, format))).format(format)
-        newItem.valid = true,
+        newItem.valid = true;
         
         newData.splice(index, 1, newItem);
         props.onChange && props.onChange(newItem);
@@ -334,6 +340,11 @@ const EditableTable = (props) => {
     const index = data.findIndex( item => 
       item.key == record.key
     )    
+
+    const deletedItem = data[index];
+    dispatch(
+      action_ItemDeleted(deletedItem, index)
+    );  
 
     const newData = [...data.slice(0, index), ...data.slice(index + 1)];
     setData(newData);

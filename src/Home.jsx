@@ -177,6 +177,20 @@ const Home = () => {
     }, [_addedData])    
 
 
+    const _deletedData = useSelector(
+        store => store.reportUpdateReducer.deletedData
+    )
+
+    useEffect( () => {
+
+        if( _deletedData ) {
+            const index = _deletedData.index;
+            const newData = [...reportData.slice(0, index), ...reportData.slice(index + 1)];
+            setReportData(newData);
+        }
+
+    }, [_deletedData]);
+
     useEffect( () => {
 
         if( _calendarDate ) {
