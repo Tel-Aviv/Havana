@@ -44,10 +44,11 @@ const AddRecordModal = (props) => {
               closable={false}
               className='rtl'
               footer={[
-                <Button onClick={onCancel}>
+                <Button key='cancel' onClick={onCancel}>
                     {t('cancel')}
                 </Button>,
-                <Button type="primary" htmlType="submit">
+                <Button key='submit' onClick={_onSubmit} 
+                        type="primary" htmlType="submit">
                     {t('add_record')}
                 </Button>
               ]}>
