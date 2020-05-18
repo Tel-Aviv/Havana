@@ -127,11 +127,11 @@ const App = () => {
             <Layout title={t('product_name')}layout='topmenu' 
                     locale='he-IL'> 
                 <Layout.Header className='ant-layout-header rtl'>                
-                <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-dark' style={{
+                <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-blue' style={{
                     padding: '0 6%'
                 }}>  
                     <Menu.Item key='settings' style={{
-                            top: '12px'
+                            top: '6px'
                         }}>
                             <Tooltip title={t('settings')}>
                                 <div onClick={goSettings}>
@@ -148,7 +148,7 @@ const App = () => {
                     </Menu.Item>
                     <Menu.Item key='home' style={{
                         float: 'left',
-                        marginTop: '12px'
+                        marginTop: '8px'
                         }}>
                         <Tooltip title={t('home')}>
                             <Icon type="home" 

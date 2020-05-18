@@ -20,10 +20,11 @@ import style from './less/components/settings.less';
 
 const Settings = () => {
 
-    const [signature, setSignature] = useState()
+    const [userName, setUserName] = useState();
+    const [signature, setSignature] = useState();
     const [stamp, setStamp] = useState();
-    const [loading, setLoading] = useState()
-    const context = useContext(DataContext)
+    const [loading, setLoading] = useState();
+    const context = useContext(DataContext);
 
     const { t } = useTranslation();
 
@@ -31,27 +32,32 @@ const Settings = () => {
 
         async function fetchData() {
 
-            let resp = await axios(`http://${context.host}/me/signature`,{
-                withCredentials: true
-            });
-            const signature = resp.data;
-            if( signature.startsWith('data:') ) {
-                setSignature(signature);
-            }
-            else {    
-                setSignature(`data:/image/*;base64,${signature}`);
-            }
+            try {
 
-            resp = await axios(`http://${context.host}/me/stamp`, {
-                withCredentials: true
-            })
-            const stamp = resp.data;
-            if( stamp.startsWith('data:') ) {
-                setStamp(stamp)
-            } else {
-                setStamp(`data:/image/*;base64,${stamp}`);
+                const resp = axios.all([
+                    axios(`http://${context.host}/me/signature`,{ withCredentials: true} ),
+                    axios(`http://${context.host}/me/stamp`, { withCredentials: true  } ),
+                    axios(`http://${context.host}/me`, { withCredentials: true })
+                ])
+
+                const signature = reps[0].data;
+                if( signature.startsWith('data:') ) {
+                    setSignature(signature);
+                }
+                else {    
+                    setSignature(`data:/image/*;base64,${signature}`);
+                }
+                const stamp = resp[1].data;
+                if( stamp.startsWith('data:') ) {
+                    setStamp(stamp)
+                } else {
+                    setStamp(`data:/image/*;base64,${stamp}`);
+                }
+
+                setUserName(resp[2].data.userName)
+            } catch( err ) {
+                console.log(err)
             }
-            
         }
 
         fetchData()
@@ -163,8 +169,15 @@ const Settings = () => {
 
     return (
         <div className='hvn-item-rtl'>
-            <Title level={2}>{t('setting_title')}</Title>
-            <Row gutter={[16, 16]}>
+            
+            <Row style={{
+                    margin: '0% 4%' 
+                }}>
+                <Title level={2}>{t('setting_title')}</Title>
+            </Row>
+            <Row gutter={[32, 32]} style={{
+                    margin: '0% 2%' 
+                }}>
                 <Col span={8}>
                     <Card title={t('stamp')}
                     actions={[
@@ -195,9 +208,15 @@ const Settings = () => {
                 </Col>
                 <Col span={8}>
                     <Card title={context.user.name}>
-                        <Avatar size={64} src={`data:image/jpeg;base64,${context.user.imageData}`}/>
-                        {/* <Meta title="Interaction Expert" 
-                            description='No one can do this like you'/> */}
+                        <Row>
+                            <Col span={18}>
+                                <Meta title={userName}
+                                    description='Not you? Sign out'/>
+                            </Col>
+                            <Col span={6}>
+                                <Avatar size={64} src={`data:image/jpeg;base64,${context.user.imageData}`}/>
+                            </Col>
+                        </Row>    
                     </Card>
                 </Col>
             </Row>

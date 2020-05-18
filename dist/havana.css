@@ -122,6 +122,28 @@ body {
     display: flex !important;
 }
 
+.ant-menu-blue {
+  color: white !important;
+  background:  rgb(24, 144, 255) !important;
+}
+
+.ant-menu-item-active
+{
+  color: white !important;
+}
+
+.ant-menu-item-selected {
+  color: white !important;
+  border-bottom: 2px solid transparent !important;
+}
+
+.ant-layout-header {
+  height: 56px !important;
+  padding: 0 50px;
+  line-height: 64px;
+  background: rgb(24, 144, 255) !important;
+}
+
 .ant-popover-message-title {
   padding-left: 22px;
   direction: rtl;
