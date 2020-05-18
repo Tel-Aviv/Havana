@@ -21,6 +21,7 @@ const EditableTable = (props) => {
   const { getFieldDecorator, getFieldError, isFieldTouched } = props.form;
 
   const [data, setData] = useState([])
+  const [daysOff, setDaysOff] = useState([]);
   const [originalData, setOriginalData] = useState([])
   const [editingKey, setEditingKey] = useState('')
 
@@ -51,13 +52,32 @@ const EditableTable = (props) => {
     )
   }, [props.dataSource])
 
+  useEffect(() => {
+    setDaysOff(props.daysOff);
+  },[props.daysOff])
+
   const isRowEditing = record => {
     return record.key === editingKey
   }
 
+  const isWorkingDay = (item) => {
+
+    const itemDate = moment(item.rdate);
+
+    const index = daysOff.find( dayOff => (
+         dayOff.getDate() == itemDate.date()
+         && dayOff.getMonth() == itemDate.month()
+         && dayOff.getFullYear() == itemDate.year()
+    ))
+    if( index ) 
+        return false;
+    else
+        return !(item.dayOfWeek === 'ש' || item.dayOfWeek === 'ו');
+  }
+
   const isRowEditable = record => {
-    return props.editable 
-            //&&  record.notes !== ''
+    return props.editable && isWorkingDay(record);
+          //&&  record.notes !== ''
   }
 
   const edit = (key) => {

@@ -124,15 +124,12 @@ const Home = () => {
 
     const isWorkingDay = (item) => {
 
-        const itemDate = new Date();
-        itemDate.setMonth(month-1);
-        itemDate.setYear(year);
-        itemDate.setDate(item.day);
+        const itemDate = moment(item.rdate);
         
         const index = daysOff.find( dayOff => (
-             dayOff.getDate() == itemDate.getDate()   
-             && dayOff.getMonth() == itemDate.getMonth()
-             && dayOff.getFullYear() == itemDate.getFullYear()
+             dayOff.getDate() == itemDate.date()   
+             && dayOff.getMonth() == itemDate.month()
+             && dayOff.getFullYear() == itemDate.year()
         ))
         if( index ) 
             return false;
@@ -266,36 +263,34 @@ const Home = () => {
                 let reportId = 0;
                 
                 if( respArr[1].data ) {
+                    // The status was returned, i.e. there was an updates to the original report
 
                     const saveReportId = respArr[1].data.saveReportId;
-
-                    let _resp;
-
-                    // The status was returned, i.e. there was an updates to the original report
                     if( saveReportId ) {
 
                         // Interim report found. Actually the following call gets
                         // the merged report: saved changes over the original data
-                        _resp = await axios(`http://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
+                        const resp = await axios(`http://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
                             withCredentials: true
                         })  
+                        data = resp.data.items.map( (item, index ) => {
+                            const _item = {...item, key: index};
+                            return _item;
+                        })
+                        setTotals(resp.data.totalHours);
+
                         // Enable further saves
                         setIsReportEditable(true);
-                    }  else {
+                    }  
+                    // else {
   
-                        reportId = respArr[1].data.reportId;
-                        _resp = await axios(`http://${dataContext.host}/me/reports/${reportId}/updates`, {
-                            withCredentials: true
-                        });
-                        // Disable the changes to assigned report
-                        setIsReportEditable(false);
-                    } 
-
-                    data = _resp.data.items.map( (item, index ) => {
-                        const _item = {...item, key: index};
-                        return _item;
-                    })
-                    setTotals(_resp.data.totalHours);
+                    //     reportId = respArr[1].data.reportId;
+                    //     _resp = await axios(`http://${dataContext.host}/me/reports/${reportId}/updates`, {
+                    //         withCredentials: true
+                    //     });
+                    //     // Disable the changes to assigned report
+                    //     setIsReportEditable(false);
+                    // } 
 
                 } else {
 
@@ -665,8 +660,9 @@ const Home = () => {
                                 key="1">
                                   
                             <TableReport dataSource={reportData}
+                                        daysOff={daysOff}
                                         loading={loadingData}
-                                        scroll={{y: '600px'}}
+                                        scroll={{y: '400px'}}
                                         onChange={( item ) => dispatch(action_updateItem(item)) } 
                                         editable={isReportEditable}>
                                 <Affix target={() => container}>

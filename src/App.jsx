@@ -50,6 +50,8 @@ const App = () => {
     const [month, setMonth] = useState(moment().month());
     const [year, setYear] = useState(moment().year());
     const [displayNotifications, setDisplayNotificatios] = useState(false);
+    const [notificationsCount, setNotificationsCount] = useState(0);
+
     const context = {
         user : getUserFromHtml(),
         host : getHost()
@@ -78,9 +80,15 @@ const App = () => {
         fetchData();
     }, [displayNotifications])
 
-    const notificationsCount = useSelector(
+    const _notificationsCount = useSelector(
         store => store.notificationsCountReducer.notificationsCount
     )
+
+    useEffect(() => {
+        if( _notificationsCount ) {
+            setNotificationsCount(_notificationsCount);
+        }
+    }, [_notificationsCount])
 
     const onMonthChange = (date, dateString) => {
         if( date ) {
@@ -114,15 +122,16 @@ const App = () => {
             <Helmet>
                 <title>{t('product_name')}</title>
                 <meta name="description" content={t('product_name')} />
+                <style>{'body { background-color: rgb(240, 242, 245) !important; }'}</style>
             </Helmet> 
             <Layout title={t('product_name')}layout='topmenu' 
                     locale='he-IL'> 
                 <Layout.Header className='ant-layout-header rtl'>                
-                <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-dark' style={{
+                <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-blue' style={{
                     padding: '0 6%'
                 }}>  
                     <Menu.Item key='settings' style={{
-                            top: '12px'
+                            top: '6px'
                         }}>
                             <Tooltip title={t('settings')}>
                                 <div onClick={goSettings}>
@@ -139,7 +148,7 @@ const App = () => {
                     </Menu.Item>
                     <Menu.Item key='home' style={{
                         float: 'left',
-                        marginTop: '12px'
+                        marginTop: '8px'
                         }}>
                         <Tooltip title={t('home')}>
                             <Icon type="home" 
@@ -156,7 +165,7 @@ const App = () => {
                             float: 'left',
                             display: displayNotifications
                         }}>
-                            <Badge count={notificationsCount} onClick={onApprovalClicked} 
+                            <Badge count={parseInt(notificationsCount)} onClick={onApprovalClicked} 
                                    className='ltr' 
                                    showZero
                                    overflowCount={50}>

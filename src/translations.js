@@ -102,7 +102,7 @@ const translations = {
             "validate_report": "אמת נתונים",
             "report_validated": "נתונים הדוח תקיניים",
             "print_report": "הדפסת דוח",
-            "add_record": "הוסף רשומה",
+            "add_record": "הוספת רשומה",
             "add_entry_error": "שכחת זמן כניסה?",
             "add_exit_error": "שכחת זמן יציאה?",            
             "add_notes_error": "אנא ספק הערות",

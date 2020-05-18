@@ -43,7 +43,15 @@ const AddRecordModal = (props) => {
         <Modal visible={visible}
               closable={false}
               className='rtl'
-              footer={[]}>
+              footer={[
+                <Button key='cancel' onClick={onCancel}>
+                    {t('cancel')}
+                </Button>,
+                <Button key='submit' onClick={_onSubmit} 
+                        type="primary" htmlType="submit">
+                    {t('add_record')}
+                </Button>
+              ]}>
             <Title className='rtl'
                 style={{
                     marginTop: '12px'
@@ -52,8 +60,9 @@ const AddRecordModal = (props) => {
             </Title> 
 
             <Form layout="vertical"
+                    size='small'
                     onSubmit={_onSubmit}>
-                <Form.Item label={t('in')} labelAlign="right">
+                <Form.Item label={t('in')}>
                 {getFieldDecorator('date-picker-in', {
                     rules: [{ 
                             type: 'object', 
@@ -64,7 +73,7 @@ const AddRecordModal = (props) => {
                     <CustomTimePicker />
                 )}
                 </Form.Item>
-                <Form.Item label={t('out')} labelAlign="right">
+                <Form.Item label={t('out')}>
                     {getFieldDecorator('date-picker-out', {
                         rules: [{ 
                                 type: 'object', 
@@ -82,20 +91,6 @@ const AddRecordModal = (props) => {
                         <Input />,
                     )}
                 </Form.Item>                
-                <Form.Item>
-                    <Row>
-                        <Col offset={12} span={6}>
-                        <Button type="primary" htmlType="submit">
-                            {t('add_record')}
-                        </Button>
-                        </Col>
-                        <Col span={6}>
-                        <Button onClick={onCancel}>
-                            {t('cancel')}
-                        </Button>
-                        </Col>
-                    </Row>
-                </Form.Item>                 
             </Form>
         </Modal>        
     )
