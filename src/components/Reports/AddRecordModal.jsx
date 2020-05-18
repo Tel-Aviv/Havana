@@ -43,7 +43,14 @@ const AddRecordModal = (props) => {
         <Modal visible={visible}
               closable={false}
               className='rtl'
-              footer={[]}>
+              footer={[
+                <Button onClick={onCancel}>
+                    {t('cancel')}
+                </Button>,
+                <Button type="primary" htmlType="submit">
+                    {t('add_record')}
+                </Button>
+              ]}>
             <Title className='rtl'
                 style={{
                     marginTop: '12px'
@@ -83,20 +90,6 @@ const AddRecordModal = (props) => {
                         <Input />,
                     )}
                 </Form.Item>                
-                <Form.Item>
-                    <Row>
-                        <Col offset={12} span={6}>
-                            <Button onClick={onCancel}>
-                                {t('cancel')}
-                            </Button>
-                        </Col>    
-                        <Col span={6}>
-                            <Button type="primary" htmlType="submit">
-                                {t('add_record')}
-                            </Button>
-                        </Col>
-                    </Row>
-                </Form.Item>                 
             </Form>
         </Modal>        
     )
