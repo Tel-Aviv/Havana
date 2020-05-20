@@ -13,6 +13,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack -d --watch",
+    "dist": "xcopy /Y .\\dist\\* C:\\Dev\\Havana\\PS\\PS",
     "prod": "webpack -p",
     "start": "nodemon ./src/ssr/index.js --port 3000 -e jsx",
     "find_user": "node ./src/ssr/findUser.js",

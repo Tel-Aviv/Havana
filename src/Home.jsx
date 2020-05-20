@@ -264,7 +264,9 @@ const Home = () => {
                 let data = [];
 
                 let respArr = await axios.all([
-                    axios(`http://${dataContext.host}/daysoff?year=${year}&month=${month}`),
+                    axios(`http://${dataContext.host}/daysoff?year=${year}&month=${month}`, {
+                        withCredentials: true
+                    }),
                     axios(`http://${dataContext.host}/me/reports/status?month=${month}&year=${year}`, {
                                     withCredentials: true
                     })
