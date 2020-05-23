@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { ADD_ITEM, DELETE_ITEM } from '../../redux/actionTypes';
 import 'antd/dist/antd.css';
 import { Table, Popconfirm, Modal, Form, Icon, Button, 
-        Tag, Row, Col } from 'antd';
+        Tag, Row, Col, Tooltip } from 'antd';
 var moment = require('moment');
 import { useTranslation } from "react-i18next";
 
@@ -155,14 +155,16 @@ const EditableTable = (props) => {
       title: '',
       dataIndex: 'add',
       align: 'center',
-      width: '5%',
+      width: '6%',
       editable: false,
       render: (text, record) => 
         props.editable? (
           <Row>
             <Col span={12}>
-              <Icon type="plus-circle" theme="twoTone" 
-                    onClick={() => handleAddRow(record)}/>
+              <Tooltip title={t('add_record')}>
+                <Icon type="plus-circle" theme="twoTone" 
+                      onClick={() => handleAddRow(record)}/>
+              </Tooltip>      
             </Col>
             <Col span={12}>
             {
@@ -180,6 +182,7 @@ const EditableTable = (props) => {
     },
       {
         title: 'יום',
+        width: '4%',
         dataIndex: 'day',
         align: 'right',
         ellipsis: true,
@@ -187,13 +190,15 @@ const EditableTable = (props) => {
       },
       {
         title: 'יום בשבוע',
+        width: '10%',
         dataIndex: 'dayOfWeek',
-        align: 'right',
+        align: 'center',
         ellipsis: true,
         editable: false,
       },    
       {
         title: t('in'),
+        width: '15%',
         dataIndex: 'entry',
         align: 'right',
         editable: true,
@@ -212,6 +217,7 @@ const EditableTable = (props) => {
       },
       {
         title: t('out'),
+        width: '15%',
         dataIndex: 'exit',
         align: 'right',
         editable: true,
@@ -230,6 +236,7 @@ const EditableTable = (props) => {
       },
       {
         title: 'סיכום',
+        width: '15%',
         dataIndex: 'total',
         align: 'right',
         editable: false,
@@ -251,6 +258,7 @@ const EditableTable = (props) => {
       },
       {
         title: '',
+        width: '12%',
         dataIndex: 'operation',
         render: (text, record) => 
            (record.requireChange)? 

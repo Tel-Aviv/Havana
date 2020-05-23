@@ -124,7 +124,7 @@ const App = () => {
                 <meta name="description" content={t('product_name')} />
                 <style>{'body { background-color: rgb(240, 242, 245) !important; }'}</style>
             </Helmet> 
-            <Layout title={t('product_name')}layout='topmenu' 
+            <Layout layout='topmenu' 
                     locale='he-IL'> 
                 <Layout.Header className='ant-layout-header rtl'>                
                 <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-blue' style={{

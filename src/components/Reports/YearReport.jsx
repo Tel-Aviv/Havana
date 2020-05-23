@@ -70,7 +70,7 @@ const YearReport = (props: Props) => {
                 <Chart width={600} height={400} data={reportData} scale={scale} forceFit={true}>
                     <Axis name="חודשים" title/>
                     <Axis name="שעות" title/>
-                    <Legend position="top" dy={-20} />
+                    {/* <Legend position="top" dy={-20} /> */}
                     <Tooltip />
                     <Geom type="interval" position="month*hours" color="month" />
                 </Chart>
