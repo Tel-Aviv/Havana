@@ -613,10 +613,10 @@ const Home = () => {
                 </Row>
             </Modal>
             <Row className='hvn-item-ltr' align={'middle'} type='flex'>
-                <Col span={8} >
+                <Col span={10} >
                     {operations}
                 </Col>
-                <Col span={2} offset={14}>
+                <Col span={3} offset={11}>
                     <MonthPicker onChange={onMonthChange}
                                             disabledDate={disabledDate}
                                             className='ltr'
