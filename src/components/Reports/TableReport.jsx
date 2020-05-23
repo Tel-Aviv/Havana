@@ -380,6 +380,7 @@ const EditableTable = (props) => {
       <>
         <AddRecordModal 
               visible={addModalVisible}
+              record = {recordToAdd}
               onCancel={onCancelAdd}
               onAddRecord={addRecord}
         />

@@ -66,11 +66,15 @@ const AddRecordModal = (props) => {
                     {t('add_record')}
                 </Button>
               ]}>
-            <Title className='rtl'
+            <Title level={3} className='rtl'
                 style={{
                     marginTop: '12px'
                 }}>
-                {t('add_record')}
+                {t('add_record')}{ t('to_day')} 
+                { 
+                    props.record ?  
+                    props.record.rdate : null
+                }
             </Title> 
 
             <Form layout="vertical"

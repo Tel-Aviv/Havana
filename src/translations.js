@@ -3,6 +3,7 @@ const translations = {
         translation: {
             "Switch": "English",
             "product_name": "Attendance system",
+            "to": " to day ",
             "cancel": "Cancel",
             "sure": "Are you sure?",
             "title": "Hours Report",
@@ -60,6 +61,7 @@ const translations = {
         translation: {
             "Switch": "Hebrew",
             "product_name": "מערכת נוכחות",
+            "to_day": " ליום ",
             "cancel": "ביטול",
             "sure": "האם ברצונך לבטל את השינויים?",
             "title": "דוח שעות",
