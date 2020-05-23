@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import moment from 'moment';
 import { Popconfirm, Modal, Form, Icon, Button, 
     Typography , Input, Row, Col } from 'antd';
 const { Title } = Typography;    
@@ -20,6 +21,19 @@ const AddRecordModal = (props) => {
     const _onSubmit = e => {
 
         e.preventDefault();
+
+        const fieldsValue = props.form.getFieldsValue();
+        console.log(fieldsValue);
+        if( moment(fieldsValue.entryTime).format("HH:mm") >= moment(fieldsValue.exitTime).format("HH:mm") ) {
+            props.form.setFields({
+                entryTime: {
+                value: fieldsValue.entryTime,
+                errors: [new Error(t('exit_before_entry'))],
+              },
+            });
+            return;
+        }
+
         props.form.validateFields( (err, values) => {
 
             if (err) {
@@ -29,8 +43,8 @@ const AddRecordModal = (props) => {
             console.log(values);    
             
             const _values = {
-                inTime: values["date-picker-in"],
-                outTime: values["date-picker-out"],
+                inTime: values["entryTime"],
+                outTime: values["exitTime"],
                 note: values["notes"]
             }   
             
@@ -63,18 +77,18 @@ const AddRecordModal = (props) => {
                     size='small'
                     onSubmit={_onSubmit}>
                 <Form.Item label={t('in')}>
-                {getFieldDecorator('date-picker-in', {
-                    rules: [{ 
-                            type: 'object', 
-                            required: true, 
-                            message: t('add_entry_error') 
-                            }],
-                })(
-                    <CustomTimePicker />
-                )}
+                    {getFieldDecorator('entryTime', {
+                        rules: [{ 
+                                type: 'object', 
+                                required: true, 
+                                message: t('add_entry_error') 
+                                }],
+                    })(
+                        <CustomTimePicker />
+                    )}
                 </Form.Item>
                 <Form.Item label={t('out')}>
-                    {getFieldDecorator('date-picker-out', {
+                    {getFieldDecorator('exitTime', {
                         rules: [{ 
                                 type: 'object', 
                                 required: true, 

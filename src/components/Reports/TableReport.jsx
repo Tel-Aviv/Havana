@@ -95,6 +95,24 @@ const EditableTable = (props) => {
   };
 
   const save = (form, key) => {
+
+    const fieldsValue = form.getFieldsValue();
+
+    // TODO: this validation will not work for the forms
+    // with diasable entry/exit firlds when one of them is uneditable    
+    if( fieldsValue.entry && fieldsValue.exit ) {
+
+      if( moment(fieldsValue.entry).format("HH:mm") >= moment(fieldsValue.exit).format("HH:mm") ) {
+        form.setFields({
+          entry: {
+            value: fieldsValue.entry,
+            errors: [new Error(t('exit_before_entry'))],
+          },
+        });
+        return;
+      }
+    }
+
     form.validateFields((error, row) => {
       if (error) {
         return;
@@ -272,25 +290,25 @@ const EditableTable = (props) => {
     props.onValidated && props.onValidated(data)
   }
 
-  const handleAddSubmit = e => {
+  // const handleAddSubmit = e => {
 
-    e.preventDefault();
-    props.form.validateFields( (err, values) => {
+  //   e.preventDefault();
+  //   props.form.validateFields( (err, values) => {
       
-      console.log(values);
+  //     console.log(values);
       
-      if( !err ) {
-        setAddModalVisible(false);
-        const _values = {
-          inTime: values["date-picker-in"],
-          outTime: values["date-picker-out"],
-          note: values["notes"]
-        }
-        addRecord(_values);
-      }
+  //     if( !err ) {
+  //       setAddModalVisible(false);
+  //       const _values = {
+  //         inTime: values.entryTime,
+  //         outTime: values.exitTime,
+  //         note: values["notes"]
+  //       }
+  //       addRecord(_values);
+  //     }
       
-    })
-  }
+  //   })
+  // }
 
   const onCancelAdd = () => 
     setAddModalVisible(false);
@@ -374,7 +392,6 @@ const EditableTable = (props) => {
               rowClassName="editable-row"
               pagination={false}
               size="small"
-              tableLayout={undefined}
             />
         </ReportContext.Provider>
     </>
