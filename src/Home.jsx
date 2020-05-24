@@ -35,6 +35,7 @@ import DocsUploader from './components/DocsUploader';
 import { UPDATE_ITEM } from "./redux/actionTypes"
 
 import { DatePicker } from 'antd';
+
 const { MonthPicker } = DatePicker;
 
 const Home = () => {
@@ -62,6 +63,7 @@ const Home = () => {
     const [invalidReportItems, setInvalidReportItems] = useState();
 
     const [daysOff, setDaysOff] = useState([]);
+    const [manualUpdates, setManualUpdates] = useState();
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
@@ -262,22 +264,32 @@ const Home = () => {
             try {
 
                 let data = [];
+                const manualUpdates = [];
 
                 let respArr = await axios.all([
                     axios(`http://${dataContext.host}/daysoff?year=${year}&month=${month}`, {
                         withCredentials: true
                     }),
                     axios(`http://${dataContext.host}/me/reports/status?month=${month}&year=${year}`, {
-                                    withCredentials: true
+                        withCredentials: true
+                    }),
+                    axios(`http://${dataContext.host}/me/manual_updates?year=${year}&month=${month}`, {
+                        withCredentials: true
                     })
                 ]);
+                // process work off days
                 data = respArr[0].data.items.map( item => 
                     new Date( Date.parse(item.date) )
                 );
                 setDaysOff( data );
+
+                // process manula updates
+                if( respArr[2].data ) {
+                    setManualUpdates(respArr[2].data.items)
+                }
  
+                // process report data
                 let reportId = 0;
-                
                 if( respArr[1].data ) {
                     // The status was returned, i.e. there was an updates to the original report
 
@@ -577,6 +589,37 @@ const Home = () => {
         </div>
     )
 
+    const onReportDataChanged = async ( item, inouts ) => {
+        dispatch(action_updateItem(item)) 
+
+        // update the server about manual update
+        const manualUpdate = {
+            Year: year,
+            Month: month,
+            UserID: dataContext.user.id,
+            items: []
+        }
+
+        if( inouts[0] ) { // entry time was changed for this item
+            manualUpdate.items.push({
+                "Day": item.day,
+                "InOut": true
+            })
+        }
+        if( inouts[1] ) { // exit time was changed
+            manualUpdate.items.push({
+                "Day": item.day,
+                "InOut": false
+            })
+        }
+  
+        await axios(`http://${dataContext.host}/me/manual_updates/`, {
+            method: 'post',
+            data: manualUpdate,
+            withCredentials: true
+        });        
+    } 
+
     return (
         <Content>
             <Modal visible={validateModalOpen}
@@ -677,9 +720,10 @@ const Home = () => {
                                   
                             <TableReport dataSource={reportData}
                                         daysOff={daysOff}
+                                        manualUpdates={manualUpdates}
                                         loading={loadingData}
                                         scroll={{y: '400px'}}
-                                        onChange={( item ) => dispatch(action_updateItem(item)) } 
+                                        onChange={( item, inouts ) => onReportDataChanged(item, inouts) } 
                                         editable={isReportEditable}>
                                 <Affix target={() => container}>
                                     <Button shape='circle' type='primary'>SSS</Button>

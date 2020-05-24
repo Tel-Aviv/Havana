@@ -13,6 +13,7 @@ import EditableCell from './EditableCell'
 import EditIcons from './EditIcons';
 import CustomTimePicker from '../CustomTimePicker'
 import AddRecordModal from './AddRecordModal';
+import axios from 'axios';
 
 const format = 'H:mm';
 
@@ -24,6 +25,7 @@ const EditableTable = (props) => {
   const [daysOff, setDaysOff] = useState([]);
   const [originalData, setOriginalData] = useState([])
   const [editingKey, setEditingKey] = useState('')
+  const [manualUpdates, setManualUpdates] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -57,6 +59,12 @@ const EditableTable = (props) => {
       })
     )
   }, [props.dataSource])
+
+  useEffect( () => {
+
+    setManualUpdates(props.manualUpdates);
+
+  }, [props.manualUpdates])
 
   useEffect(() => {
     setDaysOff(props.daysOff);
@@ -97,9 +105,12 @@ const EditableTable = (props) => {
   const save = (form, key) => {
 
     const fieldsValue = form.getFieldsValue();
+ 
+    const inouts = [fieldsValue.hasOwnProperty("entry"), 
+                    fieldsValue.hasOwnProperty("exit")];
 
-    // TODO: this validation will not work for the forms
-    // with diasable entry/exit firlds when one of them is uneditable    
+    // This validation check will not work for the records 
+    // with uneditable entry/exit field
     if( fieldsValue.entry && fieldsValue.exit ) {
 
       if( moment(fieldsValue.entry).format("HH:mm") >= moment(fieldsValue.exit).format("HH:mm") ) {
@@ -113,7 +124,7 @@ const EditableTable = (props) => {
       }
     }
 
-    form.validateFields((error, row) => {
+    form.validateFields( async(error, row) => {
       if (error) {
         return;
       }
@@ -132,9 +143,10 @@ const EditableTable = (props) => {
         newItem.valid = true;
         
         newData.splice(index, 1, newItem);
-        props.onChange && props.onChange(newItem);
+        props.onChange && props.onChange(newItem, inouts);
         setEditingKey('');
         setData(newData)
+
       }
     });
   }
@@ -280,18 +292,40 @@ const EditableTable = (props) => {
     }
     return {
       ...col,
-      onCell: (record, rowIndex) => ({
-        record,
-        inputType: (col.dataIndex === 'exit' ||
-          col.dataIndex === 'entry') ? 'time' : 'text',
-        dataIndex: col.dataIndex,
-        title: col.title,
-        rowEditing: isRowEditing(record),
-        cellEditbale: col.dataIndex === 'notes' || 
-             data[rowIndex][col.dataIndex] === '0:00'
-      }),
+      onCell: (record, rowIndex) => {
+        return {
+          record,
+          inputType: (col.dataIndex === 'exit' ||
+            col.dataIndex === 'entry') ? 'time' : 'text',
+          dataIndex: col.dataIndex,
+          title: col.title,
+          rowEditing: isRowEditing(record),
+          cellEditbale: record.isAdded && ( col.dataIndex == 'entry' || col.dataIndex == 'exit' )
+                        || data[rowIndex][col.dataIndex] === '0:00'
+                        || col.dataIndex === 'notes'
+                        || isRecordUpdatedManually(record, col.dataIndex)
+      }}
     };
   });
+
+  const isRecordUpdatedManually = (record, columnName) => {
+
+    if( !manualUpdates )
+      return false;
+
+    let found = false;  
+    if( columnName === 'entry' ) {
+      found = manualUpdates.find( item => {
+        return item.Day == parseInt(record.day) && item.InOut === true
+      })
+    }  else if ( columnName === 'exit') {
+      found = manualUpdates.find( item => {
+        return item.Day == parseInt(record.day) && item.InOut === false
+      })
+    }
+
+    return found ? true: false;
+  }
 
   const isValid = !data.some(r => !r.valid)
   if (isValid) {
