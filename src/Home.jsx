@@ -14,7 +14,7 @@ import { Layout, Icon, Popconfirm } from 'antd';
 const { Content } = Layout;
 
 import { Button, Tooltip, Modal, 
-        Typography, Affix, Table, Tag } from 'antd';
+        Typography, Table, Tag } from 'antd';
 const { Title, Paragraph, Text } = Typography;
 
 import { Tabs, Dropdown, Menu, message  } from 'antd-rtl';
@@ -725,9 +725,6 @@ const Home = () => {
                                         scroll={{y: '400px'}}
                                         onChange={( item, inouts ) => onReportDataChanged(item, inouts) } 
                                         editable={isReportEditable}>
-                                <Affix target={() => container}>
-                                    <Button shape='circle' type='primary'>SSS</Button>
-                                </Affix>  
                             </TableReport>
                         </TabPane>
                         {/* <TabPane tab={<span>
@@ -754,6 +751,7 @@ const Home = () => {
                 </Col>
             </Row>
             <Modal title={printReportTitle()}
+                    width='40%'
                     visible={printModalVisible}
                     closable={true}
                     forceRender={true}
@@ -771,14 +769,13 @@ const Home = () => {
                     <Title level={3} dir='rtl'>{dataContext.user.name}</Title>
                     <Title level={4} dir='rtl'>{t('title')} {t('for_month')} {month}.{year}</Title>
                     <TableReport dataSource={reportData} 
-                                 loading={loadingData} 
-                                 editable={false} /> 
+                                loading={loadingData} 
+                                editable={false} /> 
                     <Img style={{
                         width: '100px'
                     }} src={signature} /> 
                 </div>
             </Modal>
-            
         </Content>
     )
 }

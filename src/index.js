@@ -16,11 +16,12 @@ import store from './redux/store';
 import App from './App'
 import App2 from './App2'
 
-ReactDOM.render(<ConfigProvider locale={heIL}>
-                  <Provider store={store}>
-                        <HashRouter>
+ReactDOM.render(<Provider store={store}>
+                    <HashRouter>
+                        <ConfigProvider direction='rtl' 
+                              locale={heIL}>
                              <App />
-                        </HashRouter>
-                   </Provider>     
-                </ConfigProvider>,
+                             </ConfigProvider>    
+                    </HashRouter>
+                </Provider>,
                 document.getElementById('root'));
