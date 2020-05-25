@@ -102,32 +102,43 @@ const EditableTable = (props) => {
     setEditingKey('');
   };
 
+  const getEntryTime = (formValues, key) => {
+    return formValues.entry ? formValues.entry.format("HH:mm") : data[key].entry;
+  }
+
+  const getExitTime = (formValues, key) => {
+    return formValues.exit ? formValues.exit.format("HH:mm") : data[key].exit;
+  }
+
+  const minutes = (timeValue) => {
+    const tokens = timeValue.split(':');
+    return parseInt(tokens[0]) * 60 + parseInt(tokens[1]);
+  }
+
   const save = (form, key) => {
 
     const fieldsValue = form.getFieldsValue();
  
-    const inouts = [fieldsValue.hasOwnProperty("entry"), 
-                    fieldsValue.hasOwnProperty("exit")];
-
-    // This validation check will not work for the records 
-    // with uneditable entry/exit field
-    if( fieldsValue.entry && fieldsValue.exit ) {
-
-      if( moment(fieldsValue.entry).format("HH:mm") >= moment(fieldsValue.exit).format("HH:mm") ) {
-        form.setFields({
-          entry: {
-            value: fieldsValue.entry,
-            errors: [new Error(t('exit_before_entry'))],
-          },
-        });
-        return;
-      }
+    const entryTime = getEntryTime(fieldsValue, key);
+    const exitTime = getExitTime(fieldsValue, key);
+    
+    if( minutes(entryTime) >= minutes(exitTime) ) {  
+      form.setFields({
+        entry: {
+          value: fieldsValue.entry,
+          errors: [new Error(t('exit_before_entry'))],
+        },
+      });
+      return;
     }
 
     form.validateFields( async(error, row) => {
       if (error) {
         return;
       }
+
+      const inouts = [fieldsValue.hasOwnProperty("entry"), 
+                      fieldsValue.hasOwnProperty("exit")];
 
       const newData = [...data];
       const index = newData.findIndex(item => key === item.key);
@@ -331,26 +342,6 @@ const EditableTable = (props) => {
   if (isValid) {
     props.onValidated && props.onValidated(data)
   }
-
-  // const handleAddSubmit = e => {
-
-  //   e.preventDefault();
-  //   props.form.validateFields( (err, values) => {
-      
-  //     console.log(values);
-      
-  //     if( !err ) {
-  //       setAddModalVisible(false);
-  //       const _values = {
-  //         inTime: values.entryTime,
-  //         outTime: values.exitTime,
-  //         note: values["notes"]
-  //       }
-  //       addRecord(_values);
-  //     }
-      
-  //   })
-  // }
 
   const onCancelAdd = () => 
     setAddModalVisible(false);
