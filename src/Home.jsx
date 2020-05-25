@@ -64,6 +64,7 @@ const Home = () => {
 
     const [daysOff, setDaysOff] = useState([]);
     const [manualUpdates, setManualUpdates] = useState();
+    const [assignee, setAssignee] = useState('direct');
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
@@ -211,10 +212,10 @@ const Home = () => {
             if( !data.submitted ) {
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם נשלח לאישור`);
             } else if( !data.approved ) {
-                setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם אושר`);
+                setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם אושר ע"י ${data.assignedToName}`);
             } else {
                 const whenApproved = moment(data.whenApproved).format('DD/MM/YYYY')
-                setAlertMessage(`דוח שעות לחודש ${month}/${year} אושר בתאריך ${whenApproved}`);
+                setAlertMessage(`דוח שעות לחודש ${month}/${year} אושר בתאריך ${whenApproved} ע"י ${data.assignedToName}`);
             }
 
         } else {
@@ -382,7 +383,7 @@ const Home = () => {
         try {
             
             await axios({
-                url: `http://${dataContext.host}/me/reports?month=${month}&year=${year}&reportid=${reportId}`, 
+                url: `http://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee}`, 
                 method: 'post',
                 data: reportData,
                 withCredentials: true
@@ -451,6 +452,7 @@ const Home = () => {
     }
 
     const handleMenuClick = (e) => {
+        setAssignee(managers[e.key].userId);
         message.info(`הדוח יועבר לאישור ${managers[e.key].userName}`);
     }
     const menu = <Menu onClick={handleMenuClick}>
@@ -465,20 +467,20 @@ const Home = () => {
     const operations = <div>
                             <Popconfirm title={t('send_to_approval')} 
                                 onConfirm={onSubmit}>
-                                {/* <Dropdown.Button type="primary" overlay={menu}
+                                <Dropdown.Button type="primary" overlay={menu}
                                                     disabled={ isReportSubmitted || !reportDataValid }
                                     style={{
                                         marginRight: '6px'
                                     }}>
                                     {t('submit')}
-                                </Dropdown.Button> */}
-                                <Button type="primary"
+                                </Dropdown.Button>
+                                {/* <Button type="primary"
                                         disabled={ isReportSubmitted || !reportDataValid }
                                          style={{
                                             marginRight: '6px'
                                         }}>
                                     {t('submit')} 
-                                </Button>
+                                </Button> */}
                             </Popconfirm>
                             <Tooltip placement='bottom' title={t('validate_report')}>
                                 <Button onClick={validateReport} style={{
@@ -620,6 +622,8 @@ const Home = () => {
         });        
     } 
 
+    const alertOpacity = loadingData ? 0.2 : 1.0;
+
     return (
         <Content>
             <Modal visible={validateModalOpen}
@@ -670,7 +674,11 @@ const Home = () => {
                  
             </Row>
             <Row>
-            { showAlert ? (<Alert closable={false}
+            { 
+                showAlert ? (<Alert closable={false}
+                                    style={{
+                                        opacity: alertOpacity
+                                    }}
                                     message={alertMessage}
                                     className='hvn-item-rtl' 
                                     showIcon 
