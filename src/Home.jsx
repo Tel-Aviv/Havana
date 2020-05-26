@@ -284,7 +284,7 @@ const Home = () => {
                 );
                 setDaysOff( data );
 
-                // process manula updates
+                // process manual updates
                 if( respArr[2].data ) {
                     setManualUpdates(respArr[2].data.items)
                 }
@@ -413,6 +413,19 @@ const Home = () => {
                 data: reportData,
                 withCredentials: true
             })
+
+            // update the server about manual update
+            const manualUpdate = {
+                Year: year,
+                Month: month,
+                UserID: dataContext.user.id,
+                items: manualUpdates
+            }
+            await axios(`http://${dataContext.host}/me/manual_updates/`, {
+                method: 'post',
+                data: manualUpdate,
+                withCredentials: true
+            });              
 
             message.success(t('saved'))
         } catch(err) {
@@ -587,32 +600,22 @@ const Home = () => {
     const onReportDataChanged = async ( item, inouts ) => {
         dispatch(action_updateItem(item)) 
 
-        // update the server about manual update
-        const manualUpdate = {
-            Year: year,
-            Month: month,
-            UserID: dataContext.user.id,
-            items: []
-        }
-
+        let items = []
         if( inouts[0] ) { // entry time was changed for this item
-            manualUpdate.items.push({
+            items = [...items, {
                 "Day": item.day,
                 "InOut": true
-            })
+            }]
+    
         }
         if( inouts[1] ) { // exit time was changed
-            manualUpdate.items.push({
+            items = [...items, {
                 "Day": item.day,
                 "InOut": false
-            })
+            }]                            
         }
   
-        await axios(`http://${dataContext.host}/me/manual_updates/`, {
-            method: 'post',
-            data: manualUpdate,
-            withCredentials: true
-        });        
+        setManualUpdates([...manualUpdates, ...items]);
     } 
 
     const alertOpacity = loadingData ? 0.2 : 1.0;
