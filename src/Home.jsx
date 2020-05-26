@@ -110,10 +110,10 @@ const Home = () => {
             if( isItemInvalid ) {
                 invalidItemIndex = index;
 
-                if( isItemInvalid && item.notes) { // invalid till now but has explanation provided 
-                    isItemInvalid = false; 
-                    invalidItemIndex = -1;
-                }
+                // if( isItemInvalid && item.notes) { // invalid till now but has explanation provided 
+                //     isItemInvalid = false; 
+                //     invalidItemIndex = -1;
+                // }
             }
 
             return isItemInvalid;
@@ -474,13 +474,6 @@ const Home = () => {
                                     }}>
                                     {t('submit')}
                                 </Dropdown.Button>
-                                {/* <Button type="primary"
-                                        disabled={ isReportSubmitted || !reportDataValid }
-                                         style={{
-                                            marginRight: '6px'
-                                        }}>
-                                    {t('submit')} 
-                                </Button> */}
                             </Popconfirm>
                             <Tooltip placement='bottom' title={t('validate_report')}>
                                 <Button onClick={validateReport} style={{

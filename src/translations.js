@@ -54,7 +54,8 @@ const translations = {
             "add_exit_error": "Exit time is mandatory",            
             "add_notes_error": "Please provide your notes",
             "move_to": "Forward",
-            "exit_before_entry": "Exit before entry?"
+            "exit_before_entry": "Exit before entry?",
+            "manual_tag": "Has been edited manually"
         }
     },
     he: {
@@ -112,7 +113,8 @@ const translations = {
             "add_exit_error": "שכחת זמן יציאה?",            
             "add_notes_error": "בבקשה להוסיף הערות",
             "move_to": "העבר",
-            "exit_before_entry": "יציאה לפני הכניסה?"
+            "exit_before_entry": "יציאה לפני הכניסה?",
+            "manual_tag": "נערך באופן ידני"
         }
     }
 }    

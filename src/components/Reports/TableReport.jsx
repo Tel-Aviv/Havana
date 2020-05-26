@@ -225,17 +225,24 @@ const EditableTable = (props) => {
         dataIndex: 'entry',
         align: 'right',
         editable: true,
-        render: (text) => {
+        render: (text, record) => {
+          const isEditedManually = isRecordUpdatedManually(record, 'entry')
+
           let tagColor = 'green';
           if( text === '0:00' ) {
             tagColor = 'volcano'
           }
-          return <Tag color={tagColor}
+          return <>
+                  <Tag color={tagColor}
                     style={{
                       marginRight: '0'
                   }}>
                     {text}
                   </Tag>
+                  {
+                    manuallyEditedTag(isEditedManually)
+                  }
+                 </> 
         }          
       },
       {
@@ -244,17 +251,25 @@ const EditableTable = (props) => {
         dataIndex: 'exit',
         align: 'right',
         editable: true,
-        render: (text) => {
+        render: (text, record) => {
+
+          const isEditedManually = isRecordUpdatedManually(record, 'exit')
+
           let tagColor = 'green';
           if( text === '0:00' ) {
             tagColor = 'volcano'
           }
-          return <Tag color={tagColor}
-                    style={{
-                      marginRight: '0'
-                  }}>
-                    {text}
-                  </Tag>
+          return <>
+                <Tag color={tagColor}
+                  style={{
+                    marginRight: '0'
+                }}>
+                  {text}
+                </Tag>
+                {
+                  manuallyEditedTag(isEditedManually)
+                }
+            </>                  
         }
       },
       {
@@ -271,7 +286,7 @@ const EditableTable = (props) => {
         editable: true,
         render: (text, _) => 
           ( text !== '' ) ?
-              <Tag color="volcano"
+              <Tag color="blue"
                 style={{
                   marginRight: '0'
                 }}>
@@ -283,8 +298,10 @@ const EditableTable = (props) => {
         title: '',
         width: '12%',
         dataIndex: 'operation',
-        render: (text, record) => 
-           (record.requireChange)? 
+        render: (text, record) => {
+
+          return ( moment(record.rdate, 'DD/MM/YYYY').isBefore(moment()) // no edits for future
+                    && record.requireChange)? 
             (<EditIcons 
                 recordId={record.key}
                 editing={isRowEditing(record)} 
@@ -293,6 +310,7 @@ const EditableTable = (props) => {
                 save={save} 
                 cancel={cancel}
             />): null
+        }
       },
     ];
 
@@ -304,6 +322,7 @@ const EditableTable = (props) => {
     return {
       ...col,
       onCell: (record, rowIndex) => {
+
         return {
           record,
           inputType: (col.dataIndex === 'exit' ||
@@ -315,9 +334,19 @@ const EditableTable = (props) => {
                         || data[rowIndex][col.dataIndex] === '0:00'
                         || col.dataIndex === 'notes'
                         || isRecordUpdatedManually(record, col.dataIndex)
+
       }}
     };
   });
+
+  const manuallyEditedTag = ( isEditedManually ) => {
+    return isEditedManually ?
+          <Tooltip title={t('manual_tag')}>
+            <Tag color='magenta'>
+              <Icon type="tag" />
+            </Tag> 
+          </Tooltip>: null
+  }
 
   const isRecordUpdatedManually = (record, columnName) => {
 
