@@ -55,7 +55,9 @@ const translations = {
             "add_notes_error": "Please provide your notes",
             "move_to": "Forward",
             "exit_before_entry": "Exit before entry?",
-            "manual_tag": "Has been edited manually"
+            "manual_tag": "Has been edited manually",
+            "summary": "Summary attendance for ",
+            "printed_when": "Printed "
         }
     },
     he: {
@@ -114,7 +116,9 @@ const translations = {
             "add_notes_error": "בבקשה להוסיף הערות",
             "move_to": "העבר",
             "exit_before_entry": "יציאה לפני הכניסה?",
-            "manual_tag": "נערך באופן ידני"
+            "manual_tag": "נערך באופן ידני",
+            "summary": "גיליון נוכחות מסכם לחודש",
+            "printed_when": " הופק בתאריך "
         }
     }
 }    

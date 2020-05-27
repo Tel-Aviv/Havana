@@ -755,7 +755,7 @@ const Home = () => {
                 </Col>
             </Row>
             <Modal title={printReportTitle()}
-                    width='40%'
+                    width='54%'
                     visible={printModalVisible}
                     closable={true}
                     forceRender={true}
@@ -765,19 +765,34 @@ const Home = () => {
                                 copyStyles={true}
                                 removeAfterPrint={true}
                                 trigger={() => <Button type="primary">{t('print')}</Button>}
+                                documentTitle={`attendance report ${month}/${year}`}
                                 content={() => componentRef.current}
                             />,
                             <Button key={uniqid()} onClick={handlePrintCancel}>{t('cancel')}</Button>
                         ]}>
-                <div ref={componentRef}>
-                    <Title level={3} dir='rtl'>{dataContext.user.name}</Title>
-                    <Title level={4} dir='rtl'>{t('title')} {t('for_month')} {month}.{year}</Title>
+                <div ref={componentRef} style={{textAlign: 'center'}}>
+                    <div className='pdf-title'>{dataContext.user.name}</div>
+                    <div className='pdf-title'>{t('summary')} {month}/{year}</div>
                     <TableReport dataSource={reportData} 
                                 loading={loadingData} 
-                                editable={false} /> 
-                    <Img style={{
-                        width: '100px'
-                    }} src={signature} /> 
+                                manualUpdates={manualUpdates}
+                                editable={false} />
+                    <Row>
+                        <Col span={9}>
+                            <Img style={{
+                                width: '100px'
+                            }} src={signature} /> 
+                        </Col>
+                        <Col span={3}>
+                            <div>{t('signature')}</div>        
+                        </Col>
+                        <Col span={6}>
+                            <div>סה"כ { totals } שעות</div>
+                        </Col>
+                        <Col span={6}>
+                            <div>{t('printed_when')} {moment().format('DD/MM/YYYY')}</div>
+                        </Col>
+                    </Row>
                 </div>
             </Modal>
         </Content>

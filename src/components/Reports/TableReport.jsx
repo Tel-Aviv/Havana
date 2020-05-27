@@ -232,7 +232,7 @@ const EditableTable = (props) => {
           if( text === '0:00' ) {
             tagColor = 'volcano'
           }
-          return <>
+          return <Row>
                   <Tag color={tagColor}
                     style={{
                       marginRight: '0'
@@ -242,7 +242,7 @@ const EditableTable = (props) => {
                   {
                     manuallyEditedTag(isEditedManually)
                   }
-                 </> 
+                 </Row> 
         }          
       },
       {
