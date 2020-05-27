@@ -14,7 +14,7 @@ import { Layout, Icon, Popconfirm } from 'antd';
 const { Content } = Layout;
 
 import { Button, Tooltip, Modal, 
-        Typography, Affix, Table, Tag } from 'antd';
+        Typography, Table, Tag } from 'antd';
 const { Title, Paragraph, Text } = Typography;
 
 import { Tabs, Dropdown, Menu, message  } from 'antd-rtl';
@@ -35,6 +35,7 @@ import DocsUploader from './components/DocsUploader';
 import { UPDATE_ITEM } from "./redux/actionTypes"
 
 import { DatePicker } from 'antd';
+
 const { MonthPicker } = DatePicker;
 
 const Home = () => {
@@ -62,6 +63,8 @@ const Home = () => {
     const [invalidReportItems, setInvalidReportItems] = useState();
 
     const [daysOff, setDaysOff] = useState([]);
+    const [manualUpdates, setManualUpdates] = useState();
+    const [assignee, setAssignee] = useState('direct');
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
@@ -107,10 +110,10 @@ const Home = () => {
             if( isItemInvalid ) {
                 invalidItemIndex = index;
 
-                if( isItemInvalid && item.notes) { // invalid till now but has explanation provided 
-                    isItemInvalid = false; 
-                    invalidItemIndex = -1;
-                }
+                // if( isItemInvalid && item.notes) { // invalid till now but has explanation provided 
+                //     isItemInvalid = false; 
+                //     invalidItemIndex = -1;
+                // }
             }
 
             return isItemInvalid;
@@ -177,6 +180,20 @@ const Home = () => {
     }, [_addedData])    
 
 
+    const _deletedData = useSelector(
+        store => store.reportUpdateReducer.deletedData
+    )
+
+    useEffect( () => {
+
+        if( _deletedData ) {
+            const index = _deletedData.index;
+            const newData = [...reportData.slice(0, index), ...reportData.slice(index + 1)];
+            setReportData(newData);
+        }
+
+    }, [_deletedData]);
+
     useEffect( () => {
 
         if( _calendarDate ) {
@@ -195,10 +212,10 @@ const Home = () => {
             if( !data.submitted ) {
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם נשלח לאישור`);
             } else if( !data.approved ) {
-                setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם אושר`);
+                setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם אושר ע"י ${data.assignedToName}`);
             } else {
                 const whenApproved = moment(data.whenApproved).format('DD/MM/YYYY')
-                setAlertMessage(`דוח שעות לחודש ${month}/${year} אושר בתאריך ${whenApproved}`);
+                setAlertMessage(`דוח שעות לחודש ${month}/${year} אושר בתאריך ${whenApproved} ע"י ${data.assignedToName}`);
             }
 
         } else {
@@ -248,20 +265,32 @@ const Home = () => {
             try {
 
                 let data = [];
+                const manualUpdates = [];
 
                 let respArr = await axios.all([
-                    axios(`http://${dataContext.host}/daysoff?year=${year}&month=${month}`),
+                    axios(`http://${dataContext.host}/daysoff?year=${year}&month=${month}`, {
+                        withCredentials: true
+                    }),
                     axios(`http://${dataContext.host}/me/reports/status?month=${month}&year=${year}`, {
-                                    withCredentials: true
+                        withCredentials: true
+                    }),
+                    axios(`http://${dataContext.host}/me/manual_updates?year=${year}&month=${month}`, {
+                        withCredentials: true
                     })
                 ]);
+                // process work off days
                 data = respArr[0].data.items.map( item => 
                     new Date( Date.parse(item.date) )
                 );
                 setDaysOff( data );
+
+                // process manual updates
+                if( respArr[2].data ) {
+                    setManualUpdates(respArr[2].data.items)
+                }
  
+                // process report data
                 let reportId = 0;
-                
                 if( respArr[1].data ) {
                     // The status was returned, i.e. there was an updates to the original report
 
@@ -354,7 +383,7 @@ const Home = () => {
         try {
             
             await axios({
-                url: `http://${dataContext.host}/me/reports?month=${month}&year=${year}&reportid=${reportId}`, 
+                url: `http://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee}`, 
                 method: 'post',
                 data: reportData,
                 withCredentials: true
@@ -384,6 +413,19 @@ const Home = () => {
                 data: reportData,
                 withCredentials: true
             })
+
+            // update the server about manual update
+            const manualUpdate = {
+                Year: year,
+                Month: month,
+                UserID: dataContext.user.id,
+                items: manualUpdates
+            }
+            await axios(`http://${dataContext.host}/me/manual_updates/`, {
+                method: 'post',
+                data: manualUpdate,
+                withCredentials: true
+            });              
 
             message.success(t('saved'))
         } catch(err) {
@@ -423,6 +465,7 @@ const Home = () => {
     }
 
     const handleMenuClick = (e) => {
+        setAssignee(managers[e.key].userId);
         message.info(`הדוח יועבר לאישור ${managers[e.key].userName}`);
     }
     const menu = <Menu onClick={handleMenuClick}>
@@ -437,20 +480,13 @@ const Home = () => {
     const operations = <div>
                             <Popconfirm title={t('send_to_approval')} 
                                 onConfirm={onSubmit}>
-                                {/* <Dropdown.Button type="primary" overlay={menu}
+                                <Dropdown.Button type="primary" overlay={menu}
                                                     disabled={ isReportSubmitted || !reportDataValid }
                                     style={{
                                         marginRight: '6px'
                                     }}>
                                     {t('submit')}
-                                </Dropdown.Button> */}
-                                <Button type="primary"
-                                        disabled={ isReportSubmitted || !reportDataValid }
-                                         style={{
-                                            marginRight: '6px'
-                                        }}>
-                                    {t('submit')} 
-                                </Button>
+                                </Dropdown.Button>
                             </Popconfirm>
                             <Tooltip placement='bottom' title={t('validate_report')}>
                                 <Button onClick={validateReport} style={{
@@ -561,6 +597,29 @@ const Home = () => {
         </div>
     )
 
+    const onReportDataChanged = async ( item, inouts ) => {
+        dispatch(action_updateItem(item)) 
+
+        let items = []
+        if( inouts[0] ) { // entry time was changed for this item
+            items = [...items, {
+                "Day": item.day,
+                "InOut": true
+            }]
+    
+        }
+        if( inouts[1] ) { // exit time was changed
+            items = [...items, {
+                "Day": item.day,
+                "InOut": false
+            }]                            
+        }
+  
+        setManualUpdates([...manualUpdates, ...items]);
+    } 
+
+    const alertOpacity = loadingData ? 0.2 : 1.0;
+
     return (
         <Content>
             <Modal visible={validateModalOpen}
@@ -597,10 +656,10 @@ const Home = () => {
                 </Row>
             </Modal>
             <Row className='hvn-item-ltr' align={'middle'} type='flex'>
-                <Col span={8} >
+                <Col span={10} >
                     {operations}
                 </Col>
-                <Col span={2} offset={14}>
+                <Col span={3} offset={11}>
                     <MonthPicker onChange={onMonthChange}
                                             disabledDate={disabledDate}
                                             className='ltr'
@@ -611,7 +670,11 @@ const Home = () => {
                  
             </Row>
             <Row>
-            { showAlert ? (<Alert closable={false}
+            { 
+                showAlert ? (<Alert closable={false}
+                                    style={{
+                                        opacity: alertOpacity
+                                    }}
                                     message={alertMessage}
                                     className='hvn-item-rtl' 
                                     showIcon 
@@ -661,13 +724,11 @@ const Home = () => {
                                   
                             <TableReport dataSource={reportData}
                                         daysOff={daysOff}
+                                        manualUpdates={manualUpdates}
                                         loading={loadingData}
                                         scroll={{y: '400px'}}
-                                        onChange={( item ) => dispatch(action_updateItem(item)) } 
+                                        onChange={( item, inouts ) => onReportDataChanged(item, inouts) } 
                                         editable={isReportEditable}>
-                                <Affix target={() => container}>
-                                    <Button shape='circle' type='primary'>SSS</Button>
-                                </Affix>  
                             </TableReport>
                         </TabPane>
                         {/* <TabPane tab={<span>
@@ -694,6 +755,7 @@ const Home = () => {
                 </Col>
             </Row>
             <Modal title={printReportTitle()}
+                    width='54%'
                     visible={printModalVisible}
                     closable={true}
                     forceRender={true}
@@ -703,22 +765,36 @@ const Home = () => {
                                 copyStyles={true}
                                 removeAfterPrint={true}
                                 trigger={() => <Button type="primary">{t('print')}</Button>}
+                                documentTitle={`attendance report ${month}/${year}`}
                                 content={() => componentRef.current}
                             />,
                             <Button key={uniqid()} onClick={handlePrintCancel}>{t('cancel')}</Button>
                         ]}>
-                <div ref={componentRef}>
-                    <Title level={3} dir='rtl'>{dataContext.user.name}</Title>
-                    <Title level={4} dir='rtl'>{t('title')} {t('for_month')} {month}.{year}</Title>
+                <div ref={componentRef} style={{textAlign: 'center'}}>
+                    <div className='pdf-title'>{dataContext.user.name}</div>
+                    <div className='pdf-title'>{t('summary')} {month}/{year}</div>
                     <TableReport dataSource={reportData} 
-                                 loading={loadingData} 
-                                 editable={false} /> 
-                    <Img style={{
-                        width: '100px'
-                    }} src={signature} /> 
+                                loading={loadingData} 
+                                manualUpdates={manualUpdates}
+                                editable={false} />
+                    <Row>
+                        <Col span={9}>
+                            <Img style={{
+                                width: '100px'
+                            }} src={signature} /> 
+                        </Col>
+                        <Col span={3}>
+                            <div>{t('signature')}</div>        
+                        </Col>
+                        <Col span={6}>
+                            <div>סה"כ { totals } שעות</div>
+                        </Col>
+                        <Col span={6}>
+                            <div>{t('printed_when')} {moment().format('DD/MM/YYYY')}</div>
+                        </Col>
+                    </Row>
                 </div>
             </Modal>
-            
         </Content>
     )
 }

@@ -1,7 +1,9 @@
 // @flow
 import React from 'react'
 import 'antd/dist/antd.css';
-import { Popconfirm, Icon } from 'antd';
+import { Popconfirm, Icon, Tooltip } from 'antd';
+import { useTranslation } from "react-i18next";
+
 import { ReportContext } from "./table-context";
 
 const iconStyle = {
@@ -10,6 +12,9 @@ const iconStyle = {
 }
 
 export default ({recordId, display, editing, disable, edit, save, cancel}) => {
+
+    const {t} = useTranslation();
+
     return editing ? (
       <span>
         <Popconfirm title="האם ברצונך לבטל את השינויים ?" onConfirm={() => cancel(recordId)}
@@ -27,7 +32,9 @@ export default ({recordId, display, editing, disable, edit, save, cancel}) => {
     ) : (
           disable ?
             (<Icon type="edit" style={iconStyle} />) :
-            (<Icon type="edit" theme="twoTone"
-                onClick={() => edit(recordId)} type="edit" style={iconStyle} />) 
+            (<Tooltip title={t('edit_record')}>
+                <Icon type="edit" theme="twoTone"
+                onClick={() => edit(recordId)} type="edit" style={iconStyle} />
+              </Tooltip>) 
     )
   }

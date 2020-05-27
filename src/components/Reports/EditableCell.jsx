@@ -11,11 +11,7 @@ type Props = {
     inputType: string
 }
 
-type State = {
-
-}
-
-const EditableCell = (props) => {
+const EditableCell = (props: Props) => {
 
     const getInput = () => ( props.inputType !== 'time') ?
         <Input size="small"/> :
@@ -46,7 +42,7 @@ const EditableCell = (props) => {
                                     },
                                 ],
                                 initialValue: (record[dataIndex] && props.inputType === 'time') ?
-                                            moment.utc(record[dataIndex], format) : undefined
+                                            moment.utc(record[dataIndex], format) : (record[dataIndex])
                             })(getInput())}
                         </Form.Item>
                     ) : (

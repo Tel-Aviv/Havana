@@ -3,6 +3,7 @@ const translations = {
         translation: {
             "Switch": "English",
             "product_name": "Attendance system",
+            "to": " to day ",
             "cancel": "Cancel",
             "sure": "Are you sure?",
             "title": "Hours Report",
@@ -48,16 +49,22 @@ const translations = {
             "report_validated": "Report is valid",
             "print_report": "Print Report",
             "add_record": "Add record",
+            "edit_record": "Edit record",
             "add_entry_error": "Entry time is mandatory",
             "add_exit_error": "Exit time is mandatory",            
             "add_notes_error": "Please provide your notes",
-            "move_to": "Forward"
+            "move_to": "Forward",
+            "exit_before_entry": "Exit before entry?",
+            "manual_tag": "Has been edited manually",
+            "summary": "Summary attendance for ",
+            "printed_when": "Printed "
         }
     },
     he: {
         translation: {
             "Switch": "Hebrew",
             "product_name": "מערכת נוכחות",
+            "to_day": " ליום ",
             "cancel": "ביטול",
             "sure": "האם ברצונך לבטל את השינויים?",
             "title": "דוח שעות",
@@ -103,10 +110,15 @@ const translations = {
             "report_validated": "נתונים הדוח תקיניים",
             "print_report": "הדפסת דוח",
             "add_record": "הוספת רשומה",
+            "edit_record": "עריכת רשומה",
             "add_entry_error": "שכחת זמן כניסה?",
             "add_exit_error": "שכחת זמן יציאה?",            
-            "add_notes_error": "אנא ספק הערות",
-            "move_to": "העבר"
+            "add_notes_error": "בבקשה להוסיף הערות",
+            "move_to": "העבר",
+            "exit_before_entry": "יציאה לפני הכניסה?",
+            "manual_tag": "נערך באופן ידני",
+            "summary": "גיליון נוכחות מסכם לחודש",
+            "printed_when": " הופק בתאריך "
         }
     }
 }    

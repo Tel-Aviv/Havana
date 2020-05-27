@@ -1,10 +1,10 @@
 // @flow
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { ADD_ITEM } from '../../redux/actionTypes';
+import { ADD_ITEM, DELETE_ITEM } from '../../redux/actionTypes';
 import 'antd/dist/antd.css';
 import { Table, Popconfirm, Modal, Form, Icon, Button, 
-        Tag, Row, Col } from 'antd';
+        Tag, Row, Col, Tooltip } from 'antd';
 var moment = require('moment');
 import { useTranslation } from "react-i18next";
 
@@ -13,6 +13,7 @@ import EditableCell from './EditableCell'
 import EditIcons from './EditIcons';
 import CustomTimePicker from '../CustomTimePicker'
 import AddRecordModal from './AddRecordModal';
+import axios from 'axios';
 
 const format = 'H:mm';
 
@@ -24,6 +25,7 @@ const EditableTable = (props) => {
   const [daysOff, setDaysOff] = useState([]);
   const [originalData, setOriginalData] = useState([])
   const [editingKey, setEditingKey] = useState('')
+  const [manualUpdates, setManualUpdates] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -32,6 +34,12 @@ const EditableTable = (props) => {
     addIndex: index,
     addItem: item
   });  
+
+  const action_ItemDeleted = (item, index) => ({
+    type: DELETE_ITEM,
+    deleteIndex: index,
+    deletedItem: item
+  })
 
   // States for adding nee record
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false)
@@ -51,6 +59,12 @@ const EditableTable = (props) => {
       })
     )
   }, [props.dataSource])
+
+  useEffect( () => {
+
+    setManualUpdates(props.manualUpdates);
+
+  }, [props.manualUpdates])
 
   useEffect(() => {
     setDaysOff(props.daysOff);
@@ -88,11 +102,43 @@ const EditableTable = (props) => {
     setEditingKey('');
   };
 
+  const getEntryTime = (formValues, key) => {
+    return formValues.entry ? formValues.entry.format("HH:mm") : data[key].entry;
+  }
+
+  const getExitTime = (formValues, key) => {
+    return formValues.exit ? formValues.exit.format("HH:mm") : data[key].exit;
+  }
+
+  const minutes = (timeValue) => {
+    const tokens = timeValue.split(':');
+    return parseInt(tokens[0]) * 60 + parseInt(tokens[1]);
+  }
+
   const save = (form, key) => {
-    form.validateFields((error, row) => {
+
+    const fieldsValue = form.getFieldsValue();
+ 
+    const entryTime = getEntryTime(fieldsValue, key);
+    const exitTime = getExitTime(fieldsValue, key);
+    
+    if( minutes(entryTime) >= minutes(exitTime) ) {  
+      form.setFields({
+        entry: {
+          value: fieldsValue.entry,
+          errors: [new Error(t('exit_before_entry'))],
+        },
+      });
+      return;
+    }
+
+    form.validateFields( async(error, row) => {
       if (error) {
         return;
       }
+
+      const inouts = [fieldsValue.hasOwnProperty("entry"), 
+                      fieldsValue.hasOwnProperty("exit")];
 
       const newData = [...data];
       const index = newData.findIndex(item => key === item.key);
@@ -105,12 +151,13 @@ const EditableTable = (props) => {
           exit:  (row.exit) ? row.exit.format(format) : item.exit, 
         }
         newItem.total = moment.utc(moment(newItem.exit, format).diff(moment(newItem.entry, format))).format(format)
-        newItem.valid = true,
+        newItem.valid = true;
         
         newData.splice(index, 1, newItem);
-        props.onChange && props.onChange(newItem);
+        props.onChange && props.onChange(newItem, inouts);
         setEditingKey('');
         setData(newData)
+
       }
     });
   }
@@ -131,14 +178,16 @@ const EditableTable = (props) => {
       title: '',
       dataIndex: 'add',
       align: 'center',
-      width: '5%',
+      width: '6%',
       editable: false,
       render: (text, record) => 
         props.editable? (
           <Row>
             <Col span={12}>
-              <Icon type="plus-circle" theme="twoTone" 
-                    onClick={() => handleAddRow(record)}/>
+              <Tooltip title={t('add_record')}>
+                <Icon type="plus-circle" theme="twoTone" 
+                      onClick={() => handleAddRow(record)}/>
+              </Tooltip>      
             </Col>
             <Col span={12}>
             {
@@ -156,6 +205,7 @@ const EditableTable = (props) => {
     },
       {
         title: 'יום',
+        width: '4%',
         dataIndex: 'day',
         align: 'right',
         ellipsis: true,
@@ -163,49 +213,68 @@ const EditableTable = (props) => {
       },
       {
         title: 'יום בשבוע',
+        width: '10%',
         dataIndex: 'dayOfWeek',
-        align: 'right',
+        align: 'center',
         ellipsis: true,
         editable: false,
       },    
       {
         title: t('in'),
+        width: '15%',
         dataIndex: 'entry',
         align: 'right',
         editable: true,
-        render: (text) => {
+        render: (text, record) => {
+          const isEditedManually = isRecordUpdatedManually(record, 'entry')
+
           let tagColor = 'green';
           if( text === '0:00' ) {
             tagColor = 'volcano'
           }
-          return <Tag color={tagColor}
+          return <Row>
+                  <Tag color={tagColor}
                     style={{
                       marginRight: '0'
                   }}>
                     {text}
                   </Tag>
+                  {
+                    manuallyEditedTag(isEditedManually)
+                  }
+                 </Row> 
         }          
       },
       {
         title: t('out'),
+        width: '15%',
         dataIndex: 'exit',
         align: 'right',
         editable: true,
-        render: (text) => {
+        render: (text, record) => {
+
+          const isEditedManually = isRecordUpdatedManually(record, 'exit')
+
           let tagColor = 'green';
           if( text === '0:00' ) {
             tagColor = 'volcano'
           }
-          return <Tag color={tagColor}
-                    style={{
-                      marginRight: '0'
-                  }}>
-                    {text}
-                  </Tag>
+          return <>
+                <Tag color={tagColor}
+                  style={{
+                    marginRight: '0'
+                }}>
+                  {text}
+                </Tag>
+                {
+                  manuallyEditedTag(isEditedManually)
+                }
+            </>                  
         }
       },
       {
         title: 'סיכום',
+        width: '15%',
         dataIndex: 'total',
         align: 'right',
         editable: false,
@@ -217,7 +286,7 @@ const EditableTable = (props) => {
         editable: true,
         render: (text, _) => 
           ( text !== '' ) ?
-              <Tag color="volcano"
+              <Tag color="blue"
                 style={{
                   marginRight: '0'
                 }}>
@@ -227,9 +296,12 @@ const EditableTable = (props) => {
       },
       {
         title: '',
+        width: '12%',
         dataIndex: 'operation',
-        render: (text, record) => 
-           (record.requireChange)? 
+        render: (text, record) => {
+
+          return ( moment(record.rdate, 'DD/MM/YYYY').isBefore(moment()) // no edits for future
+                    && record.requireChange)? 
             (<EditIcons 
                 recordId={record.key}
                 editing={isRowEditing(record)} 
@@ -238,6 +310,7 @@ const EditableTable = (props) => {
                 save={save} 
                 cancel={cancel}
             />): null
+        }
       },
     ];
 
@@ -248,42 +321,55 @@ const EditableTable = (props) => {
     }
     return {
       ...col,
-      onCell: (record, rowIndex) => ({
-        record,
-        inputType: (col.dataIndex === 'exit' ||
-          col.dataIndex === 'entry') ? 'time' : 'text',
-        dataIndex: col.dataIndex,
-        title: col.title,
-        rowEditing: isRowEditing(record),
-        cellEditbale: col.dataIndex === 'notes' || 
-             data[rowIndex][col.dataIndex] === '0:00'
-      }),
+      onCell: (record, rowIndex) => {
+
+        return {
+          record,
+          inputType: (col.dataIndex === 'exit' ||
+            col.dataIndex === 'entry') ? 'time' : 'text',
+          dataIndex: col.dataIndex,
+          title: col.title,
+          rowEditing: isRowEditing(record),
+          cellEditbale: record.isAdded && ( col.dataIndex == 'entry' || col.dataIndex == 'exit' )
+                        || data[rowIndex][col.dataIndex] === '0:00'
+                        || col.dataIndex === 'notes'
+                        || isRecordUpdatedManually(record, col.dataIndex)
+
+      }}
     };
   });
+
+  const manuallyEditedTag = ( isEditedManually ) => {
+    return isEditedManually ?
+          <Tooltip title={t('manual_tag')}>
+            <Tag color='magenta'>
+              <Icon type="tag" />
+            </Tag> 
+          </Tooltip>: null
+  }
+
+  const isRecordUpdatedManually = (record, columnName) => {
+
+    if( !manualUpdates )
+      return false;
+
+    let found = false;  
+    if( columnName === 'entry' ) {
+      found = manualUpdates.find( item => {
+        return item.Day == parseInt(record.day) && item.InOut === true
+      })
+    }  else if ( columnName === 'exit') {
+      found = manualUpdates.find( item => {
+        return item.Day == parseInt(record.day) && item.InOut === false
+      })
+    }
+
+    return found ? true: false;
+  }
 
   const isValid = !data.some(r => !r.valid)
   if (isValid) {
     props.onValidated && props.onValidated(data)
-  }
-
-  const handleAddSubmit = e => {
-
-    e.preventDefault();
-    props.form.validateFields( (err, values) => {
-      
-      console.log(values);
-      
-      if( !err ) {
-        setAddModalVisible(false);
-        const _values = {
-          inTime: values["date-picker-in"],
-          outTime: values["date-picker-out"],
-          note: values["notes"]
-        }
-        addRecord(_values);
-      }
-      
-    })
   }
 
   const onCancelAdd = () => 
@@ -335,6 +421,11 @@ const EditableTable = (props) => {
       item.key == record.key
     )    
 
+    const deletedItem = data[index];
+    dispatch(
+      action_ItemDeleted(deletedItem, index)
+    );  
+
     const newData = [...data.slice(0, index), ...data.slice(index + 1)];
     setData(newData);
   }
@@ -343,6 +434,7 @@ const EditableTable = (props) => {
       <>
         <AddRecordModal 
               visible={addModalVisible}
+              record = {recordToAdd}
               onCancel={onCancelAdd}
               onAddRecord={addRecord}
         />
@@ -363,7 +455,6 @@ const EditableTable = (props) => {
               rowClassName="editable-row"
               pagination={false}
               size="small"
-              tableLayout={undefined}
             />
         </ReportContext.Provider>
     </>

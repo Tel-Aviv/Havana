@@ -43,6 +43,7 @@ const Confirm = (props: Props) => {
     const [notesModalVisible, setNotesModalVisible] = useState<boolean>(false);
     const [note, setNote] = useState<string>('');
     const [approvalSending, setApprovalSending] = useState<boolean>(false);
+    const [manualUpdates, setManualUpdates] = useState();
 
     const history = useHistory();
 
@@ -57,9 +58,6 @@ const Confirm = (props: Props) => {
     useEffect( () => {
 
         async function fetchData() {
-
-            setMonth(props.month)
-            setYear(props.year)
 
             setLoadingData(true)
             try {
@@ -100,6 +98,11 @@ const Confirm = (props: Props) => {
 
                 setTotals(resp.data.totalHours);
                 setTitle(`אישור דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
+
+                resp = await axios(`http://${dataContext.host}/me/employees/manual_updates/${routeParams.userid}?year=${resp.data.year}&month=${resp.data.month}`, {
+                    withCredentials: true
+                })
+                setManualUpdates(resp.data.items)
 
             } catch(err) {
                 console.error(err);
@@ -245,6 +248,8 @@ const Confirm = (props: Props) => {
                         <div ref={ref}>
                             <TableReport dataSource={tableData} 
                                         loading={loadingData} 
+                                        manualUpdates={manualUpdates}
+                                        scroll={{y: '400px'}}
                                         editable={false} />
 
                         </div>

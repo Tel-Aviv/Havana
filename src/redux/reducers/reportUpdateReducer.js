@@ -1,8 +1,9 @@
-import { ADD_ITEM, UPDATE_ITEM } from "../actionTypes";
+import { ADD_ITEM, UPDATE_ITEM, DELETE_ITEM } from "../actionTypes";
 
 const initialState = {
   updatedData: [],
   addedData: null,
+  deletedData: null,
   lastUpdatedItem: null,
 };
 
@@ -26,6 +27,16 @@ export default function(state = initialState, action) {
                 addedData: {
                     index: action.addIndex,
                     item: action.addItem
+                }
+            }
+        }
+
+        case DELETE_ITEM: {
+            return {
+                ...state,
+                deletedData: {
+                    index: action.deleteIndex,
+                    item: action.deletedItem
                 }
             }
         }
