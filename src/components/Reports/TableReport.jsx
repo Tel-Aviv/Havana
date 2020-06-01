@@ -78,20 +78,20 @@ const EditableTable = (props) => {
 
     const itemDate = moment(item.rdate);
 
-    const index = daysOff.find( dayOff => (
-         dayOff.getDate() == itemDate.date()
-         && dayOff.getMonth() == itemDate.month()
-         && dayOff.getFullYear() == itemDate.year()
-    ))
-    if( index ) 
-        return false;
-    else
-        return !(item.dayOfWeek === 'ש' || item.dayOfWeek === 'ו');
+    const index = daysOff.findIndex( dayOff => 
+         dayOff.getDate() === itemDate.date() &&
+         dayOff.getMonth() === itemDate.month() &&
+         dayOff.getFullYear() === itemDate.year()
+    );
+
+    return index !== -1 
+      ? false:   
+      !(itemDate.day() == 5  || itemDate.day() == 6);
   }
 
   const isRowEditable = record => {
     return props.editable && isWorkingDay(record);
-          //&&  record.notes !== ''
+    //       //&&  record.notes !== ''
   }
 
   const edit = (key) => {
