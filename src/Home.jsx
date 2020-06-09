@@ -48,7 +48,7 @@ const Home = () => {
     const [isReportSubmitted, setReportSubmitted] = useState<boolean>(false);
     const [isReportEditable, setIsReportEditable] = useState<boolean>(true);
     const [reportId, setReportId] = useState<number>(0);
-    const [totals, setTotals] = useState<number>(0);
+    const [totals, setTotals] = useState<string>(0);
 
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [calendarDate, setCalendarDate] = useState<moment>(moment());
@@ -156,15 +156,35 @@ const Home = () => {
     )
 
     useEffect( () => {
+
+        async function applyEffect() {
+ 
+            if( reportData.length > 0 ) { // skip for first time
+                const totals = calculateTotals();
+                setTotals(totals);
+
+                await onSave();
+            }
+        }
+
+        applyEffect();
+
+    }, [reportData]);  
+
+    useEffect( () => {
+        
         if(_updatedItem){
             const index = reportData.findIndex( item => item.key === _updatedItem.key);
             if ( index > -1 ) {
-                reportData[index] = _updatedItem;
+                const updatedReportData =
+                 [...reportData.slice(0, index), _updatedItem, ...reportData.slice(index+1)];
                 const res = isReportDataValid();
                 setReportDataValid( res.isValid );
-                setReportData(reportData);
+                setReportData(updatedReportData);
+                
             }
         }
+
     }, [_updatedItem])
 
     const _addedData= useSelector(
@@ -183,7 +203,19 @@ const Home = () => {
                 ...reportData.slice(index)
             ];
             setReportData(newData);
+
+            const addedManualUpdates = [{
+                    Day: _addedData.item.day,
+                    Inout: true,
+                }, {
+                    Day: _addedData.item.day,
+                    Inout: false,
+                }
+            ]
+            
+            setManualUpdates([...manualUpdates, ...addedManualUpdates]);
         }
+
     }, [_addedData])    
 
 
@@ -313,7 +345,6 @@ const Home = () => {
                             const _item = {...item, key: index};
                             return _item;
                         })
-                        console.log( moment(resp.data.totalHours, "hh:mm") )
                         setTotals(resp.data.totalHours);
 
                         // Enable further saves
@@ -379,6 +410,23 @@ const Home = () => {
         fetchData()
     }, [month, year])
 
+    function zeroPad(number, lenght) {
+        return (Array(lenght).join('0') + number).slice(-length);
+    }
+
+    const calculateTotals = () => {
+
+        const lTotal = reportData.reduce( ( accu, item ) => {
+            const startTime = moment(item.entry, "hh:mm")
+            const endTime = moment(item.exit, "hh:mm")
+            const dayDuration = endTime.diff(startTime, 'minutes'); // exit.subtract(entry);
+            return accu.add(dayDuration, "minutes");
+        }, moment.duration('00:00'))
+      
+        return `${Math.floor(lTotal.asHours())}:${lTotal.minutes().toString().padStart(2, '0')}`;
+        
+    }
+
     const action_updateItem = (item) => ({
         type: UPDATE_ITEM,
         item
@@ -435,7 +483,7 @@ const Home = () => {
                 withCredentials: true
             });              
 
-            message.success(t('saved'))
+            //message.success(t('saved'))
         } catch(err) {
             console.error(err);
             message.error(err.message)
@@ -504,7 +552,7 @@ const Home = () => {
                                     {t('validate')} <Icon type="check-circle" theme="twoTone" />
                                 </Button>
                             </Tooltip>
-                            <Tooltip placement='bottom' title={t('save_tooltip')}>
+                            {/* <Tooltip placement='bottom' title={t('save_tooltip')}>
                                 <Button onClick={onSave}
                                         style={{
                                             marginRight: '6px'
@@ -512,7 +560,7 @@ const Home = () => {
                                         disabled={loadingData}>
                                     {t('save')}<Icon type="save" theme="twoTone"/>
                                 </Button>
-                            </Tooltip>
+                            </Tooltip> */}
                             <Button onClick={onShowPDF}
                                     disabled={loadingData}>
                                 PDF <Icon type="file-pdf" theme="twoTone" />
@@ -628,10 +676,10 @@ const Home = () => {
                     && arrayItem.InOut === false
             });
             if( foundIndex )
-            items = [...items, {
-                "Day": item.day,
-                "InOut": false
-            }]                            
+                items = [...items, {
+                    "Day": item.day,
+                    "InOut": false
+                }]                            
         }
   
         setManualUpdates([...manualUpdates, ...items]);
