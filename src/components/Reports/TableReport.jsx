@@ -122,7 +122,7 @@ const EditableTable = (props) => {
     const entryTime = getEntryTime(fieldsValue, key);
     const exitTime = getExitTime(fieldsValue, key);
     
-    if( minutes(entryTime) >= minutes(exitTime) ) {  
+    if( minutes(entryTime) > minutes(exitTime) ) {  
       form.setFields({
         entry: {
           value: fieldsValue.entry,

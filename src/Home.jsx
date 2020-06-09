@@ -100,21 +100,28 @@ const Home = () => {
 
             const workingDay = isWorkingDay(item);
             const hasBoth = hasBothEntryExit(item);
+
+            const isItemInvalid = workingDay && !hasBoth && !item.notes;
+            if( isItemInvalid ) {
+                invalidItemIndex = index;
+                return true;
+            }
+
             // if( workingDay && !hasBoth && !item.notes ) // must explain missing working day
             // {
             //     invalidItemIndex = index;
             //     return true;
             // }
 
-            let isItemInvalid = workingDay && !hasBoth;
-            if( isItemInvalid ) {
-                invalidItemIndex = index;
+            // let isItemInvalid = workingDay && !hasBoth;
+            // if( isItemInvalid ) {
+            //     invalidItemIndex = index;
 
-                // if( isItemInvalid && item.notes) { // invalid till now but has explanation provided 
-                //     isItemInvalid = false; 
-                //     invalidItemIndex = -1;
-                // }
-            }
+            //     if( isItemInvalid && item.notes) { // invalid till now but has explanation provided 
+            //         isItemInvalid = false; 
+            //         invalidItemIndex = -1;
+            //     }
+            // }
 
             return isItemInvalid;
         })
@@ -306,6 +313,7 @@ const Home = () => {
                             const _item = {...item, key: index};
                             return _item;
                         })
+                        console.log( moment(resp.data.totalHours, "hh:mm") )
                         setTotals(resp.data.totalHours);
 
                         // Enable further saves
@@ -602,13 +610,24 @@ const Home = () => {
 
         let items = []
         if( inouts[0] ) { // entry time was changed for this item
-            items = [...items, {
-                "Day": item.day,
-                "InOut": true
-            }]
+            const foundIndex = manualUpdates.findIndex( arrayItem => {
+                return arrayItem.day === item.day
+                    && arrayItem.InOut === true
+            });
+            if( foundIndex === -1 ) {
+                items = [...items, {
+                    "Day": item.day,
+                    "InOut": true
+                }]
+            }
     
         }
         if( inouts[1] ) { // exit time was changed
+            const foundIndex = manualUpdates.findIndex( arrayItem => {
+                return arrayItem.day === item.day
+                    && arrayItem.InOut === false
+            });
+            if( foundIndex )
             items = [...items, {
                 "Day": item.day,
                 "InOut": false

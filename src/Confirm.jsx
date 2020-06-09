@@ -170,12 +170,7 @@ const Confirm = (props: Props) => {
                 history.push(`/confirmlist`);
             }, 2500);
 
-            let url = `http://${dataContext.host}/me/pendings/${routeParams.reportId}?note=${note}`;
-            if( reportId == 0 )
-            {
-                url = `http://${dataContext.host}/me/pendings/saved/${savedReportId}?note=${note}`
-            }
-
+            let url = `http://${dataContext.host}/me/pendings/saved/${savedReportId}?note=${note}`
             await axios.patch(url, {html: ref.current.outerHTML}, {
                 headers: {
                     'Content-Type': 'application/json'
