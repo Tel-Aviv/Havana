@@ -81,7 +81,7 @@ const Confirm = (props: Props) => {
 
                 } else {
 
-                    resp = await axios(`http://${dataContext.host}/me/employees/reports/${routeParams.reportId}`, {
+                    resp = await axios(`http://${dataContext.host}/me/employees/reports/${routeParams.saveReportId}`, {
                         withCredentials: true
                     }); 
 
