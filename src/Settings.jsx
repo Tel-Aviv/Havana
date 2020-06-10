@@ -40,7 +40,7 @@ const Settings = () => {
                     axios(`http://${context.host}/me`, { withCredentials: true })
                 ])
 
-                const signature = reps[0].data;
+                const signature = resp[0].data;
                 if( signature.startsWith('data:') ) {
                     setSignature(signature);
                 }

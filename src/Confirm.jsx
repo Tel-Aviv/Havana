@@ -59,6 +59,7 @@ const Confirm = (props: Props) => {
 
         async function fetchData() {
 
+            setSavedReportId(routeParams.saveReportId);
             setLoadingData(true)
             try {
 
@@ -126,17 +127,17 @@ const Confirm = (props: Props) => {
         try {
         
             const _note = note || '';
-            if( reportId == 0 ) {
+            //if( reportId == 0 ) {
                 await axios( `http://${dataContext.host}/me/forwardSavedReport?savedReportGuid=${savedReportId}&note=${_note}`, {
                     withCredentials: true
                 })
 
-            }
-            else {
-                await axios( `http://${dataContext.host}/me/forwardReport?reportId=${routeParams.reportId}&note=${_note}`, {
-                    withCredentials: true
-                })
-            }
+            //}
+            // else {
+            //     await axios( `http://${dataContext.host}/me/forwardReport?reportId=${routeParams.reportId}&note=${_note}`, {
+            //         withCredentials: true
+            //     })
+            // }
 
             dispatch(action_decreaseNotificationCount());
 
@@ -168,7 +169,7 @@ const Confirm = (props: Props) => {
                 clearTimeout(timer);
                 
                 history.push(`/confirmlist`);
-            }, 2500);
+            }, 4000);
 
             let url = `http://${dataContext.host}/me/pendings/saved/${savedReportId}?note=${note}`
             await axios.patch(url, {html: ref.current.outerHTML}, {
