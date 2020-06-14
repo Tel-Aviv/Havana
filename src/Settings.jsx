@@ -34,7 +34,7 @@ const Settings = () => {
 
             try {
 
-                const resp = axios.all([
+                const resp = await axios.all([
                     axios(`http://${context.host}/me/signature`,{ withCredentials: true} ),
                     axios(`http://${context.host}/me/stamp`, { withCredentials: true  } ),
                     axios(`http://${context.host}/me`, { withCredentials: true })

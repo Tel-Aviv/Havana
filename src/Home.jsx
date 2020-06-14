@@ -13,9 +13,9 @@ import { useTranslation } from "react-i18next";
 import { Layout, Icon, Popconfirm } from 'antd';
 const { Content } = Layout;
 
-import { Button, Tooltip, Modal, 
+import { Tooltip, Modal, Button,
         Typography, Table, Tag } from 'antd';
-const { Title, Paragraph, Text } = Typography;
+const { Title } = Typography;
 
 import { Tabs, Dropdown, Menu, message  } from 'antd-rtl';
 const { TabPane } = Tabs;
@@ -27,7 +27,6 @@ import { Pie } from 'ant-design-pro/lib/Charts';
 import ReactToPrint from 'react-to-print';
 
 import TableReport from './components/Reports/TableReport';
-import CalendarReport from './components/Reports/CalendarReport';
 import YearReport from './components/Reports/YearReport';
 import { DataContext } from "./DataContext";
 import DocsUploader from './components/DocsUploader';
@@ -545,25 +544,16 @@ const Home = () => {
                                 </Dropdown.Button>
                             </Popconfirm>
                             <Tooltip placement='bottom' title={t('validate_report')}>
-                                <Button onClick={validateReport} style={{
-                                            marginRight: '6px'
-                                        }}
+                                <Button onClick={validateReport} 
+                                        icon='check-circle'
                                         disabled={loadingData}>
-                                    {t('validate')} <Icon type="check-circle" theme="twoTone" />
+                                    {t('validate')} 
                                 </Button>
                             </Tooltip>
-                            {/* <Tooltip placement='bottom' title={t('save_tooltip')}>
-                                <Button onClick={onSave}
-                                        style={{
-                                            marginRight: '6px'
-                                        }}
-                                        disabled={loadingData}>
-                                    {t('save')}<Icon type="save" theme="twoTone"/>
-                                </Button>
-                            </Tooltip> */}
                             <Button onClick={onShowPDF}
-                                    disabled={loadingData}>
-                                PDF <Icon type="file-pdf" theme="twoTone" />
+                                    disabled={loadingData}
+                                    icon='printer'>
+                                    {t('print')}
                             </Button>
                         </div>;
 
@@ -798,16 +788,6 @@ const Home = () => {
                                         editable={isReportEditable}>
                             </TableReport>
                         </TabPane>
-                        {/* <TabPane tab={<span>
-                                        <Icon type="schedule" />
-                                        <span>
-                                            {t('calendar')}
-                                        </span>
-                                    </span>
-                                    } 
-                                key="2">
-                            <CalendarReport tableData={reportData} value={calendarDate}/>
-                        </TabPane> */}
                         <TabPane tab={<span>
                                         <Icon type="fund" />
                                         <span>
@@ -845,19 +825,17 @@ const Home = () => {
                                 manualUpdates={manualUpdates}
                                 editable={false} />
                     <Row>
-                        <Col span={9}>
-                            <Img style={{
-                                width: '100px'
-                            }} src={signature} /> 
+                        <Col offset={8} span={1}>
+                            <Img className='footer-signature' src={signature} /> 
                         </Col>
                         <Col span={3}>
-                            <div>{t('signature')}</div>        
+                            <div className='footer-print'>{t('signature')}</div>        
                         </Col>
                         <Col span={6}>
-                            <div>סה"כ { totals } שעות</div>
+                            <div className='footer-print'>סה"כ { totals } שעות</div>
                         </Col>
                         <Col span={6}>
-                            <div>{t('printed_when')} {moment().format('DD/MM/YYYY')}</div>
+                            <div className='footer-print'>{t('printed_when')} {moment().format('DD/MM/YYYY')}</div>
                         </Col>
                     </Row>
                 </div>

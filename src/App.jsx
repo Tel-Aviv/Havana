@@ -18,7 +18,8 @@ const { Title } = Typography;
 
 import { Row, Col } from 'antd';
 
-import { Avatar, Badge, Tooltip } from 'antd';
+import NotificationBadge, {Effect} from 'react-notification-badge';
+import { Avatar, Tooltip } from 'antd';
 
 // import "antd/dist/antd.css";
 import 'antd-rtl/es/tabs/style/index.css'
@@ -127,58 +128,57 @@ const App = () => {
             <Layout layout='topmenu' 
                     locale='he-IL'> 
                 <Layout.Header className='ant-layout-header rtl'>                
-                <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-blue' style={{
-                    padding: '0 6%'
-                }}>  
-                    <Menu.Item key='settings' style={{
-                            top: '6px'
-                        }}>
-                            <Tooltip title={t('settings')}>
-                                <div onClick={goSettings}>
-                                    <Avatar size="large" src={`data:image/jpeg;base64,${context.user.imageData}`}
-                                        style={{
-                                            marginRight: '0'
-                                        }}
-                                        onError={ () => true} />
-                                    <span style={{
-                                        padding: '0 12px'
-                                    }}>{context.user.name}</span>        
-                                </div>
-                            </Tooltip>
-                    </Menu.Item>
-                    <Menu.Item key='home' style={{
-                        float: 'left',
-                        marginTop: '8px'
-                        }}>
-                        <Tooltip title={t('home')}>
-                            <Icon type="home" 
-                                theme="outlined"
-                                style={{
-                                    fontSize: '24px'
-                                }} 
-                                onClick={goHome}
-                            />
-                        </Tooltip>      
-                    </Menu.Item>                    
-                    <Menu.Item key='notifications' style={{
-                            marginTop: '12px',
+                    <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-blue' style={{
+                        padding: '0 3%'
+                    }}>  
+                        <Menu.Item key='settings' style={{
+                                top: '6px'
+                            }}>
+                                <Tooltip title={t('settings')}>
+                                    <div onClick={goSettings}>
+                                        <Avatar size="large" src={`data:image/jpeg;base64,${context.user.imageData}`}
+                                            style={{
+                                                marginRight: '0'
+                                            }}
+                                            onError={ () => true} />
+                                        <span style={{
+                                            padding: '0 12px'
+                                        }}>{context.user.name}</span>        
+                                    </div>
+                                </Tooltip>
+                        </Menu.Item>
+                        <Menu.Item key='home' style={{
                             float: 'left',
-                            display: displayNotifications
-                        }}>
-                            <Badge count={parseInt(notificationsCount)} onClick={onApprovalClicked} 
-                                   className='ltr' 
-                                   showZero
-                                   overflowCount={50}>
+                            marginTop: '8px'
+                            }}>
+                            <Tooltip title={t('home')}>
+                                <Icon type="home" 
+                                    theme="outlined"
+                                    style={{
+                                        fontSize: '24px'
+                                    }} 
+                                    onClick={goHome}
+                                />
+                            </Tooltip>      
+                        </Menu.Item>                    
+                        <Menu.Item key='notifications' style={{
+                                marginTop: '8px',
+                                float: 'left',
+                                display: displayNotifications
+                            }}>
+                                <div>
+                                    <NotificationBadge count={parseInt(notificationsCount)} effect={Effect.SCALE}>
+                                    </NotificationBadge>                                
+                                </div>
                                 <Tooltip title={t('notifications')}>
-                                    <Icon type="bell" theme="outlined" 
+                                    <Icon type="bell" theme="outlined" onClick={onApprovalClicked} 
                                         style={{
                                             fontSize: '24px'
                                         }}/>
                                 </Tooltip>
-                            </Badge>    
-                    </Menu.Item> 
-                </Menu>                      
-            </Layout.Header>
+                        </Menu.Item> 
+                    </Menu>   
+                </Layout.Header>
             <Layout style={{ 
                     padding: '17px 24px 24px 24px'
                 }}>

@@ -21,7 +21,8 @@ import { DataContext } from './DataContext';
 import TableReport from './components/Reports/TableReport';
 import DocsUploader from './components/DocsUploader';
 
-import { DECREASE_NOTIFICATIONS_COUNT } from "./redux/actionTypes";
+import { DECREASE_NOTIFICATIONS_COUNT,
+         INCREASE_NOTIFICATION_COUNT } from "./redux/actionTypes";
 
 type Props = {
     month: number,
@@ -119,6 +120,10 @@ const Confirm = (props: Props) => {
         type: DECREASE_NOTIFICATIONS_COUNT
     })
 
+    const action_increaseNotificationCount = () => ({
+        type: INCREASE_NOTIFICATION_COUNT
+    })
+
     const onContinue = () => {
         setNotesModalVisible(true);
     }    
@@ -171,6 +176,8 @@ const Confirm = (props: Props) => {
                 history.push(`/confirmlist`);
             }, 4000);
 
+            dispatch( action_decreaseNotificationCount() );
+
             let url = `http://${dataContext.host}/me/pendings/saved/${savedReportId}?note=${note}`
             await axios.patch(url, {html: ref.current.outerHTML}, {
                 headers: {
@@ -178,9 +185,6 @@ const Confirm = (props: Props) => {
                 },
                 withCredentials: true
             })
-
-            dispatch(action_decreaseNotificationCount());
-
             
         } catch( err ) {
             console.error(err.message)

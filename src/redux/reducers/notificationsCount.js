@@ -1,6 +1,8 @@
 // @flow
 import moment from 'moment';
-import { SET_NOTIFICATIONS_COUNT, DECREASE_NOTIFICATIONS_COUNT } from "../actionTypes";
+import { SET_NOTIFICATIONS_COUNT, 
+            DECREASE_NOTIFICATIONS_COUNT, 
+            INCREASE_NOTIFICATION_COUNT } from "../actionTypes";
 
 type State = {
     notificationsCount: number
@@ -28,6 +30,13 @@ export default function(state: State = initialState, action: Action): State {
             return {
                 ...state,
                 notificationsCount: state.notificationsCount - 1
+            }
+        }
+
+        case INCREASE_NOTIFICATION_COUNT: {
+            return {
+                ...state,
+                notificationsCount: state.notificationsCount + 1
             }
         }
 
