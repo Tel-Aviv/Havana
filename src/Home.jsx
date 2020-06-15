@@ -159,8 +159,6 @@ const Home = () => {
         async function applyEffect() {
  
             if( reportData.length > 0 ) { // skip for first time
-                const totals = calculateTotals();
-                setTotals(totals);
 
                 await onSave();
             }
@@ -250,7 +248,11 @@ const Home = () => {
             if( !data.submitted ) {
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם נשלח לאישור`);
             } else if( !data.approved ) {
-                setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם אושר ע"י ${data.assignedToName}`);
+                let _alertMessage = `דוח שעות לחודש ${month}/${year} טרם אושר`
+                if( data.assignedToName ) {
+                    _alertMessage += ` ע"י ${data.assignedToName}`;
+                }
+                setAlertMessage(_alertMessage);
             } else {
                 const whenApproved = moment(data.whenApproved).format('DD/MM/YYYY')
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} אושר בתאריך ${whenApproved} ע"י ${data.assignedToName}`);
@@ -344,10 +346,10 @@ const Home = () => {
                             const _item = {...item, key: index};
                             return _item;
                         })
-                        setTotals(resp.data.totalHours);
+                        setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
 
                         // Enable further saves
-                        setIsReportEditable(true);
+                        setIsReportEditable(true && !respArr[1].data.approved);
                     }  
                     // else {
   
@@ -377,7 +379,7 @@ const Home = () => {
                                 return _item;
                         })
                         
-                        setTotals(resp.data.totalHours);
+                        setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
                         setIsReportEditable(resp.data.isEditable)
 
                     }
@@ -416,10 +418,16 @@ const Home = () => {
     const calculateTotals = () => {
 
         const lTotal = reportData.reduce( ( accu, item ) => {
-            const startTime = moment(item.entry, "hh:mm")
-            const endTime = moment(item.exit, "hh:mm")
-            const dayDuration = endTime.diff(startTime, 'minutes'); // exit.subtract(entry);
-            return accu.add(dayDuration, "minutes");
+            
+            const dayDuration = moment.duration(item.total);
+            return accu.add(dayDuration);
+            // const startTime = moment(item.entry, "hh:mm")
+            // const endTime = moment(item.exit, "hh:mm")
+            // const dayDuration = endTime.diff(startTime, 'minutes'); 
+            // return accu.add(dayDuration, "minutes");
+
+
+
         }, moment.duration('00:00'))
       
         return `${Math.floor(lTotal.asHours())}:${lTotal.minutes().toString().padStart(2, '0')}`;
@@ -817,7 +825,7 @@ const Home = () => {
                             />,
                             <Button key={uniqid()} onClick={handlePrintCancel}>{t('cancel')}</Button>
                         ]}>
-                <div ref={componentRef} style={{textAlign: 'center'}}>
+                <div ref={componentRef} style={{textAlign: 'center'}} className='pdf-container'>
                     <div className='pdf-title'>{dataContext.user.name}</div>
                     <div className='pdf-title'>{t('summary')} {month}/{year}</div>
                     <TableReport dataSource={reportData} 

@@ -190,14 +190,19 @@ body {
 
 /* table adaptation for print */
 @media print {
+  div.pdf-container {
+    border-style: dotted;
+    border-width: thin;
+    border-color:rgba(255, 255, 255, 1.0)
+  }
   div.ant-table  {
-    font-size: 10px;
+    font-size: x-small;
   }
   div.pdf-title {
-    font-size: 10px;
+    font-size: x-small;
   }
   tbody.ant-table-tbody {
-    font-size: 10px;
+    font-size: x-small;
   }
   span.ant-table-header-column {
     font-size: 10px;
