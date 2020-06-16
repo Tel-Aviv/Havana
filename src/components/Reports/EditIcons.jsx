@@ -33,8 +33,9 @@ export default ({recordId, display, editing, disable, edit, save, cancel}) => {
           disable ?
             (<Icon type="edit" style={iconStyle} />) :
             (<Tooltip title={t('edit_record')}>
-                <Icon type="edit" theme="twoTone"
-                onClick={() => edit(recordId)} type="edit" style={iconStyle} />
+                <Icon type="edit" 
+                      theme="twoTone"
+                      onClick={() => edit(recordId)} type="edit" style={iconStyle} />
               </Tooltip>) 
     )
   }

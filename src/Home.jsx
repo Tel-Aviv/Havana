@@ -160,6 +160,9 @@ const Home = () => {
  
             if( reportData.length > 0 ) { // skip for first time
 
+                const _totals = recalculateTotals();
+                setTotals(_totals);
+
                 await onSave();
             }
         }
@@ -226,6 +229,8 @@ const Home = () => {
             const index = _deletedData.index;
             const newData = [...reportData.slice(0, index), ...reportData.slice(index + 1)];
             setReportData(newData);
+
+            
         }
 
     }, [_deletedData]);
@@ -415,18 +420,12 @@ const Home = () => {
         return (Array(lenght).join('0') + number).slice(-length);
     }
 
-    const calculateTotals = () => {
+    const recalculateTotals = () => {
 
         const lTotal = reportData.reduce( ( accu, item ) => {
             
             const dayDuration = moment.duration(item.total);
             return accu.add(dayDuration);
-            // const startTime = moment(item.entry, "hh:mm")
-            // const endTime = moment(item.exit, "hh:mm")
-            // const dayDuration = endTime.diff(startTime, 'minutes'); 
-            // return accu.add(dayDuration, "minutes");
-
-
 
         }, moment.duration('00:00'))
       

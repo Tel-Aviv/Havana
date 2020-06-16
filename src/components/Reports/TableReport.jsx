@@ -89,9 +89,15 @@ const EditableTable = (props) => {
       !(itemDate.day() == 5  || itemDate.day() == 6);
   }
 
-  const isRowEditable = record => {
-    return props.editable && isWorkingDay(record);
-    //       //&&  record.notes !== ''
+  const isTotalled = (item) => {
+    const tokens = item.total.split(':');
+    const hours = parseInt(tokens[0]);
+    const minutes = parseInt(tokens[1]);
+    return item.total != '0:00';
+  }
+
+  const isRowEditable = (record) => {
+    return props.editable && (!isTotalled(record) && isWorkingDay(record) || record.isAdded);
   }
 
   const edit = (key) => {

@@ -47,13 +47,7 @@ const approvedTableColumns = [{
         dataIndex: "reportOwner",
         align: 'right',
         key: "name"
-    }, 
-    // {
-    //     title: "dd",
-    //     dataIndex: "reportOwnerId",
-    //     align: 'right',
-    //     key: 'ownerId'
-    // },
+    },
     ...columns.slice(1),
     {
         title: "תאריך אישור",
