@@ -732,7 +732,6 @@ const Home = () => {
                                             allowClear={false}
                                             defaultValue={moment()} />
                 </Col>
-                 
             </Row>
             <Row>
             { 

@@ -57,7 +57,10 @@ const translations = {
             "exit_before_entry": "Exit before entry?",
             "manual_tag": "Has been edited manually",
             "summary": "Summary attendance for ",
-            "printed_when": "Printed "
+            "printed_when": "Printed ",
+            "approvals_list": "Reports assigned to you",
+            "pending_reports": "Pending",
+            "approved_reports": "Approved",
         }
     },
     he: {
@@ -118,7 +121,10 @@ const translations = {
             "exit_before_entry": "יציאה לפני הכניסה?",
             "manual_tag": "נערך באופן ידני",
             "summary": "גיליון נוכחות מסכם לחודש",
-            "printed_when": " הופק בתאריך "
+            "printed_when": " הופק בתאריך ",
+            "approvals_list": "דוחות בטיפולך",
+            "pending_reports": "ממתינים",
+            "approved_reports": "אושרו",
         }
     }
 }    
