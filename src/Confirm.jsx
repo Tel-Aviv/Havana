@@ -193,7 +193,7 @@ const Confirm = (props: Props) => {
                     <Col span={4} >
                         {
                             isReportApproved ? (
-                                    <Button type='primary'
+                                    <Button
                                     icon='printer'
                                     onClick={onPrint}>
                                         {t('print')}
@@ -254,7 +254,7 @@ const Confirm = (props: Props) => {
                         <ReactToPrint key={uniqid()} 
                                         copyStyles={true}
                                         removeAfterPrint={true}
-                                        trigger={() => <Button>{t('print')}</Button>}
+                                        trigger={() => <Button type="primary">{t('print')}</Button>}
                                         documentTitle={`attendance report ${month}/${year}`}
                                         content={() => componentRef.current}
                         />,
