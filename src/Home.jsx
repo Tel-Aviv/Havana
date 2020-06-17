@@ -356,15 +356,6 @@ const Home = () => {
                         // Enable further saves
                         setIsReportEditable(true && !respArr[1].data.approved);
                     }  
-                    // else {
-  
-                    //     reportId = respArr[1].data.reportId;
-                    //     _resp = await axios(`http://${dataContext.host}/me/reports/${reportId}/updates`, {
-                    //         withCredentials: true
-                    //     });
-                    //     // Disable the changes to assigned report
-                    //     setIsReportEditable(false);
-                    // } 
 
                 } else {
 
@@ -566,79 +557,73 @@ const Home = () => {
 
     let columns = [
         {
-        title: 'יום',
-        dataIndex: 'day',
-        align: 'right',
-        ellipsis: true,
-        editable: false,
-        },
-        {
-        title: 'יום בשבוע',
-        dataIndex: 'dayOfWeek',
-        align: 'right',
-        ellipsis: true,
-        editable: false,
-        },    
-        {
-        title: 'כניסה',
-        dataIndex: 'entry',
-        align: 'right',
-        editable: true,
-        render: (text) => {
-            let tagColor = 'green';
-            if( text === '0:00' ) {
-            tagColor = 'volcano'
+            title: 'יום',
+            dataIndex: 'day',
+            align: 'right',
+            ellipsis: true,
+            editable: false,
+        }, {
+            title: 'יום בשבוע',
+            dataIndex: 'dayOfWeek',
+            align: 'right',
+            ellipsis: true,
+            editable: false,
+        }, {
+            title: 'כניסה',
+            dataIndex: 'entry',
+            align: 'right',
+            editable: true,
+            render: (text) => {
+                let tagColor = 'green';
+                if( text === '0:00' ) {
+                tagColor = 'volcano'
+                }
+                return <Tag color={tagColor}
+                        style={{
+                            marginRight: '0'
+                        }}>
+                        {text}
+                        </Tag>
+            }          
+        }, {
+            title: 'יציאה',
+            dataIndex: 'exit',
+            align: 'right',
+            editable: true,
+            render: (text) => {
+                let tagColor = 'green';
+                if( text === '0:00' ) {
+                tagColor = 'volcano'
+                }
+                return <Tag color={tagColor}
+                        style={{
+                            marginRight: '0'
+                        }}>
+                        {text}
+                        </Tag>
             }
-            return <Tag color={tagColor}
+        }, {
+            title: 'סיכום',
+            dataIndex: 'total',
+            align: 'right',
+            editable: false,
+        }, {
+            title: 'הערות',
+            dataIndex: 'notes',
+            align: 'right',
+            editable: true,
+            render: (text, _) => 
+                ( text !== '' ) ?
+                    <Tag color="volcano"
                     style={{
                         marginRight: '0'
                     }}>
                     {text}
                     </Tag>
-        }          
-        },
-        {
-        title: 'יציאה',
-        dataIndex: 'exit',
-        align: 'right',
-        editable: true,
-        render: (text) => {
-            let tagColor = 'green';
-            if( text === '0:00' ) {
-            tagColor = 'volcano'
-            }
-            return <Tag color={tagColor}
-                    style={{
-                        marginRight: '0'
-                    }}>
-                    {text}
-                    </Tag>
-        }
-        },
-        {
-        title: 'סיכום',
-        dataIndex: 'total',
-        align: 'right',
-        editable: false,
-        },
-        {
-        title: 'הערות',
-        dataIndex: 'notes',
-        align: 'right',
-        editable: true,
-        render: (text, _) => 
-            ( text !== '' ) ?
-                <Tag color="volcano"
-                style={{
-                    marginRight: '0'
-                }}>
-                {text}
-                </Tag>
-                : null
-        },
-        {
-        title: '',
-        dataIndex: 'operation'
+                    : null
+        }, {
+            title: '',
+            dataIndex: 'operation'
         }
     ];                        
                     

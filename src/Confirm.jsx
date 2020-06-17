@@ -1,8 +1,9 @@
 // @flow
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
+import moment from 'moment';
 import uniqid from 'uniqid';
 
 import { useTranslation, Trans } from "react-i18next";
@@ -16,6 +17,7 @@ const { Title } = Typography;
 import { Layout } from 'antd';
 const { Content } = Layout;
 import { Pie } from 'ant-design-pro/lib/Charts';        
+import ReactToPrint from 'react-to-print';
 
 import { DataContext } from './DataContext';
 import TableReport from './components/Reports/TableReport';
@@ -35,25 +37,25 @@ const Confirm = (props: Props) => {
     
     const [month, setMonth] = useState<number>(0);
     const [year, setYear] = useState<number>(0);
-    const [reportId, setReportId] = useState<number>(0);
     const [savedReportId, setSavedReportId] = useState<number>(0);
+    const [reportOwnerName, setReportOwnerName] = useState<string>('');
     const [totals, setTotals] = useState<number>(0);
     const [tableData, setTableData] = useState([])
     const [title, setTitle] = useState<string>('');
+    const [isReportApproved, setIsReportApproved] = useState<bool>(false);
+    const [whenApproved, setWhenApproved] = useState();
     const [loadingData, setLoadingData] = useState<boolean>(false);
     const [notesModalVisible, setNotesModalVisible] = useState<boolean>(false);
+    const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
     const [note, setNote] = useState<string>('');
     const [approvalSending, setApprovalSending] = useState<boolean>(false);
     const [manualUpdates, setManualUpdates] = useState();
 
     const history = useHistory();
-
+    const componentRef = useRef();
     const dataContext = useContext(DataContext)
-
     const { t } = useTranslation();
-
     const routeParams = useParams();
-
     const dispatch = useDispatch();
 
     useEffect( () => {
@@ -64,41 +66,21 @@ const Confirm = (props: Props) => {
             setLoadingData(true)
             try {
 
-                let resp;
-                if( routeParams.reportId == 0 ) {
+                let resp = await axios(`http://${dataContext.host}/me/employees/reports/${routeParams.saveReportId}`, {
+                    withCredentials: true
+                }); 
 
-                    resp = await axios(`http://${dataContext.host}/me/reports/saved?savedReportGuid=${routeParams.saveReportId}`, {
-                        withCredentials: true
-                    }); 
-                    setSavedReportId(routeParams.saveReportId);
-
-                    const data = resp.data.items.map( (item, index ) => {
-                        const _item = {...item, key: index};
-                        // if( reportId === 0 )
-                        //     reportId = item.reportId;
-                        return _item;
-                    })
-                    setTableData(data);
-                    setReportId(0);
-
-                } else {
-
-                    resp = await axios(`http://${dataContext.host}/me/employees/reports/${routeParams.saveReportId}`, {
-                        withCredentials: true
-                    }); 
-
-                    let reportId = 0;
-                    const data = resp.data.items.map( (item, index ) => {
-                        const _item = {...item, key: index};
-                        if( reportId === 0 )
-                            reportId = item.reportId;
-                        return _item;
-                    })
-                    setTableData(data);               
-                    setReportId(reportId);
-                }
-
-                setTotals(resp.data.totalHours);
+                const data = resp.data.items.map( (item, index ) => {
+                    const _item = {...item, key: index};
+                    return _item;
+                })
+                setTableData(data);            
+                setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);   
+                setIsReportApproved(resp.data.isApproved);
+                setMonth(resp.data.month);
+                setYear(resp.data.year);
+                setReportOwnerName(resp.data.ownerName);
+                setWhenApproved(moment(resp.data.whenApproved));
                 setTitle(`אישור דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
 
                 resp = await axios(`http://${dataContext.host}/me/employees/manual_updates/${routeParams.userid}?year=${resp.data.year}&month=${resp.data.month}`, {
@@ -132,17 +114,9 @@ const Confirm = (props: Props) => {
         try {
         
             const _note = note || '';
-            //if( reportId == 0 ) {
-                await axios( `http://${dataContext.host}/me/forwardSavedReport?savedReportGuid=${savedReportId}&note=${_note}`, {
-                    withCredentials: true
-                })
-
-            //}
-            // else {
-            //     await axios( `http://${dataContext.host}/me/forwardReport?reportId=${routeParams.reportId}&note=${_note}`, {
-            //         withCredentials: true
-            //     })
-            // }
+            await axios( `http://${dataContext.host}/me/forwardSavedReport?savedReportGuid=${savedReportId}&note=${_note}`, {
+                withCredentials: true
+            })
 
             dispatch(action_decreaseNotificationCount());
 
@@ -204,20 +178,36 @@ const Confirm = (props: Props) => {
         return Math.floor( parseFloat(totals) / 160. * 100 );
     }
 
+    const onPrint = () => {
+        setPrintModalVisible(!printModalVisible);
+    }
+
+    const handlePrintCancel = () => {
+        setPrintModalVisible(false);
+    }
+
     return (
         <Content>
             <Title level={1} className='hvn-title'>{title}</Title>
-            <Row  className='hvn-item-ltr' align={'middle'} type='flex'>
-                <Col span={4} >
-                    <Button type="primary" loading={approvalSending}
-                            style={{
-                                marginBottom: '8px'
-                            }}   
-                            onClick={ () => onContinue() }>
-                                {t('continue')}
-                    </Button>                
-                </Col>
-            </Row>
+                <Row  className='hvn-item-ltr' align={'middle'} type='flex'>
+                    <Col span={4} >
+                        {
+                            isReportApproved ? (
+                                    <Button type='primary'
+                                    icon='printer'
+                                    onClick={onPrint}>
+                                        {t('print')}
+                                    </Button>
+                                )
+                                : (
+                                    <Button type='primary' loading={approvalSending}
+                                            onClick={ () => onContinue() }>
+                                                {t('continue')}
+                                    </Button>                
+                                )
+                        }
+                    </Col>
+                </Row>
             <Row gutter={[32, 32]} style={{
                     margin: '0% 4%' 
                 }}>
@@ -244,7 +234,6 @@ const Confirm = (props: Props) => {
                 </Col>
                 <Col span={16}>
                     <div className='hvn-item'>
-        
                         <div ref={ref}>
                             <TableReport dataSource={tableData} 
                                         loading={loadingData} 
@@ -256,6 +245,42 @@ const Confirm = (props: Props) => {
                     </div>
                 </Col>
             </Row>
+            <Modal width='54%'
+                    visible={printModalVisible}
+                    closable={true}
+                    forceRender={true}
+                    onCancel={handlePrintCancel}
+                    footer={[
+                        <ReactToPrint key={uniqid()} 
+                                        copyStyles={true}
+                                        removeAfterPrint={true}
+                                        trigger={() => <Button>{t('print')}</Button>}
+                                        documentTitle={`attendance report ${month}/${year}`}
+                                        content={() => componentRef.current}
+                        />,
+                        <Button key={uniqid()} onClick={handlePrintCancel}>{t('cancel')}</Button>
+                    ]}>
+                <div ref={componentRef} style={{textAlign: 'center'}} className='pdf-container'>
+                <div className='pdf-title'>{reportOwnerName}</div>
+                    <div className='pdf-title'>{t('summary')} {month}/{year}</div>
+                    <TableReport dataSource={tableData} 
+                                        loading={loadingData} 
+                                        manualUpdates={manualUpdates}
+                                        editable={false} />
+                    <Row>
+                        <Col span={6}>
+                            <div className='footer-print'>סה"כ { totals } שעות</div>
+                        </Col>
+                        <Col span={6}>
+                            { 
+                                whenApproved ?
+                                    <div className='footer-print'>{t('approved_when')} {whenApproved.format('DD/MM/YYYY')}</div> :
+                                    null
+                            }
+                        </Col>                        
+                    </Row>                                        
+                </div>                                        
+            </Modal>
             <Modal closable={false} 
                     className='rtl'
                     visible={notesModalVisible}
