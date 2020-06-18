@@ -353,8 +353,7 @@ const Home = () => {
                         })
                         setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
 
-                        // Enable further saves
-                        setIsReportEditable(true && !respArr[1].data.approved);
+                        setIsReportEditable(!respArr[1].data.approved);
                     }  
 
                 } else {
@@ -811,10 +810,10 @@ const Home = () => {
                 <div ref={componentRef} style={{textAlign: 'center'}} className='pdf-container'>
                     <div className='pdf-title'>{dataContext.user.name}</div>
                     <div className='pdf-title'>{t('summary')} {month}/{year}</div>
-                    <TableReport dataSource={reportData} 
+                    {/* <TableReport dataSource={reportData} 
                                 loading={loadingData} 
                                 manualUpdates={manualUpdates}
-                                editable={false} />
+                                editable={false} /> */}
                     <Row>
                         <Col offset={8} span={1}>
                             <Img className='footer-signature' src={signature} /> 

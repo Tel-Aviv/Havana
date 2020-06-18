@@ -50,10 +50,13 @@ const EditableTable = (props) => {
   useEffect(() => {
     setOriginalData(props.dataSource)
     setData(props.dataSource.map( record =>  {
+
+        const _isRowEditable = isRowEditable(record);
+
         return { 
             ...record, 
-            requireChange : isRowEditable(record),
-            valid : (record.requireChange)?  false : true,
+            requireChange : _isRowEditable, // isRowEditable(record),
+            valid : _isRowEditable ? false : true, // (record.requireChange)?  false : true,
             rdate : moment(record.rdate).format('DD/MM/YYYY')
         }
       })
@@ -97,7 +100,7 @@ const EditableTable = (props) => {
   }
 
   const isRowEditable = (record) => {
-    return props.editable && (!isTotalled(record) && isWorkingDay(record) || record.isAdded);
+    return props.editable && (!isTotalled(record) && isWorkingDay(record) || record.isAdded || isRecordUpdatedManually(record, 'entry'));
   }
 
   const edit = (key) => {
@@ -155,15 +158,15 @@ const EditableTable = (props) => {
           ...row,
           entry: (row.entry) ? row.entry.format(format) : item.entry, 
           exit:  (row.exit) ? row.exit.format(format) : item.exit, 
+          rdate: moment(item.rdate, 'DD/MM/YYYY').startOf('day').format()
         }
         newItem.total = moment.utc(moment(newItem.exit, format).diff(moment(newItem.entry, format))).format(format)
         newItem.valid = true;
         
         newData.splice(index, 1, newItem);
-        props.onChange && props.onChange(newItem, inouts);
         setEditingKey('');
+        props.onChange && props.onChange(newItem, inouts);        
         setData(newData)
-
       }
     });
   }
@@ -304,7 +307,7 @@ const EditableTable = (props) => {
         title: '',
         width: '12%',
         dataIndex: 'operation',
-        render: (text, record) => {
+        render: (_, record) => {
 
           return ( moment(record.rdate, 'DD/MM/YYYY').isBefore(moment()) // no edits for future
                     && record.requireChange)? 
@@ -316,6 +319,7 @@ const EditableTable = (props) => {
                 save={save} 
                 cancel={cancel}
             />): null
+
         }
       },
     ];

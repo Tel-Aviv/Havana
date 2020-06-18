@@ -14,7 +14,7 @@
   "scripts": {
     "build": "webpack -d --watch",
     "dist": "xcopy /Y .\\dist\\* C:\\Dev\\Havana\\PS\\PS",
-    "prod": "webpack -p",
+    "prod": "webpack -p --config webpack.prod.js",
     "start": "nodemon ./src/ssr/index.js --port 3000 -e jsx",
     "find_user": "node ./src/ssr/findUser.js",
     "test": "jest"
@@ -68,6 +68,7 @@
     "nodemon": "^2.0.2",
     "react-test-renderer": "^16.12.0",
     "style-loader": "^1.1.2",
+    "terser-webpack-plugin": "^3.0.5",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1"

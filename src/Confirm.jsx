@@ -163,7 +163,6 @@ const Confirm = (props: Props) => {
         } catch( err ) {
             console.error(err.message)
         }
-
     }
     
     const onNotesModalClosed = () => {
