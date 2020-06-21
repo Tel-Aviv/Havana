@@ -13,7 +13,7 @@ import EditableCell from './EditableCell'
 import EditIcons from './EditIcons';
 import CustomTimePicker from '../CustomTimePicker'
 import AddRecordModal from './AddRecordModal';
-import axios from 'axios';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
 const format = 'H:mm';
 
@@ -291,6 +291,7 @@ const EditableTable = (props) => {
       {
         title: t('notes'),
         dataIndex: 'notes',
+        width: '100px',
         align: 'right',
         editable: true,
         render: (text, _) => 
@@ -299,13 +300,18 @@ const EditableTable = (props) => {
                 style={{
                   marginRight: '0'
                 }}>
-                {text}
+                  {
+                    text.length > 42 ?
+                    <Tooltip title={text}>
+                      <Ellipsis length={42}>{text}</Ellipsis>
+                    </Tooltip> :
+                      <div>{text}</div>
+                  }
               </Tag>
               : null
       },
       {
         title: '',
-        width: '12%',
         dataIndex: 'operation',
         render: (_, record) => {
 

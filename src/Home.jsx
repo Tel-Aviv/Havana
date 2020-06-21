@@ -98,9 +98,9 @@ const Home = () => {
         const res = reportData.some( (item, index) => {
 
             const workingDay = isWorkingDay(item);
-            const hasBoth = hasBothEntryExit(item);
+            const hasTotal = isTotalled(item);
 
-            const isItemInvalid = workingDay && !hasBoth && !item.notes;
+            const isItemInvalid = workingDay && !hasTotal && !item.notes;
             if( isItemInvalid ) {
                 invalidItemIndex = index;
                 return true;
@@ -146,8 +146,13 @@ const Home = () => {
             return !(item.dayOfWeek === 'ש' || item.dayOfWeek === 'ו');
     }
 
-    const hasBothEntryExit = (item) => {
-        return item.entry !== '0:00' && item.exit !== '0:00'
+    const isTotalled = (item) => {
+        const tokens = item.total.split(':');
+        const hours = parseInt(tokens[0]);
+        const minutes = parseInt(tokens[1]);
+    
+        //return item.entry !== '0:00' && item.exit !== '0:00'
+        return item.total != '0:00';
     }
 
     const _updatedItem = useSelector(
@@ -735,7 +740,7 @@ const Home = () => {
                 <Col span={5}>
                     <Row gutter={[40, 32]}>
                         <Col>
-                            <Card title='סיכומים' bordered={false}
+                            <Card title='סיכום חודשי' bordered={false}
                                 className='rtl' loading={loadingData}>
                                 <div>סה"כ { totals } שעות</div>
                                 <Pie percent={getTotalHoursPercentage()} total={getTotalHoursPercentage() + '%'} height={140} />
@@ -810,12 +815,15 @@ const Home = () => {
                 <div ref={componentRef} style={{textAlign: 'center'}} className='pdf-container'>
                     <div className='pdf-title'>{dataContext.user.name}</div>
                     <div className='pdf-title'>{t('summary')} {month}/{year}</div>
-                    {/* <TableReport dataSource={reportData} 
+                    <TableReport dataSource={reportData} 
                                 loading={loadingData} 
                                 manualUpdates={manualUpdates}
-                                editable={false} /> */}
+                                editable={false} />
                     <Row>
-                        <Col offset={8} span={1}>
+                        <Col span={9} style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end'
+                        }}>
                             <Img className='footer-signature' src={signature} /> 
                         </Col>
                         <Col span={3}>

@@ -213,7 +213,7 @@ const Confirm = (props: Props) => {
                 <Col span={8}>
                     <Row gutter={[40, 32]}>
                         <Col>
-                            <Card title='סיכומים' bordered={false}
+                            <Card title='סיכום חודשי' bordered={false}
                                 className='rtl' loading={loadingData}>
                                     <div>סה"כ { totals } שעות</div>
                                     <Pie percent={getTotalHoursPercentage()} total={getTotalHoursPercentage() + '%'} height={140} />
