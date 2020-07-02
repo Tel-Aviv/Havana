@@ -411,10 +411,6 @@ const Home = () => {
         fetchData()
     }, [month, year])
 
-    function zeroPad(number, lenght) {
-        return (Array(lenght).join('0') + number).slice(-length);
-    }
-
     const recalculateTotals = () => {
 
         const lTotal = reportData.reduce( ( accu, item ) => {
@@ -554,7 +550,10 @@ const Home = () => {
                             </Tooltip>
                             <Button onClick={onShowPDF}
                                     disabled={loadingData}
-                                    icon='printer'>
+                                    icon='printer'
+                                    style={{
+                                        marginLeft: '4px'
+                                    }}>
                                     {t('print')}
                             </Button>
                         </div>;

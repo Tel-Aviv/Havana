@@ -75,7 +75,7 @@ const Confirm = (props: Props) => {
                     return _item;
                 })
                 setTableData(data);            
-                setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);   
+                setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60).toString().padStart(2, '0')}`);   
                 setIsReportApproved(resp.data.isApproved);
                 setMonth(resp.data.month);
                 setYear(resp.data.year);

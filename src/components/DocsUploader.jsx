@@ -25,34 +25,44 @@ const DocsUploader = ({year, month, isOperational, employeeId}: Props) => {
     const { t } = useTranslation();
 
     useEffect( () => {
+        
+        let mounted = true;
 
         const fetchData = async () => {            
 
             try {
                 const url = (isOperational) ?
-                    `http://${dataContext.host}/me/reports/${_year}/${_month}/docs/` :
-                    `http://${dataContext.host}/me/employees/${employeeId}/reports/${_year}/${_month}/docs`;
-                const res = await axios(url, {
-                    withCredentials: true
-                })
-                const _docs = res.data.map( (item, index) => {
-                    return {
-                        uid: index,
-                        status: 'done',
-                        name: item
+                    `http://${dataContext.host}/me/reports/${year}/${month}/docs/` :
+                    `http://${dataContext.host}/me/employees/${employeeId}/reports/${year}/${month}/docs`;
+                
+                    const res = await axios(url, {
+                        withCredentials: true
+                    })
+                    
+                    if (mounted) {
+                        const _docs = res.data.map( (item, index) => {
+                            return {
+                                uid: index,
+                                status: 'done',
+                                name: item
+                            }
+                        })
+                        setDocs(_docs);
                     }
-                })
-                setDocs(_docs);
-
             } catch( err ) {
                 console.error(err);
             }
         }
-
         _setYear(year);
         _setMonth(month);
 
         fetchData();
+
+        return () => {
+            // When cleanup is called, toggle the mounted variable to false
+            mounted = false;
+        }
+
     }, [year, month])
 
     const removeDoc = async(file) => {
