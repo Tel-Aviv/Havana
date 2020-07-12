@@ -1,7 +1,7 @@
 // @flow
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Route, Switch, withRouter, Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import moment from 'moment'
 
 import { Table, Alert, 
@@ -13,6 +13,17 @@ import { Layout } from 'antd';
 const { Content } = Layout;
 import { DataContext } from './DataContext';
 
+const monthsFilter = [...Array(12).keys()].map( i => ({
+                                                        text: i+1,
+                                                        value: i + 1
+                                                    })
+                                              )
+const yearsFilter = [2019, 2020, 2021, 2022, 2023].map( i => ({
+                                                            text: i,
+                                                            value: i
+                                                        })
+                                                    )                                              
+
 const columns = [{
         title: 'שם עובד',
         dataIndex: 'userName',
@@ -22,12 +33,20 @@ const columns = [{
       title: "שנה",
       dataIndex: "year",
       align: 'right',
-      key: "year"
+      key: "year",
+      filters: yearsFilter,
+      onFilter: (value, record) => {
+          return record.year === value
+      }      
    },{
       title: "חודש",
       dataIndex: "month",
       align: 'right',
-      key: "month"
+      key: "month",
+      filters: monthsFilter,
+      onFilter: (value, record) => {
+          return record.month === value
+      }      
    },{
       title: "תאריך שליחה",
       dataIndex: "whenSubmitted",
@@ -42,11 +61,26 @@ const columns = [{
 
 ]
 
-const approvedTableColumns = [{
+const ConfirmList = () => {
+
+    const history = useHistory()
+    const [pendingList, setPendingList] = useState([])
+    const [approvedList, setApprovedList] = useState([])
+    const [namesFilter, setNamesFilter] = useState({})
+    const dataContext = useContext(DataContext)
+
+    const { t } = useTranslation();
+
+
+    const approvedTableColumns = [{
         title: "שם עובד",
         dataIndex: "reportOwner",
         align: 'right',
-        key: "name"
+        key: "name",
+        filters: namesFilter,
+        onFilter: (value, record) => {
+            return record.reportOwner.indexOf(value) === 0
+        }
     },
     ...columns.slice(1),
     {
@@ -55,16 +89,7 @@ const approvedTableColumns = [{
         align: 'right',
         key: "approved"
     }    
-];
-
-const ConfirmList = () => {
-
-    const history = useHistory()
-    const [pendingList, setPendingList] = useState([])
-    const [approvedList, setApprovedList] = useState([])
-    const dataContext = useContext(DataContext)
-
-    const { t } = useTranslation();
+    ];
 
     useEffect( () =>  {
 
@@ -98,7 +123,19 @@ const ConfirmList = () => {
                         key: index
                     }
                 });
-                setApprovedList(approvedReports)
+                setApprovedList(approvedReports);
+
+                const names = new Set(); // will bw unique
+                resp[1].data.forEach( item => names.add(item.reportOwner) )
+
+                const _namesFilter = [...names].map( item => (
+                    {
+                        text: item,
+                        value: item
+                    }
+                ))
+                
+                setNamesFilter(_namesFilter);
 
             } catch(error) { // 😨
                 console.log(error.message);

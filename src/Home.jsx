@@ -100,27 +100,11 @@ const Home = () => {
             const workingDay = isWorkingDay(item);
             const hasTotal = isTotalled(item);
 
-            const isItemInvalid = workingDay && !hasTotal && !item.notes;
+            const isItemInvalid = workingDay && !hasTotal && !item.notes || item.notes.startsWith('*');
             if( isItemInvalid ) {
                 invalidItemIndex = index;
                 return true;
             }
-
-            // if( workingDay && !hasBoth && !item.notes ) // must explain missing working day
-            // {
-            //     invalidItemIndex = index;
-            //     return true;
-            // }
-
-            // let isItemInvalid = workingDay && !hasBoth;
-            // if( isItemInvalid ) {
-            //     invalidItemIndex = index;
-
-            //     if( isItemInvalid && item.notes) { // invalid till now but has explanation provided 
-            //         isItemInvalid = false; 
-            //         invalidItemIndex = -1;
-            //     }
-            // }
 
             return isItemInvalid;
         })

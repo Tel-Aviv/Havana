@@ -1,12 +1,12 @@
 // @flow
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 import uniqid from 'uniqid';
 
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 import { Button, Typography, 
         Row, Col, Card } from 'antd';

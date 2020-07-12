@@ -11,7 +11,6 @@ import { useTranslation } from "react-i18next";
 import { ReportContext } from "./table-context";
 import EditableCell from './EditableCell'
 import EditIcons from './EditIcons';
-import CustomTimePicker from '../CustomTimePicker'
 import AddRecordModal from './AddRecordModal';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
@@ -291,7 +290,6 @@ const EditableTable = (props) => {
       {
         title: t('notes'),
         dataIndex: 'notes',
-        width: '100px',
         align: 'right',
         editable: true,
         render: (text, _) => 
@@ -313,6 +311,7 @@ const EditableTable = (props) => {
       {
         title: '',
         dataIndex: 'operation',
+        width: '6%',
         render: (_, record) => {
 
           return ( moment(record.rdate, 'DD/MM/YYYY').isBefore(moment()) // no edits for future
