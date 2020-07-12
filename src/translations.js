@@ -62,6 +62,18 @@ const translations = {
             "approvals_list": "Reports assigned to you",
             "pending_reports": "Pending",
             "approved_reports": "Approved",
+            "m1": "January",
+            "m2": "Ferbuary",
+            "m3": "March",
+            "m4": "April",
+            "m5": "May",
+            "m6": "Juny",
+            "m7": "July",
+            "m8": "August",
+            "m9": "September",
+            "m10": "October",
+            "m11": "November",
+            "m12": "December"
         }
     },
     he: {
@@ -127,6 +139,18 @@ const translations = {
             "approvals_list": "דוחות בטיפולך",
             "pending_reports": "ממתינים",
             "approved_reports": "אושרו",
+            "m1": "ינואר",
+            "m2": "פברואר",
+            "m3": "מרץ",
+            "m4": "אפריל",
+            "m5": "מאי",
+            "m6": "יוני",
+            "m7": "יולי",
+            "m8": "אוגוסט",
+            "m9": "ספטמבר",
+            "m10": "אוקטובר",
+            "m11": "נובמבר",
+            "m12": "דצמבר"
         }
     }
 }    

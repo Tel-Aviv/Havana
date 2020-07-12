@@ -654,6 +654,10 @@ const Home = () => {
         setManualUpdates([...manualUpdates, ...items]);
     } 
 
+    const getMonthName = (monthNum) => {
+        return t('m'+monthNum)
+    }
+
     const alertOpacity = loadingData ? 0.2 : 1.0;
 
     return (
@@ -723,10 +727,13 @@ const Home = () => {
                 <Col span={5}>
                     <Row gutter={[40, 32]}>
                         <Col>
-                            <Card title='סיכום חודשי' bordered={false}
+                            <Card title={ `סיכום חודשי: סה"כ ${totals} שעות` } bordered={false}
                                 className='rtl' loading={loadingData}>
-                                <div>סה"כ { totals } שעות</div>
-                                <Pie percent={getTotalHoursPercentage()} total={getTotalHoursPercentage() + '%'} height={140} />
+                                <Pie percent={getTotalHoursPercentage()} 
+                                     total={getTotalHoursPercentage() + '%'} 
+                                     animate={false}
+                                     subTitle={`${getMonthName(month)} ${year}`}
+                                     height={140} />
                             </Card>
                         </Col>
                     </Row>

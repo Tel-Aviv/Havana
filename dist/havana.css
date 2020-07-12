@@ -225,6 +225,11 @@ body {
   width: 100px
 }
 
+.totals {
+  width: 200px;
+  margin: 0 auto;
+}
+
 /* Splash animation */
 
 .bar {
