@@ -13,9 +13,9 @@ import { useTranslation } from "react-i18next";
 import { Layout, Icon, Popconfirm } from 'antd';
 const { Content } = Layout;
 
-import { Button, Tooltip, Modal, 
+import { Tooltip, Modal, Button,
         Typography, Table, Tag } from 'antd';
-const { Title, Paragraph, Text } = Typography;
+const { Title } = Typography;
 
 import { Tabs, Dropdown, Menu, message  } from 'antd-rtl';
 const { TabPane } = Tabs;
@@ -27,7 +27,6 @@ import { Pie } from 'ant-design-pro/lib/Charts';
 import ReactToPrint from 'react-to-print';
 
 import TableReport from './components/Reports/TableReport';
-import CalendarReport from './components/Reports/CalendarReport';
 import YearReport from './components/Reports/YearReport';
 import { DataContext } from "./DataContext";
 import DocsUploader from './components/DocsUploader';
@@ -48,7 +47,7 @@ const Home = () => {
     const [isReportSubmitted, setReportSubmitted] = useState<boolean>(false);
     const [isReportEditable, setIsReportEditable] = useState<boolean>(true);
     const [reportId, setReportId] = useState<number>(0);
-    const [totals, setTotals] = useState<number>(0);
+    const [totals, setTotals] = useState<string>(0);
 
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [calendarDate, setCalendarDate] = useState<moment>(moment());
@@ -99,21 +98,12 @@ const Home = () => {
         const res = reportData.some( (item, index) => {
 
             const workingDay = isWorkingDay(item);
-            const hasBoth = hasBothEntryExit(item);
-            // if( workingDay && !hasBoth && !item.notes ) // must explain missing working day
-            // {
-            //     invalidItemIndex = index;
-            //     return true;
-            // }
+            const hasTotal = isTotalled(item);
 
-            let isItemInvalid = workingDay && !hasBoth;
+            const isItemInvalid = workingDay && !hasTotal && !item.notes || item.notes.startsWith('*');
             if( isItemInvalid ) {
                 invalidItemIndex = index;
-
-                // if( isItemInvalid && item.notes) { // invalid till now but has explanation provided 
-                //     isItemInvalid = false; 
-                //     invalidItemIndex = -1;
-                // }
+                return true;
             }
 
             return isItemInvalid;
@@ -140,8 +130,13 @@ const Home = () => {
             return !(item.dayOfWeek === 'ש' || item.dayOfWeek === 'ו');
     }
 
-    const hasBothEntryExit = (item) => {
-        return item.entry !== '0:00' && item.exit !== '0:00'
+    const isTotalled = (item) => {
+        const tokens = item.total.split(':');
+        const hours = parseInt(tokens[0]);
+        const minutes = parseInt(tokens[1]);
+    
+        //return item.entry !== '0:00' && item.exit !== '0:00'
+        return item.total != '0:00';
     }
 
     const _updatedItem = useSelector(
@@ -149,15 +144,36 @@ const Home = () => {
     )
 
     useEffect( () => {
+
+        async function applyEffect() {
+ 
+            if( reportData.length > 0 ) { // skip for first time
+
+                const _totals = recalculateTotals();
+                setTotals(_totals);
+
+                await onSave();
+            }
+        }
+
+        applyEffect();
+
+    }, [reportData]);  
+
+    useEffect( () => {
+        
         if(_updatedItem){
             const index = reportData.findIndex( item => item.key === _updatedItem.key);
             if ( index > -1 ) {
-                reportData[index] = _updatedItem;
+                const updatedReportData =
+                 [...reportData.slice(0, index), _updatedItem, ...reportData.slice(index+1)];
                 const res = isReportDataValid();
                 setReportDataValid( res.isValid );
-                setReportData(reportData);
+                setReportData(updatedReportData);
+                
             }
         }
+
     }, [_updatedItem])
 
     const _addedData= useSelector(
@@ -176,7 +192,19 @@ const Home = () => {
                 ...reportData.slice(index)
             ];
             setReportData(newData);
+
+            const addedManualUpdates = [{
+                    Day: _addedData.item.day,
+                    Inout: true,
+                }, {
+                    Day: _addedData.item.day,
+                    Inout: false,
+                }
+            ]
+            
+            setManualUpdates([...manualUpdates, ...addedManualUpdates]);
         }
+
     }, [_addedData])    
 
 
@@ -190,6 +218,8 @@ const Home = () => {
             const index = _deletedData.index;
             const newData = [...reportData.slice(0, index), ...reportData.slice(index + 1)];
             setReportData(newData);
+
+            
         }
 
     }, [_deletedData]);
@@ -212,7 +242,11 @@ const Home = () => {
             if( !data.submitted ) {
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם נשלח לאישור`);
             } else if( !data.approved ) {
-                setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם אושר ע"י ${data.assignedToName}`);
+                let _alertMessage = `דוח שעות לחודש ${month}/${year} טרם אושר`
+                if( data.assignedToName ) {
+                    _alertMessage += ` ע"י ${data.assignedToName}`;
+                }
+                setAlertMessage(_alertMessage);
             } else {
                 const whenApproved = moment(data.whenApproved).format('DD/MM/YYYY')
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} אושר בתאריך ${whenApproved} ע"י ${data.assignedToName}`);
@@ -230,13 +264,13 @@ const Home = () => {
         async function fetchData() {
 
             try {
-                let resp = await axios(`http://${dataContext.host}/me/managers/`, {
+                let resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/managers/`, {
                     withCredentials: true
                 });
 
                 setManagers(resp.data);
 
-                resp = await axios(`http://${dataContext.host}/me/signature`, {
+                resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/signature`, {
                     withCredentials: true
                 });
             
@@ -268,13 +302,13 @@ const Home = () => {
                 const manualUpdates = [];
 
                 let respArr = await axios.all([
-                    axios(`http://${dataContext.host}/daysoff?year=${year}&month=${month}`, {
+                    axios(`${dataContext.protocol}://${dataContext.host}/daysoff?year=${year}&month=${month}`, {
                         withCredentials: true
                     }),
-                    axios(`http://${dataContext.host}/me/reports/status?month=${month}&year=${year}`, {
+                    axios(`${dataContext.protocol}://${dataContext.host}/me/reports/status?month=${month}&year=${year}`, {
                         withCredentials: true
                     }),
-                    axios(`http://${dataContext.host}/me/manual_updates?year=${year}&month=${month}`, {
+                    axios(`${dataContext.protocol}://${dataContext.host}/me/manual_updates?year=${year}&month=${month}`, {
                         withCredentials: true
                     })
                 ]);
@@ -299,32 +333,22 @@ const Home = () => {
 
                         // Interim report found. Actually the following call gets
                         // the merged report: saved changes over the original data
-                        const resp = await axios(`http://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
+                        const resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
                             withCredentials: true
                         })  
                         data = resp.data.items.map( (item, index ) => {
                             const _item = {...item, key: index};
                             return _item;
                         })
-                        setTotals(resp.data.totalHours);
+                        setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
 
-                        // Enable further saves
-                        setIsReportEditable(true);
+                        setIsReportEditable(!respArr[1].data.approved);
                     }  
-                    // else {
-  
-                    //     reportId = respArr[1].data.reportId;
-                    //     _resp = await axios(`http://${dataContext.host}/me/reports/${reportId}/updates`, {
-                    //         withCredentials: true
-                    //     });
-                    //     // Disable the changes to assigned report
-                    //     setIsReportEditable(false);
-                    // } 
 
                 } else {
 
                     // The status of the report is unknown, i.e. get the original report    
-                    const resp = await axios(`http://${dataContext.host}/me/reports/${year}/${month}/`, {
+                    const resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/reports/${year}/${month}/`, {
                         withCredentials: true
                     }); 
 
@@ -339,7 +363,7 @@ const Home = () => {
                                 return _item;
                         })
                         
-                        setTotals(resp.data.totalHours);
+                        setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
                         setIsReportEditable(resp.data.isEditable)
 
                     }
@@ -371,6 +395,19 @@ const Home = () => {
         fetchData()
     }, [month, year])
 
+    const recalculateTotals = () => {
+
+        const lTotal = reportData.reduce( ( accu, item ) => {
+            
+            const dayDuration = moment.duration(item.total);
+            return accu.add(dayDuration);
+
+        }, moment.duration('00:00'))
+      
+        return `${Math.floor(lTotal.asHours())}:${lTotal.minutes().toString().padStart(2, '0')}`;
+        
+    }
+
     const action_updateItem = (item) => ({
         type: UPDATE_ITEM,
         item
@@ -383,7 +420,7 @@ const Home = () => {
         try {
             
             await axios({
-                url: `http://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee}`, 
+                url: `${dataContext.protocol}://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee}`, 
                 method: 'post',
                 data: reportData,
                 withCredentials: true
@@ -408,7 +445,7 @@ const Home = () => {
     const onSave = async() => {
         try {
             await axios({
-                url: `http://${dataContext.host}/me/report/save?month=${month}&year=${year}`,
+                url: `${dataContext.protocol}://${dataContext.host}/me/report/save?month=${month}&year=${year}`,
                 method: 'post',
                 data: reportData,
                 withCredentials: true
@@ -421,13 +458,13 @@ const Home = () => {
                 UserID: dataContext.user.id,
                 items: manualUpdates
             }
-            await axios(`http://${dataContext.host}/me/manual_updates/`, {
+            await axios(`${dataContext.protocol}://${dataContext.host}/me/manual_updates/`, {
                 method: 'post',
                 data: manualUpdate,
                 withCredentials: true
             });              
 
-            message.success(t('saved'))
+            //message.success(t('saved'))
         } catch(err) {
             console.error(err);
             message.error(err.message)
@@ -489,103 +526,91 @@ const Home = () => {
                                 </Dropdown.Button>
                             </Popconfirm>
                             <Tooltip placement='bottom' title={t('validate_report')}>
-                                <Button onClick={validateReport} style={{
-                                            marginRight: '6px'
-                                        }}
+                                <Button onClick={validateReport} 
+                                        icon='check-circle'
                                         disabled={loadingData}>
-                                    {t('validate')} <Icon type="check-circle" theme="twoTone" />
-                                </Button>
-                            </Tooltip>
-                            <Tooltip placement='bottom' title={t('save_tooltip')}>
-                                <Button onClick={onSave}
-                                        style={{
-                                            marginRight: '6px'
-                                        }}
-                                        disabled={loadingData}>
-                                    {t('save')}<Icon type="save" theme="twoTone"/>
+                                    {t('validate')} 
                                 </Button>
                             </Tooltip>
                             <Button onClick={onShowPDF}
-                                    disabled={loadingData}>
-                                PDF <Icon type="file-pdf" theme="twoTone" />
+                                    disabled={loadingData}
+                                    icon='printer'
+                                    style={{
+                                        marginLeft: '4px'
+                                    }}>
+                                    {t('print')}
                             </Button>
                         </div>;
 
     let columns = [
         {
-        title: 'יום',
-        dataIndex: 'day',
-        align: 'right',
-        ellipsis: true,
-        editable: false,
-        },
-        {
-        title: 'יום בשבוע',
-        dataIndex: 'dayOfWeek',
-        align: 'right',
-        ellipsis: true,
-        editable: false,
-        },    
-        {
-        title: 'כניסה',
-        dataIndex: 'entry',
-        align: 'right',
-        editable: true,
-        render: (text) => {
-            let tagColor = 'green';
-            if( text === '0:00' ) {
-            tagColor = 'volcano'
+            title: 'יום',
+            dataIndex: 'day',
+            align: 'right',
+            ellipsis: true,
+            editable: false,
+        }, {
+            title: 'יום בשבוע',
+            dataIndex: 'dayOfWeek',
+            align: 'right',
+            ellipsis: true,
+            editable: false,
+        }, {
+            title: 'כניסה',
+            dataIndex: 'entry',
+            align: 'right',
+            editable: true,
+            render: (text) => {
+                let tagColor = 'green';
+                if( text === '0:00' ) {
+                tagColor = 'volcano'
+                }
+                return <Tag color={tagColor}
+                        style={{
+                            marginRight: '0'
+                        }}>
+                        {text}
+                        </Tag>
+            }          
+        }, {
+            title: 'יציאה',
+            dataIndex: 'exit',
+            align: 'right',
+            editable: true,
+            render: (text) => {
+                let tagColor = 'green';
+                if( text === '0:00' ) {
+                tagColor = 'volcano'
+                }
+                return <Tag color={tagColor}
+                        style={{
+                            marginRight: '0'
+                        }}>
+                        {text}
+                        </Tag>
             }
-            return <Tag color={tagColor}
+        }, {
+            title: 'סיכום',
+            dataIndex: 'total',
+            align: 'right',
+            editable: false,
+        }, {
+            title: 'הערות',
+            dataIndex: 'notes',
+            align: 'right',
+            editable: true,
+            render: (text, _) => 
+                ( text !== '' ) ?
+                    <Tag color="volcano"
                     style={{
                         marginRight: '0'
                     }}>
                     {text}
                     </Tag>
-        }          
-        },
-        {
-        title: 'יציאה',
-        dataIndex: 'exit',
-        align: 'right',
-        editable: true,
-        render: (text) => {
-            let tagColor = 'green';
-            if( text === '0:00' ) {
-            tagColor = 'volcano'
-            }
-            return <Tag color={tagColor}
-                    style={{
-                        marginRight: '0'
-                    }}>
-                    {text}
-                    </Tag>
-        }
-        },
-        {
-        title: 'סיכום',
-        dataIndex: 'total',
-        align: 'right',
-        editable: false,
-        },
-        {
-        title: 'הערות',
-        dataIndex: 'notes',
-        align: 'right',
-        editable: true,
-        render: (text, _) => 
-            ( text !== '' ) ?
-                <Tag color="volcano"
-                style={{
-                    marginRight: '0'
-                }}>
-                {text}
-                </Tag>
-                : null
-        },
-        {
-        title: '',
-        dataIndex: 'operation'
+                    : null
+        }, {
+            title: '',
+            dataIndex: 'operation'
         }
     ];                        
                     
@@ -602,21 +627,36 @@ const Home = () => {
 
         let items = []
         if( inouts[0] ) { // entry time was changed for this item
-            items = [...items, {
-                "Day": item.day,
-                "InOut": true
-            }]
+            const foundIndex = manualUpdates.findIndex( arrayItem => {
+                return arrayItem.day === item.day
+                    && arrayItem.InOut === true
+            });
+            if( foundIndex === -1 ) {
+                items = [...items, {
+                    "Day": item.day,
+                    "InOut": true
+                }]
+            }
     
         }
         if( inouts[1] ) { // exit time was changed
-            items = [...items, {
-                "Day": item.day,
-                "InOut": false
-            }]                            
+            const foundIndex = manualUpdates.findIndex( arrayItem => {
+                return arrayItem.day === item.day
+                    && arrayItem.InOut === false
+            });
+            if( foundIndex )
+                items = [...items, {
+                    "Day": item.day,
+                    "InOut": false
+                }]                            
         }
   
         setManualUpdates([...manualUpdates, ...items]);
     } 
+
+    const getMonthName = (monthNum) => {
+        return t('m'+monthNum)
+    }
 
     const alertOpacity = loadingData ? 0.2 : 1.0;
 
@@ -667,7 +707,6 @@ const Home = () => {
                                             allowClear={false}
                                             defaultValue={moment()} />
                 </Col>
-                 
             </Row>
             <Row>
             { 
@@ -688,10 +727,13 @@ const Home = () => {
                 <Col span={5}>
                     <Row gutter={[40, 32]}>
                         <Col>
-                            <Card title='סיכומים' bordered={false}
+                            <Card title={ `סיכום חודשי: ${getMonthName(month)} ${year} ` } bordered={false}
                                 className='rtl' loading={loadingData}>
-                                <div>סה"כ { totals } שעות</div>
-                                <Pie percent={getTotalHoursPercentage()} total={getTotalHoursPercentage() + '%'} height={140} />
+                                <Pie percent={getTotalHoursPercentage()} 
+                                     total={getTotalHoursPercentage() + '%'} 
+                                     animate={false}
+                                     subTitle={ `${totals} שעות`}
+                                     height={180} />
                             </Card>
                         </Col>
                     </Row>
@@ -731,16 +773,6 @@ const Home = () => {
                                         editable={isReportEditable}>
                             </TableReport>
                         </TabPane>
-                        {/* <TabPane tab={<span>
-                                        <Icon type="schedule" />
-                                        <span>
-                                            {t('calendar')}
-                                        </span>
-                                    </span>
-                                    } 
-                                key="2">
-                            <CalendarReport tableData={reportData} value={calendarDate}/>
-                        </TabPane> */}
                         <TabPane tab={<span>
                                         <Icon type="fund" />
                                         <span>
@@ -770,7 +802,7 @@ const Home = () => {
                             />,
                             <Button key={uniqid()} onClick={handlePrintCancel}>{t('cancel')}</Button>
                         ]}>
-                <div ref={componentRef} style={{textAlign: 'center'}}>
+                <div ref={componentRef} style={{textAlign: 'center'}} className='pdf-container'>
                     <div className='pdf-title'>{dataContext.user.name}</div>
                     <div className='pdf-title'>{t('summary')} {month}/{year}</div>
                     <TableReport dataSource={reportData} 
@@ -778,19 +810,20 @@ const Home = () => {
                                 manualUpdates={manualUpdates}
                                 editable={false} />
                     <Row>
-                        <Col span={9}>
-                            <Img style={{
-                                width: '100px'
-                            }} src={signature} /> 
+                        <Col span={9} style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end'
+                        }}>
+                            <Img className='footer-signature' src={signature} /> 
                         </Col>
                         <Col span={3}>
-                            <div>{t('signature')}</div>        
+                            <div className='footer-print'>{t('signature')}</div>        
                         </Col>
                         <Col span={6}>
-                            <div>סה"כ { totals } שעות</div>
+                            <div className='footer-print'>סה"כ { totals } שעות</div>
                         </Col>
                         <Col span={6}>
-                            <div>{t('printed_when')} {moment().format('DD/MM/YYYY')}</div>
+                            <div className='footer-print'>{t('printed_when')} {moment().format('DD/MM/YYYY')}</div>
                         </Col>
                     </Row>
                 </div>

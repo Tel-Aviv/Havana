@@ -1,6 +1,14 @@
+const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
 
 module.exports = {
+    mode: 'production',
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin({ 
+            cache: true,
+         })],
+    },    
     entry: {
         bundle: path.resolve(__dirname, './src/index.js'),
         // ssr_bundle: './src/ssr/index.js'
@@ -67,5 +75,5 @@ module.exports = {
         contentBase: path.join(__dirname, 'dist'),
         compress: true
     },    
-    devtool: 'source-map',
+    devtool: 'source-map'
 }

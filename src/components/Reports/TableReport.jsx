@@ -11,9 +11,8 @@ import { useTranslation } from "react-i18next";
 import { ReportContext } from "./table-context";
 import EditableCell from './EditableCell'
 import EditIcons from './EditIcons';
-import CustomTimePicker from '../CustomTimePicker'
 import AddRecordModal from './AddRecordModal';
-import axios from 'axios';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
 const format = 'H:mm';
 
@@ -50,10 +49,13 @@ const EditableTable = (props) => {
   useEffect(() => {
     setOriginalData(props.dataSource)
     setData(props.dataSource.map( record =>  {
+
+        const _isRowEditable = isRowEditable(record);
+
         return { 
             ...record, 
-            requireChange : isRowEditable(record),
-            valid : (record.requireChange)?  false : true,
+            requireChange : _isRowEditable, // isRowEditable(record),
+            valid : _isRowEditable ? false : true, // (record.requireChange)?  false : true,
             rdate : moment(record.rdate).format('DD/MM/YYYY')
         }
       })
@@ -78,20 +80,33 @@ const EditableTable = (props) => {
 
     const itemDate = moment(item.rdate);
 
-    const index = daysOff.find( dayOff => (
-         dayOff.getDate() == itemDate.date()
-         && dayOff.getMonth() == itemDate.month()
-         && dayOff.getFullYear() == itemDate.year()
-    ))
-    if( index ) 
-        return false;
-    else
-        return !(item.dayOfWeek === 'ש' || item.dayOfWeek === 'ו');
+    const index = daysOff.findIndex( dayOff => 
+         dayOff.getDate() === itemDate.date() &&
+         dayOff.getMonth() === itemDate.month() &&
+         dayOff.getFullYear() === itemDate.year()
+    );
+
+    return index !== -1 
+      ? false:   
+      !(itemDate.day() == 5  || itemDate.day() == 6);
   }
 
-  const isRowEditable = record => {
-    return props.editable && isWorkingDay(record);
-          //&&  record.notes !== ''
+  const isTotalled = (item) => {
+    const tokens = item.total.split(':');
+    const hours = parseInt(tokens[0]);
+    const minutes = parseInt(tokens[1]);
+    return item.total != '0:00';
+  }
+
+  const hasSytemNotes = (record) => {
+    return record.notes && record.notes.startsWith('*');
+  }
+
+  const isRowEditable = (record) => {
+    return props.editable && (!isTotalled(record) && isWorkingDay(record) 
+                          || record.isAdded 
+                          || isRecordUpdatedManually(record, 'entry') 
+                          || hasSytemNotes(record));
   }
 
   const edit = (key) => {
@@ -122,7 +137,7 @@ const EditableTable = (props) => {
     const entryTime = getEntryTime(fieldsValue, key);
     const exitTime = getExitTime(fieldsValue, key);
     
-    if( minutes(entryTime) >= minutes(exitTime) ) {  
+    if( minutes(entryTime) > minutes(exitTime) ) {  
       form.setFields({
         entry: {
           value: fieldsValue.entry,
@@ -149,15 +164,15 @@ const EditableTable = (props) => {
           ...row,
           entry: (row.entry) ? row.entry.format(format) : item.entry, 
           exit:  (row.exit) ? row.exit.format(format) : item.exit, 
+          rdate: moment(item.rdate, 'DD/MM/YYYY').startOf('day').format()
         }
         newItem.total = moment.utc(moment(newItem.exit, format).diff(moment(newItem.entry, format))).format(format)
         newItem.valid = true;
         
         newData.splice(index, 1, newItem);
-        props.onChange && props.onChange(newItem, inouts);
         setEditingKey('');
+        props.onChange && props.onChange(newItem, inouts);        
         setData(newData)
-
       }
     });
   }
@@ -290,15 +305,21 @@ const EditableTable = (props) => {
                 style={{
                   marginRight: '0'
                 }}>
-                {text}
+                  {
+                    text && text.length > 42 ?
+                    <Tooltip title={text}>
+                      <Ellipsis length={42}>{text}</Ellipsis>
+                    </Tooltip> :
+                      <div>{text}</div>
+                  }
               </Tag>
               : null
       },
       {
         title: '',
-        width: '12%',
         dataIndex: 'operation',
-        render: (text, record) => {
+        width: '6%',
+        render: (_, record) => {
 
           return ( moment(record.rdate, 'DD/MM/YYYY').isBefore(moment()) // no edits for future
                     && record.requireChange)? 
@@ -310,6 +331,7 @@ const EditableTable = (props) => {
                 save={save} 
                 cancel={cancel}
             />): null
+
         }
       },
     ];

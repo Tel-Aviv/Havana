@@ -18,7 +18,8 @@ const { Title } = Typography;
 
 import { Row, Col } from 'antd';
 
-import { Avatar, Badge, Tooltip } from 'antd';
+import NotificationBadge, {Effect} from 'react-notification-badge';
+import { Avatar, Tooltip } from 'antd';
 
 // import "antd/dist/antd.css";
 import 'antd-rtl/es/tabs/style/index.css'
@@ -30,7 +31,7 @@ import ReportPDF from './ReportPDF';
 import Settings from './Settings';
 
 import { DataContext } from "./DataContext";
-import { getUserFromHtml, getHost } from './utils';
+import { getUserFromHtml, getHost, getProtocol } from './utils';
 import translations from './translations';
 
 import { SET_NOTIFICATIONS_COUNT } from './redux/actionTypes';
@@ -54,7 +55,8 @@ const App = () => {
 
     const context = {
         user : getUserFromHtml(),
-        host : getHost()
+        host : getHost(),
+        protocol: getProtocol()
     }
 
     const dispatch = useDispatch();
@@ -63,7 +65,7 @@ const App = () => {
 
     useEffect( () => {
         async function fetchData() {
-            let res = await axios(`http://${context.host}/me/is_manager/`, {
+            let res = await axios(`${context.protocol}://${context.host}/me/is_manager/`, {
                 withCredentials: true
             });
             const isManager = res.data;
@@ -71,7 +73,7 @@ const App = () => {
             setDisplayNotificatios(display)
 
             if( isManager ) {
-                res = await axios(`http://${context.host}/me/pendings/count`,{
+                res = await axios(`${context.protocol}://${context.host}/me/pendings/count`,{
                     withCredentials: true
                 })
                 dispatch(action_setNotificationCount(res.data));
@@ -127,58 +129,57 @@ const App = () => {
             <Layout layout='topmenu' 
                     locale='he-IL'> 
                 <Layout.Header className='ant-layout-header rtl'>                
-                <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-blue' style={{
-                    padding: '0 6%'
-                }}>  
-                    <Menu.Item key='settings' style={{
-                            top: '6px'
-                        }}>
-                            <Tooltip title={t('settings')}>
-                                <div onClick={goSettings}>
-                                    <Avatar size="large" src={`data:image/jpeg;base64,${context.user.imageData}`}
-                                        style={{
-                                            marginRight: '0'
-                                        }}
-                                        onError={ () => true} />
-                                    <span style={{
-                                        padding: '0 12px'
-                                    }}>{context.user.name}</span>        
-                                </div>
-                            </Tooltip>
-                    </Menu.Item>
-                    <Menu.Item key='home' style={{
-                        float: 'left',
-                        marginTop: '8px'
-                        }}>
-                        <Tooltip title={t('home')}>
-                            <Icon type="home" 
-                                theme="outlined"
-                                style={{
-                                    fontSize: '24px'
-                                }} 
-                                onClick={goHome}
-                            />
-                        </Tooltip>      
-                    </Menu.Item>                    
-                    <Menu.Item key='notifications' style={{
-                            marginTop: '12px',
+                    <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-blue' style={{
+                        padding: '0 3%'
+                    }}>  
+                        <Menu.Item key='settings' style={{
+                                top: '6px'
+                            }}>
+                                <Tooltip title={t('settings')}>
+                                    <div onClick={goSettings}>
+                                        <Avatar size="large" src={`data:image/jpeg;base64,${context.user.imageData}`}
+                                            style={{
+                                                marginRight: '0'
+                                            }}
+                                            onError={ () => true} />
+                                        <span style={{
+                                            padding: '0 12px'
+                                        }}>{context.user.name}</span>        
+                                    </div>
+                                </Tooltip>
+                        </Menu.Item>
+                        <Menu.Item key='home' style={{
                             float: 'left',
-                            display: displayNotifications
-                        }}>
-                            <Badge count={parseInt(notificationsCount)} onClick={onApprovalClicked} 
-                                   className='ltr' 
-                                   showZero
-                                   overflowCount={50}>
+                            marginTop: '8px'
+                            }}>
+                            <Tooltip title={t('home')}>
+                                <Icon type="home" 
+                                    theme="outlined"
+                                    style={{
+                                        fontSize: '24px'
+                                    }} 
+                                    onClick={goHome}
+                                />
+                            </Tooltip>      
+                        </Menu.Item>                    
+                        <Menu.Item key='notifications' style={{
+                                marginTop: '8px',
+                                float: 'left',
+                                display: displayNotifications
+                            }}>
+                                <div>
+                                    <NotificationBadge count={parseInt(notificationsCount)} effect={Effect.SCALE}>
+                                    </NotificationBadge>                                
+                                </div>
                                 <Tooltip title={t('notifications')}>
-                                    <Icon type="bell" theme="outlined" 
+                                    <Icon type="bell" theme="outlined" onClick={onApprovalClicked} 
                                         style={{
                                             fontSize: '24px'
                                         }}/>
                                 </Tooltip>
-                            </Badge>    
-                    </Menu.Item> 
-                </Menu>                      
-            </Layout.Header>
+                        </Menu.Item> 
+                    </Menu>   
+                </Layout.Header>
             <Layout style={{ 
                     padding: '17px 24px 24px 24px'
                 }}>
@@ -189,7 +190,7 @@ const App = () => {
                                     <Home />
                                 }/>
                         <Route path='/confirmlist' component={ConfirmList} />
-                        <Route path='/confirm/:userid/:reportId/:saveReportId' component={Confirm}/>
+                        <Route path='/confirm/:userid/:saveReportId' component={Confirm}/>
                         <Route path='/pdf' 
                                 render={ (props) => 
                                     <ReportPDF tableData={props} />

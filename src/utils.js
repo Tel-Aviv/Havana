@@ -18,3 +18,8 @@ export function getHost() {
     const elem = document.getElementById('HOST');
     return elem.textContent;
 }
+
+export function getProtocol() {
+    const elem = document.getElementById('PROTOCOL');
+    return elem.textContent;
+}

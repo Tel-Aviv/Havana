@@ -188,6 +188,48 @@ body {
   word-break: keep-all !important;
 }
 
+/* table adaptation for print */
+@media print {
+  div.pdf-container {
+    border-style: dotted;
+    border-width: thin;
+    border-color:rgba(255, 255, 255, 1.0)
+  }
+  div.ant-table  {
+    font-size: x-small;
+  }
+  div.pdf-title {
+    font-size: x-small;
+  }
+  tbody.ant-table-tbody {
+    font-size: x-small;
+  }
+  span.ant-table-header-column {
+    font-size: 10px;
+  }
+  span.ant-tag {
+    font-size: 10px !important;
+  }
+  td {
+    padding: 2px 2px !important;
+  }
+  div.footer-print {
+    font-size: 10px;
+  }
+  img.footer-signature {
+      width: 60px
+  }
+}
+
+.footer-signature {
+  width: 100px
+}
+
+.totals {
+  width: 200px;
+  margin: 0 auto;
+}
+
 /* Splash animation */
 
 .bar {

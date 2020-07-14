@@ -32,18 +32,21 @@ const YearReport = (props: Props) => {
 
     const { t } = useTranslation();
 
-    const dataContext = useContext(DataContext);
+    const context = useContext(DataContext);
 
     useEffect( () => {
         async function fetchData() {
             try {
-                const resp = await axios(`http://${dataContext.host}/me/reports/yearly?year=${props.year}`, {
+                const resp = await axios(`${context.protocol}://${context.host}/me/reports/yearly?year=${props.year}`, {
                     withCredentials: true
                 });
-                const data = resp.data.items.map( item => ({
-                    month: item.month,
-                    hours: item.hours ? parseFloat(item.hours) : 0
-                }))
+                const data = resp.data.items.map( item => {
+                    return {
+                        month: item.month,
+                        hours_decimal: item.hoursDecimal,
+                        hours: `${Math.floor(item.hoursDecimal)}:${Math.round(item.hoursDecimal % 1 * 60)}` 
+                    }}
+                )
                 
                 setReportData(data);
                 const totalAnnual = parseFloat(resp.data.annualHoursBar)
@@ -67,12 +70,22 @@ const YearReport = (props: Props) => {
                 </ChartCard>
             </Col>
             <Col span={16}>
-                <Chart width={600} height={400} data={reportData} scale={scale} forceFit={true}>
-                    <Axis name="חודשים" title/>
-                    <Axis name="שעות" title/>
-                    {/* <Legend position="top" dy={-20} /> */}
-                    <Tooltip />
-                    <Geom type="interval" position="month*hours" color="month" />
+                <Chart width={600} height={400} 
+                    data={reportData} 
+                    scale={scale} 
+                    forceFit={true}
+                    >
+                        <Axis name="חודשים" title/>
+                        <Axis name="שעות" title/>
+                        {/* <Legend position="top" dy={-20} /> */}
+                        <Tooltip />
+                        <Geom type="interval" position="month*hours_decimal" color="month"
+                            tooltip={['month*hours', (month, hours) => {
+                                return {
+                                    name: '',//`${month}`,
+                                    value: hours
+                                }
+                            }]} />
                 </Chart>
             </Col>
         </Row>        
