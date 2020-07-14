@@ -31,7 +31,7 @@ import ReportPDF from './ReportPDF';
 import Settings from './Settings';
 
 import { DataContext } from "./DataContext";
-import { getUserFromHtml, getHost } from './utils';
+import { getUserFromHtml, getHost, getProtocol } from './utils';
 import translations from './translations';
 
 import { SET_NOTIFICATIONS_COUNT } from './redux/actionTypes';
@@ -55,7 +55,8 @@ const App = () => {
 
     const context = {
         user : getUserFromHtml(),
-        host : getHost()
+        host : getHost(),
+        protocol: getProtocol()
     }
 
     const dispatch = useDispatch();
@@ -64,7 +65,7 @@ const App = () => {
 
     useEffect( () => {
         async function fetchData() {
-            let res = await axios(`http://${context.host}/me/is_manager/`, {
+            let res = await axios(`${context.protocol}://${context.host}/me/is_manager/`, {
                 withCredentials: true
             });
             const isManager = res.data;
@@ -72,7 +73,7 @@ const App = () => {
             setDisplayNotificatios(display)
 
             if( isManager ) {
-                res = await axios(`http://${context.host}/me/pendings/count`,{
+                res = await axios(`${context.protocol}://${context.host}/me/pendings/count`,{
                     withCredentials: true
                 })
                 dispatch(action_setNotificationCount(res.data));

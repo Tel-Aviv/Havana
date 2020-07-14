@@ -35,9 +35,9 @@ const Settings = () => {
             try {
 
                 const resp = await axios.all([
-                    axios(`http://${context.host}/me/signature`,{ withCredentials: true} ),
-                    axios(`http://${context.host}/me/stamp`, { withCredentials: true  } ),
-                    axios(`http://${context.host}/me`, { withCredentials: true })
+                    axios(`${context.protocol}://${context.host}/me/signature`,{ withCredentials: true} ),
+                    axios(`${context.protocol}://${context.host}/me/stamp`, { withCredentials: true  } ),
+                    axios(`${context.protocol}://${context.host}/me`, { withCredentials: true })
                 ])
 
                 const signature = resp[0].data;
@@ -121,7 +121,7 @@ const Settings = () => {
     const removeStamp = async (event) => {
         event.stopPropagation()
 
-        await axios.delete(`http://${context.host}/me/stamp`, {
+        await axios.delete(`${context.protocol}://${context.host}/me/stamp`, {
             withCredentials: true
         })
         setStamp(null)        
@@ -130,14 +130,14 @@ const Settings = () => {
     const removeSignature = async (event) => {
         event.stopPropagation()
 
-        await axios.delete(`http://${context.host}/me/signature`, {
+        await axios.delete(`${context.protocol}://${context.host}/me/signature`, {
             withCredentials: true
         })
         setSignature(null)        
     }    
 
     const uploadProps = {
-        action: `http://${context.host}/me/upload_signature`,
+        action: `${context.protocol}://${context.host}/me/upload_signature`,
         withCredentials: true,
         multiple: false,
         listType: 'picture-card',
@@ -149,7 +149,7 @@ const Settings = () => {
     }
 
     const uploadStampProps = {
-        action: `http://${context.host}/me/upload_stamp`,
+        action: `${context.protocol}://${context.host}/me/upload_stamp`,
         withCredentials: true,
         multiple: false,
         listType: 'picture-card',

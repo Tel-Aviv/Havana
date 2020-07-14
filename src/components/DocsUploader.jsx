@@ -32,8 +32,8 @@ const DocsUploader = ({year, month, isOperational, employeeId}: Props) => {
 
             try {
                 const url = (isOperational) ?
-                    `http://${dataContext.host}/me/reports/${year}/${month}/docs/` :
-                    `http://${dataContext.host}/me/employees/${employeeId}/reports/${year}/${month}/docs`;
+                    `${dataContext.protocol}://${dataContext.host}/me/reports/${year}/${month}/docs/` :
+                    `${dataContext.protocol}://${dataContext.host}/me/employees/${employeeId}/reports/${year}/${month}/docs`;
                 
                     const res = await axios(url, {
                         withCredentials: true
@@ -69,7 +69,7 @@ const DocsUploader = ({year, month, isOperational, employeeId}: Props) => {
 
         try {
             const docName = file.name;
-            await axios.delete(`http://${dataContext.host}/me/reports/${_year}/${_month}/docs?docName=${docName}`, {
+            await axios.delete(`${dataContext.protocol}://${dataContext.host}/me/reports/${_year}/${_month}/docs?docName=${docName}`, {
                 withCredentials: true
             })
         } catch(err) {
@@ -96,8 +96,8 @@ const DocsUploader = ({year, month, isOperational, employeeId}: Props) => {
         console.log(file);
         try {
             let url = (isOperational) ?
-                `http://${dataContext.host}/me/reports/${_year}/${_month}/doc?docName=${file.name}` :
-                `http://${dataContext.host}/me/employees/${employeeId}/reports/${_year}/${_month}/doc?docName=${file.name}`;
+                `${dataContext.protocol}://${dataContext.host}/me/reports/${_year}/${_month}/doc?docName=${file.name}` :
+                `${dataContext.protocol}://${dataContext.host}/me/employees/${employeeId}/reports/${_year}/${_month}/doc?docName=${file.name}`;
             let res = await axios(url, {
                 withCredentials: true,
             });
@@ -138,7 +138,7 @@ const DocsUploader = ({year, month, isOperational, employeeId}: Props) => {
 
     const docsUploadProps = {
 
-        action: `http://${dataContext.host}/me/reports/${_year}/${_month}/docs/`,
+        action: `${dataContext.protocol}://${dataContext.host}/me/reports/${_year}/${_month}/docs/`,
         onChange({ file, fileList }) {
             fileList = fileList.map(file => {
                   if (file.response) {

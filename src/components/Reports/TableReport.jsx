@@ -98,8 +98,15 @@ const EditableTable = (props) => {
     return item.total != '0:00';
   }
 
+  const hasSytemNotes = (record) => {
+    return record.notes && record.notes.startsWith('*');
+  }
+
   const isRowEditable = (record) => {
-    return props.editable && (!isTotalled(record) && isWorkingDay(record) || record.isAdded || isRecordUpdatedManually(record, 'entry'));
+    return props.editable && (!isTotalled(record) && isWorkingDay(record) 
+                          || record.isAdded 
+                          || isRecordUpdatedManually(record, 'entry') 
+                          || hasSytemNotes(record));
   }
 
   const edit = (key) => {
@@ -299,7 +306,7 @@ const EditableTable = (props) => {
                   marginRight: '0'
                 }}>
                   {
-                    text.length > 42 ?
+                    text && text.length > 42 ?
                     <Tooltip title={text}>
                       <Ellipsis length={42}>{text}</Ellipsis>
                     </Tooltip> :

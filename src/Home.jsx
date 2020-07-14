@@ -264,13 +264,13 @@ const Home = () => {
         async function fetchData() {
 
             try {
-                let resp = await axios(`http://${dataContext.host}/me/managers/`, {
+                let resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/managers/`, {
                     withCredentials: true
                 });
 
                 setManagers(resp.data);
 
-                resp = await axios(`http://${dataContext.host}/me/signature`, {
+                resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/signature`, {
                     withCredentials: true
                 });
             
@@ -302,13 +302,13 @@ const Home = () => {
                 const manualUpdates = [];
 
                 let respArr = await axios.all([
-                    axios(`http://${dataContext.host}/daysoff?year=${year}&month=${month}`, {
+                    axios(`${dataContext.protocol}://${dataContext.host}/daysoff?year=${year}&month=${month}`, {
                         withCredentials: true
                     }),
-                    axios(`http://${dataContext.host}/me/reports/status?month=${month}&year=${year}`, {
+                    axios(`${dataContext.protocol}://${dataContext.host}/me/reports/status?month=${month}&year=${year}`, {
                         withCredentials: true
                     }),
-                    axios(`http://${dataContext.host}/me/manual_updates?year=${year}&month=${month}`, {
+                    axios(`${dataContext.protocol}://${dataContext.host}/me/manual_updates?year=${year}&month=${month}`, {
                         withCredentials: true
                     })
                 ]);
@@ -333,7 +333,7 @@ const Home = () => {
 
                         // Interim report found. Actually the following call gets
                         // the merged report: saved changes over the original data
-                        const resp = await axios(`http://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
+                        const resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
                             withCredentials: true
                         })  
                         data = resp.data.items.map( (item, index ) => {
@@ -348,7 +348,7 @@ const Home = () => {
                 } else {
 
                     // The status of the report is unknown, i.e. get the original report    
-                    const resp = await axios(`http://${dataContext.host}/me/reports/${year}/${month}/`, {
+                    const resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/reports/${year}/${month}/`, {
                         withCredentials: true
                     }); 
 
@@ -420,7 +420,7 @@ const Home = () => {
         try {
             
             await axios({
-                url: `http://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee}`, 
+                url: `${dataContext.protocol}://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee}`, 
                 method: 'post',
                 data: reportData,
                 withCredentials: true
@@ -445,7 +445,7 @@ const Home = () => {
     const onSave = async() => {
         try {
             await axios({
-                url: `http://${dataContext.host}/me/report/save?month=${month}&year=${year}`,
+                url: `${dataContext.protocol}://${dataContext.host}/me/report/save?month=${month}&year=${year}`,
                 method: 'post',
                 data: reportData,
                 withCredentials: true
@@ -458,7 +458,7 @@ const Home = () => {
                 UserID: dataContext.user.id,
                 items: manualUpdates
             }
-            await axios(`http://${dataContext.host}/me/manual_updates/`, {
+            await axios(`${dataContext.protocol}://${dataContext.host}/me/manual_updates/`, {
                 method: 'post',
                 data: manualUpdate,
                 withCredentials: true
@@ -727,13 +727,13 @@ const Home = () => {
                 <Col span={5}>
                     <Row gutter={[40, 32]}>
                         <Col>
-                            <Card title={ `סיכום חודשי: סה"כ ${totals} שעות` } bordered={false}
+                            <Card title={ `סיכום חודשי: ${getMonthName(month)} ${year} ` } bordered={false}
                                 className='rtl' loading={loadingData}>
                                 <Pie percent={getTotalHoursPercentage()} 
                                      total={getTotalHoursPercentage() + '%'} 
                                      animate={false}
-                                     subTitle={`${getMonthName(month)} ${year}`}
-                                     height={140} />
+                                     subTitle={ `${totals} שעות`}
+                                     height={180} />
                             </Card>
                         </Col>
                     </Row>

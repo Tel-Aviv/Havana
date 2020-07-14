@@ -53,7 +53,7 @@ const Confirm = (props: Props) => {
 
     const history = useHistory();
     const componentRef = useRef();
-    const dataContext = useContext(DataContext)
+    const context = useContext(DataContext)
     const { t } = useTranslation();
     const routeParams = useParams();
     const dispatch = useDispatch();
@@ -66,7 +66,7 @@ const Confirm = (props: Props) => {
             setLoadingData(true)
             try {
 
-                let resp = await axios(`http://${dataContext.host}/me/employees/reports/${routeParams.saveReportId}`, {
+                let resp = await axios(`${context.protocol}://${context.host}/me/employees/reports/${routeParams.saveReportId}`, {
                     withCredentials: true
                 }); 
 
@@ -83,7 +83,7 @@ const Confirm = (props: Props) => {
                 setWhenApproved(moment(resp.data.whenApproved));
                 setTitle(`אישור דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
 
-                resp = await axios(`http://${dataContext.host}/me/employees/manual_updates/${routeParams.userid}?year=${resp.data.year}&month=${resp.data.month}`, {
+                resp = await axios(`${context.protocol}://${context.host}/me/employees/manual_updates/${routeParams.userid}?year=${resp.data.year}&month=${resp.data.month}`, {
                     withCredentials: true
                 })
                 setManualUpdates(resp.data.items)
@@ -114,7 +114,7 @@ const Confirm = (props: Props) => {
         try {
         
             const _note = note || '';
-            await axios( `http://${dataContext.host}/me/forwardSavedReport?savedReportGuid=${savedReportId}&note=${_note}`, {
+            await axios( `${context.protocol}://${context.host}/me/forwardSavedReport?savedReportGuid=${savedReportId}&note=${_note}`, {
                 withCredentials: true
             })
 
@@ -152,7 +152,7 @@ const Confirm = (props: Props) => {
 
             dispatch( action_decreaseNotificationCount() );
 
-            let url = `http://${dataContext.host}/me/pendings/saved/${savedReportId}?note=${note}`
+            let url = `${context.protocol}://${context.host}/me/pendings/saved/${savedReportId}?note=${note}`
             await axios.patch(url, {html: ref.current.outerHTML}, {
                 headers: {
                     'Content-Type': 'application/json'

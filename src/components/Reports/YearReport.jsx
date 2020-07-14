@@ -32,12 +32,12 @@ const YearReport = (props: Props) => {
 
     const { t } = useTranslation();
 
-    const dataContext = useContext(DataContext);
+    const context = useContext(DataContext);
 
     useEffect( () => {
         async function fetchData() {
             try {
-                const resp = await axios(`http://${dataContext.host}/me/reports/yearly?year=${props.year}`, {
+                const resp = await axios(`${context.protocol}://${context.host}/me/reports/yearly?year=${props.year}`, {
                     withCredentials: true
                 });
                 const data = resp.data.items.map( item => {

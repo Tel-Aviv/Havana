@@ -75,5 +75,5 @@ module.exports = {
         contentBase: path.join(__dirname, 'dist'),
         compress: true
     },    
-    devtool: 'source-map',
+    devtool: 'source-map'
 }

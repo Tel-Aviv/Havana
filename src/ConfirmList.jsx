@@ -67,7 +67,7 @@ const ConfirmList = () => {
     const [pendingList, setPendingList] = useState([])
     const [approvedList, setApprovedList] = useState([])
     const [namesFilter, setNamesFilter] = useState({})
-    const dataContext = useContext(DataContext)
+    const context = useContext(DataContext)
 
     const { t } = useTranslation();
 
@@ -98,10 +98,10 @@ const ConfirmList = () => {
             try {
 
                 const resp = await axios.all([
-                    axios(`http://${dataContext.host}/me/pendings`, {
+                    axios(`${context.protocol}://${context.host}/me/pendings`, {
                         withCredentials: true
                     }),
-                    axios(`http://${dataContext.host}/me/approved`, {
+                    axios(`${context.protocol}://${context.host}/me/approved`, {
                         withCredentials: true
                     })
                 ])
