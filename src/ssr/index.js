@@ -54,6 +54,7 @@ app.get('/hr', function(request, response, next) {
                         .replace('{USER_THUMBNAIL}', null)
                         .replace('{USER_ID}', request.ntlm.UserName)
                         .replace('{HOST}', process.env.HOST)
+                        .replace('{PROTOCOL}', 'http')
 
             } else {
                 const now =  moment()
