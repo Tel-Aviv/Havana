@@ -5,13 +5,14 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment'
 
 import { Table, Alert, 
-        Row, Col, Icon } from 'antd';
+        Row, Col, Icon, Tag } from 'antd';
 import { useTranslation } from "react-i18next";
 import { Tabs } from 'antd-rtl';
 const { TabPane } = Tabs;
 import { Layout } from 'antd';
 const { Content } = Layout;
 import { DataContext } from './DataContext';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
 const monthsFilter = [...Array(12).keys()].map( i => ({
                                                         text: i+1,
@@ -54,9 +55,22 @@ const columns = [{
       key: "submitted"
    },{
       title: "הערות",
-      dataIndex: "comment",
+      dataIndex: "note",
       align: 'right',
-      key: "comment"
+      key: "comment",
+      render: (text, _) => 
+          <Tag color='volcano'
+                style={{
+                    marginRight: '0'
+                }}>
+            {
+                text && text.length > 42 ?
+                    <Tooltip title={text}>
+                        <Ellipsis length={42}>{text}</Ellipsis> 
+                    </Tooltip> :
+                    <div>{text}</div>
+            }
+          </Tag>
   }
 
 ]
