@@ -9,7 +9,7 @@ import uniqid from 'uniqid';
 import { useTranslation } from "react-i18next";
 
 import { Button, Typography, 
-        Row, Col, Card } from 'antd';
+        Row, Col, Card, Tooltip } from 'antd';
 import { Input, Modal } from 'antd-rtl';
 
 const { Title } = Typography;    
@@ -173,6 +173,27 @@ const Confirm = (props: Props) => {
         setNote(evt.target.value)
     }
 
+    const onReject = async() => {
+        try {
+
+            setApprovalSending(true);
+            const timer = setTimeout(() => {
+                setApprovalSending(false);
+                setNotesModalVisible(false);
+
+                clearTimeout(timer);
+                
+                history.push(`/confirmlist`);
+            }, 4000);
+
+            let url = `${context.protocol}://${context.host}/me/pendings/rejected/${savedReportId}?note=${note}`
+            await axios.patch(url, { withCredentials: true })
+            
+        } catch( err ) {
+            console.error(err.message)
+        }
+    }
+
     const getTotalHoursPercentage = () => {
         return Math.floor( parseFloat(totals) / 160. * 100 );
     }
@@ -289,17 +310,31 @@ const Confirm = (props: Props) => {
                             <Button key='cancel' onClick={onNotesModalClosed} style={{
                                 marginRight: '8px'
                             }}>{t('cancel')}</Button>,
-
-                            <Button key='forward' type="primary"
-                                    style={{
-                                        direction: 'ltr',
-                                        marginRight: '8px'
-                                    }} onClick={onForward}>{t('move_to')}</Button>,
-                            <Button key='approve' type="primary" 
+                            <Tooltip key='reject' title={t('reject_tooltip')}>
+                                <Button onClick={onReject} type='danger' style={{
+                                    marginLeft: '8px'
+                                }}>
+                                    {t('reject')}
+                                </Button>
+                            </Tooltip>,
+                            <Tooltip key='forward' title={t('forward_tooltip')}>
+                                <Button type="primary"
+                                        style={{
+                                            direction: 'ltr',
+                                            marginRight: '8px'
+                                        }} onClick={onForward}>
+                                    {t('move_to')}
+                                </Button>
+                            </Tooltip>        ,
+                            <Tooltip key='approve' title={t('approve_tooltip')}>
+                                <Button type="primary" 
                                     style={{
                                         direction: 'ltr'
                                     }}
-                                     onClick={onApprove} >{t('approve')}</Button>                            
+                                     onClick={onApprove} >
+                                         {t('approve')}
+                                </Button> 
+                            </Tooltip>                                    
                         ]
                     }
                    >
@@ -309,7 +344,7 @@ const Confirm = (props: Props) => {
                         onChange={onNotesChanged} />
                     <div style={{
                         marginTop: '8px'
-                    }}>הערות תשלחנה בדוא"ל לבעל הדוח רק במקרה של אישור</div>
+                    }}>הערות תשלחנה בדוא"ל לבעל הדוח</div>
                 </div>       
             </Modal>
         </Content>

@@ -132,21 +132,19 @@ const App = () => {
                     <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-blue' style={{
                         padding: '0 3%'
                     }}>  
-                        <Menu.Item key='settings' style={{
+                        <Menu.Item key='avatar' style={{
                                 top: '6px'
                             }}>
-                                <Tooltip title={t('settings')}>
-                                    <div onClick={goSettings}>
-                                        <Avatar size="large" src={`data:image/jpeg;base64,${context.user.imageData}`}
-                                            style={{
-                                                marginRight: '0'
-                                            }}
-                                            onError={ () => true} />
-                                        <span style={{
-                                            padding: '0 12px'
-                                        }}>{context.user.name}</span>        
-                                    </div>
-                                </Tooltip>
+                                <div>
+                                    <Avatar size="large" src={`data:image/jpeg;base64,${context.user.imageData}`}
+                                        style={{
+                                            marginRight: '0'
+                                        }}
+                                        onError={ () => true} />
+                                    <span style={{
+                                        padding: '0 12px'
+                                    }}>{context.user.name}</span>        
+                                </div>
                         </Menu.Item>
                         <Menu.Item key='home' style={{
                             float: 'left',
@@ -161,7 +159,20 @@ const App = () => {
                                     onClick={goHome}
                                 />
                             </Tooltip>      
-                        </Menu.Item>                    
+                        </Menu.Item>
+                        <Menu.Item key='settings' style={{
+                            float: 'left',
+                            marginTop: '8px'
+                            }}>
+                             <Tooltip title={t('settings')}>
+                                <Icon type="setting" 
+                                        theme="outlined"
+                                        style={{
+                                            fontSize: '24px'
+                                        }}
+                                        onClick={goSettings}/>
+                             </Tooltip>             
+                        </Menu.Item>                 
                         <Menu.Item key='notifications' style={{
                                 marginTop: '8px',
                                 float: 'left',

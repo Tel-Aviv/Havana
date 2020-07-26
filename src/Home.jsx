@@ -31,7 +31,7 @@ import YearReport from './components/Reports/YearReport';
 import { DataContext } from "./DataContext";
 import DocsUploader from './components/DocsUploader';
 
-import { UPDATE_ITEM } from "./redux/actionTypes"
+import { UPDATE_ITEM, SET_DIRECT_MANAGER } from "./redux/actionTypes"
 
 import { DatePicker } from 'antd';
 
@@ -63,13 +63,31 @@ const Home = () => {
 
     const [daysOff, setDaysOff] = useState([]);
     const [manualUpdates, setManualUpdates] = useState();
-    const [assignee, setAssignee] = useState('direct');
+    const [assignee, setAssignee] = useState({
+                                            userId:'direct'
+                                        });
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
     const componentRef = useRef();
 
     const dispatch = useDispatch();
+
+    const action_setDirectManager = (manager: object) => ({
+        type: SET_DIRECT_MANAGER,
+        data: manager
+    })
+
+    const _directManager = useSelector(
+        store => store.directManagerReducer.directManager
+    )
+
+    useEffect( () => {
+        if( _directManager ) {
+            setAssignee(_directManager);
+        }
+        
+    }, [_directManager])
 
     const _calendarDate = useSelector(
         store => store.reportDateReducer.reportDate
@@ -264,23 +282,29 @@ const Home = () => {
         async function fetchData() {
 
             try {
-                let resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/managers/`, {
-                    withCredentials: true
-                });
 
-                setManagers(resp.data);
-
-                resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/signature`, {
-                    withCredentials: true
-                });
+                const resp = await axios.all([
+                    axios(`${dataContext.protocol}://${dataContext.host}/me/managers/`, { withCredentials: true }),
+                    axios(`${dataContext.protocol}://${dataContext.host}/me/signature`, { withCredentials: true }),
+                    axios(`${dataContext.protocol}://${dataContext.host}/me/direct_manager`, { withCredentials: true } )
+                ]);
+                setManagers(resp[0].data);
             
-                const signature = resp.data;
+                const signature = resp[1].data;
                 if( signature.startsWith('data:') ) {
                     setSignature(signature);
                 }
                 else {    
                     setSignature(`data:/image/*;base64,${signature}`);
-                }    
+                }   
+                
+                if( assignee.userId === 'direct' ) {
+                    const directManager = resp[2].data;
+                    if( directManager ) {
+                        setAssignee(directManager);
+                        dispatch(action_setDirectManager(directManager));
+                    }
+                }
 
             } catch(err) {
                 console.error(err);
@@ -420,7 +444,7 @@ const Home = () => {
         try {
             
             await axios({
-                url: `${dataContext.protocol}://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee}`, 
+                url: `${dataContext.protocol}://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee.userId}`, 
                 method: 'post',
                 data: reportData,
                 withCredentials: true
@@ -514,17 +538,28 @@ const Home = () => {
         ))}
     </Menu>
     
+    const getSubmitTitle = () => {
+        if( assignee ) {
+            return `הדוח יעבור לאישור ע"י ${assignee.userName}`;
+        } else {
+            return t('no_direct_manager');
+        }
+      
+    }        
+
     const operations = <div>
-                            <Popconfirm title={t('send_to_approval')} 
-                                onConfirm={onSubmit}>
-                                <Dropdown.Button type="primary" overlay={menu}
-                                                    disabled={ isReportSubmitted || !reportDataValid }
-                                    style={{
-                                        marginRight: '6px'
-                                    }}>
-                                    {t('submit')}
-                                </Dropdown.Button>
-                            </Popconfirm>
+                            <Tooltip placement='bottom' title={getSubmitTitle}>
+                                <Popconfirm title={t('send_to_approval')} 
+                                    onConfirm={onSubmit}>
+                                    <Dropdown.Button type="primary" overlay={menu}
+                                                        disabled={ isReportSubmitted || !reportDataValid }
+                                        style={{
+                                            marginRight: '6px'
+                                        }}>
+                                        {t('submit')}
+                                    </Dropdown.Button>
+                                </Popconfirm>
+                            </Tooltip>
                             <Tooltip placement='bottom' title={t('validate_report')}>
                                 <Button onClick={validateReport} 
                                         icon='check-circle'
