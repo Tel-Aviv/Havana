@@ -46,6 +46,7 @@ const Home = () => {
     const [reportDataValid, setReportDataValid] = useState<boolean>(false);
     const [isReportSubmitted, setReportSubmitted] = useState<boolean>(false);
     const [isReportEditable, setIsReportEditable] = useState<boolean>(true);
+    const [isReportRejected, setIsReportRejected] = useState<bool>(false);
     const [reportId, setReportId] = useState<number>(0);
     const [totals, setTotals] = useState<string>(0);
 
@@ -260,11 +261,18 @@ const Home = () => {
             if( !data.submitted ) {
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם נשלח לאישור`);
             } else if( !data.approved ) {
-                let _alertMessage = `דוח שעות לחודש ${month}/${year} טרם אושר`
-                if( data.assignedToName ) {
-                    _alertMessage += ` ע"י ${data.assignedToName}`;
+
+                if ( data.rejected ) {
+                    setAlertType('error');
+                    setAlertMessage(t('rejected_note') + data.note)
+                } else {
+
+                    let _alertMessage = `דוח שעות לחודש ${month}/${year} טרם אושר`
+                    if( data.assignedToName ) {
+                        _alertMessage += ` ע"י ${data.assignedToName}`;
+                    }
+                    setAlertMessage(_alertMessage);
                 }
-                setAlertMessage(_alertMessage);
             } else {
                 const whenApproved = moment(data.whenApproved).format('DD/MM/YYYY')
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} אושר בתאריך ${whenApproved} ע"י ${data.assignedToName}`);
@@ -367,6 +375,8 @@ const Home = () => {
                         setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
 
                         setIsReportEditable(!respArr[1].data.approved);
+
+                        setIsReportRejected( respArr[1].data.rejected )
                     }  
 
                 } else {
@@ -637,14 +647,15 @@ const Home = () => {
             render: (text, _) => 
                 ( text !== '' ) ?
                     <Tag color="volcano"
-                    style={{
-                        marginRight: '0'
-                    }}>
-                    {text}
+                        style={{
+                            marginRight: '0'
+                        }}>
+                        {text}
                     </Tag>
                     : null
         }, {
             title: '',
+            width: '3%',
             dataIndex: 'operation'
         }
     ];                        
