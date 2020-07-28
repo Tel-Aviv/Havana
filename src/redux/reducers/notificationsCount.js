@@ -1,5 +1,4 @@
 // @flow
-import moment from 'moment';
 import { SET_NOTIFICATIONS_COUNT, 
             DECREASE_NOTIFICATIONS_COUNT, 
             INCREASE_NOTIFICATION_COUNT } from "../actionTypes";

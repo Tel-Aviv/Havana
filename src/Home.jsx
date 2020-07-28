@@ -31,7 +31,7 @@ import YearReport from './components/Reports/YearReport';
 import { DataContext } from "./DataContext";
 import DocsUploader from './components/DocsUploader';
 
-import { UPDATE_ITEM } from "./redux/actionTypes"
+import { UPDATE_ITEM, SET_DIRECT_MANAGER } from "./redux/actionTypes"
 
 import { DatePicker } from 'antd';
 
@@ -46,6 +46,7 @@ const Home = () => {
     const [reportDataValid, setReportDataValid] = useState<boolean>(false);
     const [isReportSubmitted, setReportSubmitted] = useState<boolean>(false);
     const [isReportEditable, setIsReportEditable] = useState<boolean>(true);
+    const [isReportRejected, setIsReportRejected] = useState<bool>(false);
     const [reportId, setReportId] = useState<number>(0);
     const [totals, setTotals] = useState<string>(0);
 
@@ -63,13 +64,31 @@ const Home = () => {
 
     const [daysOff, setDaysOff] = useState([]);
     const [manualUpdates, setManualUpdates] = useState();
-    const [assignee, setAssignee] = useState('direct');
+    const [assignee, setAssignee] = useState({
+                                            userId:'direct'
+                                        });
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
     const componentRef = useRef();
 
     const dispatch = useDispatch();
+
+    const action_setDirectManager = (manager: object) => ({
+        type: SET_DIRECT_MANAGER,
+        data: manager
+    })
+
+    const _directManager = useSelector(
+        store => store.directManagerReducer.directManager
+    )
+
+    useEffect( () => {
+        if( _directManager ) {
+            setAssignee(_directManager);
+        }
+        
+    }, [_directManager])
 
     const _calendarDate = useSelector(
         store => store.reportDateReducer.reportDate
@@ -242,11 +261,18 @@ const Home = () => {
             if( !data.submitted ) {
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} טרם נשלח לאישור`);
             } else if( !data.approved ) {
-                let _alertMessage = `דוח שעות לחודש ${month}/${year} טרם אושר`
-                if( data.assignedToName ) {
-                    _alertMessage += ` ע"י ${data.assignedToName}`;
+
+                if ( data.rejected ) {
+                    setAlertType('error');
+                    setAlertMessage(t('rejected_note') + data.note)
+                } else {
+
+                    let _alertMessage = `דוח שעות לחודש ${month}/${year} טרם אושר`
+                    if( data.assignedToName ) {
+                        _alertMessage += ` ע"י ${data.assignedToName}`;
+                    }
+                    setAlertMessage(_alertMessage);
                 }
-                setAlertMessage(_alertMessage);
             } else {
                 const whenApproved = moment(data.whenApproved).format('DD/MM/YYYY')
                 setAlertMessage(`דוח שעות לחודש ${month}/${year} אושר בתאריך ${whenApproved} ע"י ${data.assignedToName}`);
@@ -264,23 +290,29 @@ const Home = () => {
         async function fetchData() {
 
             try {
-                let resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/managers/`, {
-                    withCredentials: true
-                });
 
-                setManagers(resp.data);
-
-                resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/signature`, {
-                    withCredentials: true
-                });
+                const resp = await axios.all([
+                    axios(`${dataContext.protocol}://${dataContext.host}/me/managers/`, { withCredentials: true }),
+                    axios(`${dataContext.protocol}://${dataContext.host}/me/signature`, { withCredentials: true }),
+                    axios(`${dataContext.protocol}://${dataContext.host}/me/direct_manager`, { withCredentials: true } )
+                ]);
+                setManagers(resp[0].data);
             
-                const signature = resp.data;
+                const signature = resp[1].data;
                 if( signature.startsWith('data:') ) {
                     setSignature(signature);
                 }
                 else {    
                     setSignature(`data:/image/*;base64,${signature}`);
-                }    
+                }   
+                
+                if( assignee.userId === 'direct' ) {
+                    const directManager = resp[2].data;
+                    if( directManager ) {
+                        setAssignee(directManager);
+                        dispatch(action_setDirectManager(directManager));
+                    }
+                }
 
             } catch(err) {
                 console.error(err);
@@ -343,6 +375,8 @@ const Home = () => {
                         setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
 
                         setIsReportEditable(!respArr[1].data.approved);
+
+                        setIsReportRejected( respArr[1].data.rejected )
                     }  
 
                 } else {
@@ -420,7 +454,7 @@ const Home = () => {
         try {
             
             await axios({
-                url: `${dataContext.protocol}://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee}`, 
+                url: `${dataContext.protocol}://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee.userId}`, 
                 method: 'post',
                 data: reportData,
                 withCredentials: true
@@ -514,17 +548,28 @@ const Home = () => {
         ))}
     </Menu>
     
+    const getSubmitTitle = () => {
+        if( assignee ) {
+            return `הדוח יעבור לאישור ע"י ${assignee.userName}`;
+        } else {
+            return t('no_direct_manager');
+        }
+      
+    }        
+
     const operations = <div>
-                            <Popconfirm title={t('send_to_approval')} 
-                                onConfirm={onSubmit}>
-                                <Dropdown.Button type="primary" overlay={menu}
-                                                    disabled={ isReportSubmitted || !reportDataValid }
-                                    style={{
-                                        marginRight: '6px'
-                                    }}>
-                                    {t('submit')}
-                                </Dropdown.Button>
-                            </Popconfirm>
+                            <Tooltip placement='bottom' title={getSubmitTitle}>
+                                <Popconfirm title={t('send_to_approval')} 
+                                    onConfirm={onSubmit}>
+                                    <Dropdown.Button type="primary" overlay={menu}
+                                                        disabled={ isReportSubmitted || !reportDataValid }
+                                        style={{
+                                            marginRight: '6px'
+                                        }}>
+                                        {t('submit')}
+                                    </Dropdown.Button>
+                                </Popconfirm>
+                            </Tooltip>
                             <Tooltip placement='bottom' title={t('validate_report')}>
                                 <Button onClick={validateReport} 
                                         icon='check-circle'
@@ -602,14 +647,15 @@ const Home = () => {
             render: (text, _) => 
                 ( text !== '' ) ?
                     <Tag color="volcano"
-                    style={{
-                        marginRight: '0'
-                    }}>
-                    {text}
+                        style={{
+                            marginRight: '0'
+                        }}>
+                        {text}
                     </Tag>
                     : null
         }, {
             title: '',
+            width: '3%',
             dataIndex: 'operation'
         }
     ];                        

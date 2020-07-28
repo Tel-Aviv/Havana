@@ -1,16 +1,21 @@
 // @flow
 import React, { useState, useContext, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { useTranslation } from "react-i18next";
 
-import { Upload, Button, Icon, message } from 'antd';
+import { Upload, Icon, message } from 'antd';
 import { Row, Col, Card, Avatar } from 'antd';
 const { Meta } = Card;
 
 import { Typography } from 'antd';
-const { Title, Paragraph, Text } = Typography;
+const { Title } = Typography;
+
+import { Menu, Dropdown, Select } from 'antd-rtl';
+const { Option } = Select;
 
 import { DataContext } from './DataContext';
+import { UPDATE_ITEM, SET_DIRECT_MANAGER } from "./redux/actionTypes"
 
 // Only let to webpack to know which file to consider,
 // but you neither can access its rules or its styles.
@@ -24,8 +29,16 @@ const Settings = () => {
     const [signature, setSignature] = useState();
     const [stamp, setStamp] = useState();
     const [loading, setLoading] = useState();
+    const [managers, setManagers] = useState([]);
+    const [directManager, setDirectManager] = useState({});
+    
     const context = useContext(DataContext);
-
+    const dispatch = useDispatch();
+    
+    const action_setDirectManager = (manager: object) => ({
+        type: SET_DIRECT_MANAGER,
+        data: manager
+    })
     const { t } = useTranslation();
 
     useEffect( () => {
@@ -37,7 +50,8 @@ const Settings = () => {
                 const resp = await axios.all([
                     axios(`${context.protocol}://${context.host}/me/signature`,{ withCredentials: true} ),
                     axios(`${context.protocol}://${context.host}/me/stamp`, { withCredentials: true  } ),
-                    axios(`${context.protocol}://${context.host}/me`, { withCredentials: true })
+                    axios(`${context.protocol}://${context.host}/me`, { withCredentials: true }),
+                    axios(`${context.protocol}://${context.host}/me/managers/`, { withCredentials: true })
                 ])
 
                 const signature = resp[0].data;
@@ -54,7 +68,11 @@ const Settings = () => {
                     setStamp(`data:/image/*;base64,${stamp}`);
                 }
 
-                setUserName(resp[2].data.userName)
+                setUserName(resp[2].data.userName);
+                
+                const managres = resp[3].data
+                setManagers(managres);
+
             } catch( err ) {
                 console.log(err)
             }
@@ -63,6 +81,17 @@ const Settings = () => {
         fetchData()
         
     }, [])
+
+    const _directManager = useSelector(
+        store => store.directManagerReducer.directManager
+    )
+
+    useEffect( () => {
+        if( _directManager ) {
+            setDirectManager(_directManager);
+        }
+        
+    }, [_directManager])
 
     const beforeUpload = (file) => {
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -167,6 +196,26 @@ const Settings = () => {
         </>
     )
 
+    const handleManagersMenuClick = (e) => {
+        // setAssignee(managers[e.key].userId);
+        console.log( managers[e.key].userId )
+        // message.info(`הדוח יועבר לאישור ${managers[e.key].userName}`);
+    }
+
+    const onDirectManagerChanged = (val) => {
+        const _directManager = managers[val];
+        dispatch(action_setDirectManager(_directManager));
+    }
+
+    const managersMenu = <Menu onClick={handleManagersMenuClick}>
+        {managers.map((manager, index) => (
+                <Menu.Item  key={index}>
+                    <Icon type="user" />
+                    {manager.userName}
+                </Menu.Item>
+        ))}
+    </Menu>
+
     return (
         <div className='hvn-item-rtl'>
             
@@ -216,7 +265,24 @@ const Settings = () => {
                             <Col span={6}>
                                 <Avatar size={64} src={`data:image/jpeg;base64,${context.user.imageData}`}/>
                             </Col>
-                        </Row>    
+                        </Row> 
+  
+                    </Card>
+                    <Card title={t('reports_to')}>
+                         <Row>
+                            <Col span={24}>
+                                <Select showSearch
+                                        style={{ width: 200 }}
+                                        onChange={onDirectManagerChanged}
+                                        placeholder={directManager.userName}>
+                                    {
+                                        managers.map((manager, index) => (
+                                            <Option key={index}>{manager.userName}</Option>
+                                        ))
+                                    }
+                                </Select>
+                            </Col>
+                        </Row> 
                     </Card>
                 </Col>
             </Row>

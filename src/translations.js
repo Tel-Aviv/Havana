@@ -73,7 +73,14 @@ const translations = {
             "m9": "September",
             "m10": "October",
             "m11": "November",
-            "m12": "December"
+            "m12": "December",
+            "reports_to": "Reports to",
+            "no_direct_manager": "Could not find the direct manager. Please select one from the list nearby",
+            "reject": "Reject",
+            "approve_tooltip" : "Accept with possible comments",
+            "reject_tooltip": "Reject and provide the reason",
+            "forward_tooltip": "Move the approval to the next management level",
+            "rejected_note": "This report was rejected by the manager with note: "
         }
     },
     he: {
@@ -150,7 +157,14 @@ const translations = {
             "m9": "ספטמבר",
             "m10": "אוקטובר",
             "m11": "נובמבר",
-            "m12": "דצמבר"
+            "m12": "דצמבר",
+            "reports_to": "מדווח ל",
+            "no_direct_manager": "לא נמצא מנהל ישיר לאישור דוחות. נא בחר מנהל ישיר מהרשימה ליד הכפתור.",
+            "reject": "דחה",
+            "approve_tooltip" : "לאשר עם הערות אפשריות",
+            "reject_tooltip": "דחה את הדוח והסבר מדוע",
+            "forward_tooltip" : "העבר את האישור לדרג ניהול הבא",
+            "rejected_note": "הדוח הזה נדחה על ידי המנהל עם ההערה: "
         }
     }
 }    
