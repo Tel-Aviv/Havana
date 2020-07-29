@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment'
 
 import { Table, Alert, 
-        Row, Col, Icon, Tag } from 'antd';
+        Row, Col, Icon, Tag, Checkbox } from 'antd';
 import { useTranslation } from "react-i18next";
 import { Tabs } from 'antd-rtl';
 const { TabPane } = Tabs;
@@ -29,7 +29,7 @@ const columns = [{
         title: 'שם עובד',
         dataIndex: 'userName',
         align: 'right',
-        key: 'name',
+        key: 'name'
     },{
       title: "שנה",
       dataIndex: "year",
@@ -55,7 +55,7 @@ const columns = [{
       key: "submitted"
    },{
       title: "הערות",
-      dataIndex: "note",
+      dataIndex: "notes",
       align: 'right',
       key: "comment",
       render: (text, _) => 
@@ -71,6 +71,22 @@ const columns = [{
                     <div>{text}</div>
             }
           </Tag>
+  }, {
+      title: "סטטוס",
+      dataIndex: "reSubmitted",
+      align: 'right',
+      key: "resubmitted",
+      render: (value, _) => 
+        <Tag color='blue'
+        style={{
+            marginRight: '0'
+        }}>
+            {
+                value ? 
+                <div>נשלח מחדש</div> :
+                <div>ממתין לאישור</div>
+            }
+        </Tag>
   }
 
 ]
@@ -79,12 +95,15 @@ const ConfirmList = () => {
 
     const history = useHistory()
     const [pendingList, setPendingList] = useState([])
+    const [pendingCount, setPendingCount] = useState(0)
     const [approvedList, setApprovedList] = useState([])
+    const [approvedCount, setApprovedCount] = useState(0)
+    const [rejectedList, setRejectedList] = useState([])
+    const [rejectedCount, setRejectedCount] = useState(0)
     const [namesFilter, setNamesFilter] = useState({})
     const context = useContext(DataContext)
 
     const { t } = useTranslation();
-
 
     const approvedTableColumns = [{
         title: "שם עובד",
@@ -102,8 +121,25 @@ const ConfirmList = () => {
         dataIndex: "whenApproved",
         align: 'right',
         key: "approved"
-    }    
-    ];
+    }];
+    
+    const rejectedTableColumns = [{
+        title: "שם עובד",
+        dataIndex: "reportOwner",
+        align: 'right',
+        key: "name",
+        filters: namesFilter,
+        onFilter: (value, record) => {
+        } 
+    },
+    ...columns.slice(1),
+    {
+        title: "תאריך דחיה",
+        dataIndex: "whenRejected",
+        align: 'right',
+        key: "approved" 
+    }
+   ]
 
     useEffect( () =>  {
 
@@ -117,6 +153,9 @@ const ConfirmList = () => {
                     }),
                     axios(`${context.protocol}://${context.host}/me/approved`, {
                         withCredentials: true
+                    }),
+                    axios(`${context.protocol}://${context.host}/me/pendings/rejected`, {
+                        withCredentials: true
                     })
                 ])
 
@@ -127,6 +166,7 @@ const ConfirmList = () => {
                         key: index
                     }
                 })
+                setPendingCount(pendingReports.length);
                 setPendingList(pendingReports);
 
                 const approvedReports = resp[1].data.map( (item, index) => {
@@ -137,9 +177,10 @@ const ConfirmList = () => {
                         key: index
                     }
                 });
+                setApprovedCount(approvedReports.length);
                 setApprovedList(approvedReports);
 
-                const names = new Set(); // will bw unique
+                const names = new Set(); // will be unique
                 resp[1].data.forEach( item => names.add(item.reportOwner) )
 
                 const _namesFilter = [...names].map( item => (
@@ -148,8 +189,18 @@ const ConfirmList = () => {
                         value: item
                     }
                 ))
-                
                 setNamesFilter(_namesFilter);
+
+                const _rejectedList = resp[2].data.map( (item, index) => {
+                    return {
+                        ...item,
+                        whenSubmitted: moment(item.whenSubmitted).format('DD/MM/YYYY'),
+                        whenRejected: moment(item.whenRejected).format('DD/MM/YYYY'),
+                        key: index
+                    }
+                });
+                setRejectedCount(_rejectedList.length);
+                setRejectedList(_rejectedList);
 
             } catch(error) { // 😨
                 console.log(error.message);
@@ -168,6 +219,10 @@ const ConfirmList = () => {
         history.push(`/confirm/${record.reportOwnerId}/${record.saveReportId}`);
     }
 
+    const onRejectedRowClick = (record, index, event) => {
+        history.push(`/confirm/${record.reportOwnerId}/${record.saveReportId}`); 
+    }
+
     return(
         <Content>
             <Row>
@@ -184,9 +239,9 @@ const ConfirmList = () => {
                         className='hvn-table-rtl'>
                         <TabPane tab={
                             <span>
-                                <Icon type="schedule" />
+                                <Icon type="schedule" theme="twoTone"/>
                                 <span>
-                                {t('pending_reports')}
+                                    {t('pending_reports')} ({pendingCount})
                                 </span>
                             </span>
                         }
@@ -204,9 +259,9 @@ const ConfirmList = () => {
                         </TabPane>
                         <TabPane tab={
                             <span>
-                                <Icon type="carry-out" />
+                                <Icon type="carry-out" theme="twoTone"/>
                                 <span>
-                                    {t('approved_reports')}
+                                    {t('approved_reports')} ({approvedCount})
                                 </span>
                             </span>
                         }
@@ -215,13 +270,33 @@ const ConfirmList = () => {
                                 style={{ direction: 'rtl', heigth: '600px', cursor: 'pointer' }}
                                 columns={approvedTableColumns}
                                 size='middle'
-                                bordered={false}
+                                bordered={true}
                                 pagination={false}
-                                onRow={ (record, index) => ({
+                                onRow = { (record, index) => ({
                                     onClick: (event) => { onApprovedRowClick(record, index, event) }
                                 })}>
 
                             </Table>
+                        </TabPane>
+                        <TabPane tab={
+                            <span>
+                                <Icon type="alert" theme="twoTone" />
+                                <span>
+                                    {t('rejected_reports')} ({rejectedCount})
+                                </span>
+                            </span>
+                        }
+                            key='3'>
+                                <Table dataSource={rejectedList}
+                                    style={{ direction: 'rtl', heigth: '600px', cursor: 'pointer' }}
+                                    columns={rejectedTableColumns}
+                                    size='middle'
+                                    bordered={false}
+                                    pagination={false}
+                                    onRow = { (record, index) => ({
+                                        onClick: (event) => { onRejectedRowClick(record, index, event) }
+                                    })}
+                                    />
                         </TabPane>
                     </Tabs>
                 </Col>

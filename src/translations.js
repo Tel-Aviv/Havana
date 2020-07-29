@@ -80,7 +80,10 @@ const translations = {
             "approve_tooltip" : "Accept with possible comments",
             "reject_tooltip": "Reject and provide the reason",
             "forward_tooltip": "Move the approval to the next management level",
-            "rejected_note": "This report was rejected by the manager with note: "
+            "rejected_note": "This report was rejected by the manager with note: ",
+            "rejected_reports": "Rejected",
+            "approval_status": "Pending appoval",
+            "resubmitted_status": "Re-submitted"
         }
     },
     he: {
@@ -164,7 +167,10 @@ const translations = {
             "approve_tooltip" : "לאשר עם הערות אפשריות",
             "reject_tooltip": "דחה את הדוח והסבר מדוע",
             "forward_tooltip" : "העבר את האישור לדרג ניהול הבא",
-            "rejected_note": "הדוח הזה נדחה על ידי המנהל עם ההערה: "
+            "rejected_note": "הדוח הזה נדחה על ידי המנהל עם ההערה: ",
+            "rejected_reports": "נדחו",
+            "approval_status": "ממתין לאישור",
+            "resubmitted_status": "נשלח מחדש"
         }
     }
 }    
