@@ -115,7 +115,7 @@ const ConfirmList = () => {
             return record.reportOwner.indexOf(value) === 0
         }
     },
-    ...columns.slice(1),
+    ...columns.slice(1, columns.length - 1),
     {
         title: "תאריך אישור",
         dataIndex: "whenApproved",
@@ -132,7 +132,7 @@ const ConfirmList = () => {
         onFilter: (value, record) => {
         } 
     },
-    ...columns.slice(1),
+    ...columns.slice(1, columns.length - 1),
     {
         title: "תאריך דחיה",
         dataIndex: "whenRejected",
