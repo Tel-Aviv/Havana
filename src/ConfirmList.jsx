@@ -91,6 +91,42 @@ const columns = [{
 
 ]
 
+const approvedTableColumns = [{
+    title: "שם עובד",
+    dataIndex: "reportOwner",
+    align: 'right',
+    key: "name",
+    filters: namesFilter,
+    onFilter: (value, record) => {
+        return record.reportOwner.indexOf(value) === 0
+    }
+},
+...columns.slice(1, columns.length - 1),
+{
+    title: "תאריך אישור",
+    dataIndex: "whenApproved",
+    align: 'right',
+    key: "approved"
+}];
+
+const rejectedTableColumns = [{
+    title: "שם עובד",
+    dataIndex: "reportOwner",
+    align: 'right',
+    key: "name",
+    filters: namesFilter,
+    onFilter: (value, record) => {
+    } 
+},
+...columns.slice(1, columns.length - 1),
+{
+    title: "תאריך דחיה",
+    dataIndex: "whenRejected",
+    align: 'right',
+    key: "approved" 
+}
+]
+
 const ConfirmList = () => {
 
     const history = useHistory()
@@ -104,42 +140,6 @@ const ConfirmList = () => {
     const context = useContext(DataContext)
 
     const { t } = useTranslation();
-
-    const approvedTableColumns = [{
-        title: "שם עובד",
-        dataIndex: "reportOwner",
-        align: 'right',
-        key: "name",
-        filters: namesFilter,
-        onFilter: (value, record) => {
-            return record.reportOwner.indexOf(value) === 0
-        }
-    },
-    ...columns.slice(1, columns.length - 1),
-    {
-        title: "תאריך אישור",
-        dataIndex: "whenApproved",
-        align: 'right',
-        key: "approved"
-    }];
-    
-    const rejectedTableColumns = [{
-        title: "שם עובד",
-        dataIndex: "reportOwner",
-        align: 'right',
-        key: "name",
-        filters: namesFilter,
-        onFilter: (value, record) => {
-        } 
-    },
-    ...columns.slice(1, columns.length - 1),
-    {
-        title: "תאריך דחיה",
-        dataIndex: "whenRejected",
-        align: 'right',
-        key: "approved" 
-    }
-   ]
 
     useEffect( () =>  {
 
