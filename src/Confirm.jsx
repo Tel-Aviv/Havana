@@ -9,7 +9,9 @@ import uniqid from 'uniqid';
 import { useTranslation } from "react-i18next";
 
 import { Button, Typography, 
-        Row, Col, Card, Tooltip, Alert } from 'antd';
+        Row, Col, Card, Tooltip, 
+        Icon, Collapse, Alert } from 'antd';
+const { Panel } = Collapse;
 import { Input, Modal } from 'antd-rtl';
 
 const { Title } = Typography;    
@@ -44,6 +46,7 @@ const Confirm = (props: Props) => {
     const [title, setTitle] = useState<string>('');
     const [isReportApproved, setIsReportApproved] = useState<bool>(false);
     const [isReportRejected, setReportRejected] = useState<bool>(false);
+    const [isReportResubmitted, setReportResubmitted] = useState<bool>(false);
     const [reportNote, setReportNote] = useState<string>('')
     const [whenApproved, setWhenApproved] = useState();
     const [loadingData, setLoadingData] = useState<boolean>(false);
@@ -84,6 +87,7 @@ const Confirm = (props: Props) => {
                 setReportOwnerName(resp.data.ownerName);
                 setWhenApproved(moment(resp.data.whenApproved));
                 setReportRejected(resp.data.isRejected);
+                setReportResubmitted(resp.data.reSubmitted);
                 setReportNote(resp.data.note);
                 setTitle(`אישור דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
 
@@ -211,6 +215,15 @@ const Confirm = (props: Props) => {
         setPrintModalVisible(false);
     }
 
+    const formatAlertMessage = () => {
+        if( isReportResubmitted )
+            return `${t('resubmitted_header')} : ${reportNote}`;
+        else if( isReportRejected )
+            return `${t('rejected_note')} : ${reportNote}`;
+        else    
+            return t('approval_status');
+    }
+
     return (
         <Content>
             <Title level={1} className='hvn-title'>{title}</Title>
@@ -234,10 +247,10 @@ const Confirm = (props: Props) => {
                     </Col>
                     <Col span={22}>
                         <Alert closable={false} 
-                                message={reportNote}
-                                showIcon 
-                                className='hvn-item-rtl' 
-                                type={ isReportRejected ? 'error' : 'info'}/>
+                            message={formatAlertMessage()}
+                            showIcon 
+                            className='hvn-item-rtl' 
+                            type={ isReportRejected ? 'error' : 'info'}/>
                     </Col>
                 </Row>
             <Row gutter={[32, 32]} style={{

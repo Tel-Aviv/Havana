@@ -83,7 +83,8 @@ const translations = {
             "rejected_note": "This report was rejected by the manager with note: ",
             "rejected_reports": "Rejected",
             "approval_status": "Pending appoval",
-            "resubmitted_status": "Re-submitted"
+            "resubmitted_status": "Re-submitted",
+            "resubmitted_header": "This report was resubmitted"
         }
     },
     he: {
@@ -170,7 +171,8 @@ const translations = {
             "rejected_note": "הדוח הזה נדחה על ידי המנהל עם ההערה: ",
             "rejected_reports": "נדחו",
             "approval_status": "ממתין לאישור",
-            "resubmitted_status": "נשלח מחדש"
+            "resubmitted_status": "נשלח מחדש",
+            "resubmitted_header": "דוח זה נשלח לאישור מחדש לאחר טיפול בהערת מנהל"
         }
     }
 }    
