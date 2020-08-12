@@ -26,6 +26,7 @@ import style from './less/components/settings.less';
 const Settings = () => {
 
     const [userName, setUserName] = useState();
+    const [userID, setUserID] = useState();
     const [signature, setSignature] = useState();
     const [stamp, setStamp] = useState();
     const [loading, setLoading] = useState();
@@ -69,6 +70,7 @@ const Settings = () => {
                 }
 
                 setUserName(resp[2].data.userName);
+                setUserID(resp[2].data.ID);
                 
                 const managres = resp[3].data
                 setManagers(managres);
@@ -259,7 +261,7 @@ const Settings = () => {
                     <Card title={context.user.name}>
                         <Row>
                             <Col span={18}>
-                                <Meta title={userName}
+                                <Meta title={`${userName} (${userID})`}
                                     description='Not you? Sign out'/>
                             </Col>
                             <Col span={6}>

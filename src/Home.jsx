@@ -49,6 +49,7 @@ const Home = () => {
     const [isReportRejected, setIsReportRejected] = useState<bool>(false);
     const [reportId, setReportId] = useState<number>(0);
     const [totals, setTotals] = useState<string>(0);
+    const [userCompanyCode, setUserCompanyCode] = useState<number>(0);
 
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [calendarDate, setCalendarDate] = useState<moment>(moment());
@@ -398,7 +399,9 @@ const Home = () => {
                         })
                         
                         setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
-                        setIsReportEditable(resp.data.isEditable)
+                        console.log(resp.data)
+                        setUserCompanyCode(resp.data.employerCode);
+                        setIsReportEditable(resp.data.isEditable);
 
                     }
                 }
@@ -479,7 +482,7 @@ const Home = () => {
     const onSave = async() => {
         try {
             await axios({
-                url: `${dataContext.protocol}://${dataContext.host}/me/report/save?month=${month}&year=${year}`,
+                url: `${dataContext.protocol}://${dataContext.host}/me/report/save?month=${month}&year=${year}&employerCode=${userCompanyCode}`,
                 method: 'post',
                 data: reportData,
                 withCredentials: true
