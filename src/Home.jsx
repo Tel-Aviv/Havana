@@ -366,6 +366,13 @@ const Home = () => {
 
                         // Interim report found. Actually the following call gets
                         // the merged report: saved changes over the original data
+                        const reportStatus = respArr[1].data;
+                        setIsReportEditable( !reportStatus.approved );
+                        setIsReportRejected( reportStatus.rejected );
+                        const employerCode = reportStatus.employerCode || 0;
+                        setUserCompanyCode( employerCode )
+
+                        // Now get the report items
                         const resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
                             withCredentials: true
                         })  
@@ -375,9 +382,6 @@ const Home = () => {
                         })
                         setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
 
-                        setIsReportEditable(!respArr[1].data.approved);
-
-                        setIsReportRejected( respArr[1].data.rejected )
                     }  
 
                 } else {
@@ -399,7 +403,6 @@ const Home = () => {
                         })
                         
                         setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
-                        console.log(resp.data)
                         setUserCompanyCode(resp.data.employerCode);
                         setIsReportEditable(resp.data.isEditable);
 
