@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ADD_ITEM, DELETE_ITEM } from '../../redux/actionTypes';
 import 'antd/dist/antd.css';
-import { Table, Popconfirm, Modal, Form, Icon, Button, 
-        Tag, Row, Col, Tooltip } from 'antd';
+import { Table, Popconfirm, Modal, Form, Icon, 
+        Dropdown, Button, 
+        Tag, Row, Col, Tooltip, Menu } from 'antd';
 var moment = require('moment');
 import { useTranslation } from "react-i18next";
 
@@ -187,6 +188,18 @@ const EditableTable = (props) => {
       cell: EditableCell,
     },
   };
+
+  const actionsMenu = (
+    <Menu>
+      {
+        ['aaa', 'bbb'].map( (item, index) => 
+          <Menu.Item key={index}>
+            {item}
+          </Menu.Item>
+        )
+      }
+    </Menu>
+  )
   
   let columns = [
     {
@@ -289,10 +302,22 @@ const EditableTable = (props) => {
       },
       {
         title: 'סיכום',
-        width: '15%',
+        width: '6%',
         dataIndex: 'total',
         align: 'right',
         editable: false,
+      },
+      {
+        title: t('action_kind'),
+        width: '15%',
+        dataIndex: 'kind',
+        align: 'right',
+        render: (text, _) => 
+          <Dropdown overlay={actionsMenu}>
+             <Button>
+               {text} <Icon type="down" />
+             </Button>
+          </Dropdown>
       },
       {
         title: t('notes'),

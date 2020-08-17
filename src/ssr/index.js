@@ -52,7 +52,7 @@ app.get('/hr', function(request, response, next) {
 
                 rsp = template.replace('{USER_NAME}', request.ntlm.UserName)
                         .replace('{USER_THUMBNAIL}', null)
-                        .replace('{USER_ID}', request.ntlm.UserName)
+                        .replace('{USER_ACCOUNT_NAME}', request.ntlm.UserName)
                         .replace('{HOST}', process.env.HOST)
                         .replace('{PROTOCOL}', 'http')
 
@@ -63,7 +63,7 @@ app.get('/hr', function(request, response, next) {
                 //TODO this operation take to match time
                 rsp = template.replace('{USER_NAME}', user.cn)
                         .replace('{USER_THUMBNAIL}', user.thumbnailPhoto)
-                        .replace('{USER_ID}', request.ntlm.UserName)
+                        .replace('{USER_ACCOUNT_NAME}', request.ntlm.UserName)
                         .replace('{HOST}', process.env.HOST)
             }   
             response.end(rsp)

@@ -370,10 +370,15 @@ const Home = () => {
                         setIsReportEditable( !reportStatus.approved );
                         setIsReportRejected( reportStatus.rejected );
                         const employerCode = reportStatus.employerCode || 0;
-                        setUserCompanyCode( employerCode )
+                        setUserCompanyCode( employerCode );
+
+                        // Get action codes
+                        let resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/report_codes?id=${dataContext.user.userID}&employerCode=${employerCode}&year=${year}&month=${month}`, {
+                            withCredentials: true
+                        })
 
                         // Now get the report items
-                        const resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
+                        resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
                             withCredentials: true
                         })  
                         data = resp.data.items.map( (item, index ) => {
@@ -495,7 +500,7 @@ const Home = () => {
             const manualUpdate = {
                 Year: year,
                 Month: month,
-                UserID: dataContext.user.id,
+                UserID: dataContext.user.account_name,
                 items: manualUpdates
             }
             await axios(`${dataContext.protocol}://${dataContext.host}/me/manual_updates/`, {

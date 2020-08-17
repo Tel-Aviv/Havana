@@ -2,14 +2,17 @@ export function getUserFromHtml() {
 
     let elem = document.getElementById('USER_NAME');
     const userName = elem.textContent;
+    elem = document.getElementById('USER_ACCOUNT_NAME');
+    const accountName = elem.textContent;
     elem = document.getElementById('USER_ID');
-    const userId = elem.textContent;
+    const userID = elem.textContent;
     elem = document.getElementById('USER_THUMBNAIL');
     const imageData = elem.textContent;
 
     return {
         name: userName,
-        id: userId,
+        account_name: accountName,
+        userID:  userID,
         imageData: imageData
     }
 }
