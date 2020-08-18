@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
 import moment from 'moment';
 import i18n from 'i18next';
 import { useTranslation, initReactI18next } from "react-i18next";
@@ -31,7 +30,7 @@ import ReportPDF from './ReportPDF';
 import Settings from './Settings';
 
 import { DataContext } from "./DataContext";
-import { getUserFromHtml, getHost, getProtocol } from './utils';
+import { getUserFromHtml, getHost, getProtocol, API } from './utils';
 import translations from './translations';
 
 import { SET_NOTIFICATIONS_COUNT } from './redux/actionTypes';
@@ -56,7 +55,8 @@ const App = () => {
     const context = {
         user : getUserFromHtml(),
         host : getHost(),
-        protocol: getProtocol()
+        protocol: getProtocol(),
+        API: API
     }
 
     const dispatch = useDispatch();
@@ -65,15 +65,17 @@ const App = () => {
 
     useEffect( () => {
         async function fetchData() {
-            let res = await axios(`${context.protocol}://${context.host}/me/is_manager/`, {
+
+            let res = await context.API.get('/me/is_manager/', {
                 withCredentials: true
-            });
+            })
+
             const isManager = res.data;
             const display = isManager ? 'block' : 'none';
             setDisplayNotificatios(display)
 
             if( isManager ) {
-                res = await axios(`${context.protocol}://${context.host}/me/pendings/count`,{
+                res = await context.API.get('me/pendings/count',{
                     withCredentials: true
                 })
                 dispatch(action_setNotificationCount(res.data));

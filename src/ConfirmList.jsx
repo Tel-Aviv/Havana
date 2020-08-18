@@ -149,15 +149,9 @@ const ConfirmList = () => {
             try {
 
                 const resp = await axios.all([
-                    axios(`${context.protocol}://${context.host}/me/pendings`, {
-                        withCredentials: true
-                    }),
-                    axios(`${context.protocol}://${context.host}/me/approved`, {
-                        withCredentials: true
-                    }),
-                    axios(`${context.protocol}://${context.host}/me/pendings/rejected`, {
-                        withCredentials: true
-                    })
+                    context.API.get('/me/pendings', { withCredentials: true }),
+                    context.API.get('/me/approved', { withCredentials: true }),
+                    context.API.get('/me/pendings/rejected', { withCredentials: true })
                 ])
 
                 const pendingReports = resp[0].data.map( (item, index) => {

@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import axios from 'axios';
 import moment from 'moment';
 import uniqid from 'uniqid';
 
@@ -71,7 +70,8 @@ const Confirm = (props: Props) => {
             setLoadingData(true)
             try {
 
-                let resp = await axios(`${context.protocol}://${context.host}/me/employees/reports/${routeParams.saveReportId}`, {
+
+                context.API.get(`/me/employees/reports/${routeParams.saveReportId}`, {
                     withCredentials: true
                 }); 
 
@@ -91,7 +91,7 @@ const Confirm = (props: Props) => {
                 setReportNote(resp.data.note);
                 setTitle(`אישור דוח נוכחות של ${resp.data.ownerName} ל ${resp.data.month}/${resp.data.year}`);
 
-                resp = await axios(`${context.protocol}://${context.host}/me/employees/manual_updates/${routeParams.userid}?year=${resp.data.year}&month=${resp.data.month}`, {
+                resp = await context.API.get(`/me/employees/manual_updates/${routeParams.userid}?year=${resp.data.year}&month=${resp.data.month}`, {
                     withCredentials: true
                 })
                 setManualUpdates(resp.data.items)
@@ -122,7 +122,7 @@ const Confirm = (props: Props) => {
         try {
         
             const _note = note || '';
-            await axios( `${context.protocol}://${context.host}/me/forwardSavedReport?savedReportGuid=${savedReportId}&note=${_note}`, {
+            await context.API.get(`/me/forwardSavedReport?savedReportGuid=${savedReportId}&note=${_note}`, {
                 withCredentials: true
             })
 
@@ -160,13 +160,15 @@ const Confirm = (props: Props) => {
 
             dispatch( action_decreaseNotificationCount() );
 
-            let url = `${context.protocol}://${context.host}/me/pendings/saved/${savedReportId}?note=${note}`
-            await axios.patch(url, {html: ref.current.outerHTML}, {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                withCredentials: true
-            })
+            await context.API.patch(`/me/pendings/saved/${savedReportId}?note=${note}`, {
+                    html: ref.current.outerHTML
+                }, 
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    withCredentials: true
+                })
             
         } catch( err ) {
             console.error(err.message)
@@ -186,8 +188,9 @@ const Confirm = (props: Props) => {
                 history.push(`/confirmlist`);
             }, 4000);
 
-            let url = `${context.protocol}://${context.host}/me/pendings/rejected/${savedReportId}?note=${note}`
-            await axios.patch(url, {}, { withCredentials: true })
+            await context.API.patch(`/me/pendings/rejected/${savedReportId}?note=${note}`, 
+                {}, 
+                { withCredentials: true })
             
         } catch( err ) {
             console.error(err.message)

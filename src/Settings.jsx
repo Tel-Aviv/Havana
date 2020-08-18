@@ -49,10 +49,10 @@ const Settings = () => {
             try {
 
                 const resp = await axios.all([
-                    axios(`${context.protocol}://${context.host}/me/signature`,{ withCredentials: true} ),
-                    axios(`${context.protocol}://${context.host}/me/stamp`, { withCredentials: true  } ),
-                    axios(`${context.protocol}://${context.host}/me`, { withCredentials: true }),
-                    axios(`${context.protocol}://${context.host}/me/managers/`, { withCredentials: true })
+                    context.API.get('/me/signature', { withCredentials: true} ),
+                    context.API.get('/me/stamp', { withCredentials: true  }),
+                    context.API.get('/me', { withCredentials: true  }),
+                    context.API.get('/me/managers/', { withCredentials: true  })
                 ])
 
                 const signature = resp[0].data;

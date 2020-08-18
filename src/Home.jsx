@@ -293,9 +293,9 @@ const Home = () => {
             try {
 
                 const resp = await axios.all([
-                    axios(`${dataContext.protocol}://${dataContext.host}/me/managers/`, { withCredentials: true }),
-                    axios(`${dataContext.protocol}://${dataContext.host}/me/signature`, { withCredentials: true }),
-                    axios(`${dataContext.protocol}://${dataContext.host}/me/direct_manager`, { withCredentials: true } )
+                    dataContext.API.get('/me/managers/', { withCredentials: true }),
+                    dataContext.API.get('me/signature', { withCredentials: true }),
+                    dataContext.API.get('/me/direct_manager', { withCredentials: true } )
                 ]);
                 setManagers(resp[0].data);
             
@@ -315,8 +315,8 @@ const Home = () => {
                     }
                 }
 
-            } catch(err) {
-                console.error(err);
+            } catch( {response} ) {
+                console.error( response.data );
             }
         }
         fetchData()
@@ -335,13 +335,13 @@ const Home = () => {
                 const manualUpdates = [];
 
                 let respArr = await axios.all([
-                    axios(`${dataContext.protocol}://${dataContext.host}/daysoff?year=${year}&month=${month}`, {
+                    dataContext.API.get(`/daysoff?year=${year}&month=${month}`, {
                         withCredentials: true
                     }),
-                    axios(`${dataContext.protocol}://${dataContext.host}/me/reports/status?month=${month}&year=${year}`, {
+                    dataContext.API.get(`me/reports/status?month=${month}&year=${year}`, {
                         withCredentials: true
                     }),
-                    axios(`${dataContext.protocol}://${dataContext.host}/me/manual_updates?year=${year}&month=${month}`, {
+                    dataContext.API.get(`/me/manual_updates?year=${year}&month=${month}`, {
                         withCredentials: true
                     })
                 ]);
@@ -373,12 +373,12 @@ const Home = () => {
                         setUserCompanyCode( employerCode );
 
                         // Get action codes
-                        let resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/report_codes?id=${dataContext.user.userID}&employerCode=${employerCode}&year=${year}&month=${month}`, {
+                        let resp = await dataContext.API.get(`/me/report_codes?id=${dataContext.user.userID}&employerCode=${employerCode}&year=${year}&month=${month}`, {
                             withCredentials: true
                         })
 
                         // Now get the report items
-                        resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/reports/saved?savedReportGuid=${saveReportId}`, {
+                        resp = await dataContext.API.get(`/me/reports/saved?savedReportGuid=${saveReportId}`, {
                             withCredentials: true
                         })  
                         data = resp.data.items.map( (item, index ) => {
@@ -392,7 +392,7 @@ const Home = () => {
                 } else {
 
                     // The status of the report is unknown, i.e. get the original report    
-                    const resp = await axios(`${dataContext.protocol}://${dataContext.host}/me/reports/${year}/${month}/`, {
+                    const resp = await dataContext.API.get(`/me/reports/${year}/${month}/`, {
                         withCredentials: true
                     }); 
 
@@ -419,12 +419,10 @@ const Home = () => {
 
                 defineAlert(respArr[1].data);
 
-            } catch( error ) { // 😨
+            } catch( {response} ) { // 😨
 
-                console.log(error.message);
-                
-                if (error.mesage) {
-                    setAlertMessage(error.mesage);
+                if( response.data ) {
+                    setAlertMessage(response.data);
                 } else {
                     setAlertMessage('Something went wrong')
                 }
@@ -464,9 +462,7 @@ const Home = () => {
         
         try {
             
-            await axios({
-                url: `${dataContext.protocol}://${dataContext.host}/me/reports?month=${month}&year=${year}&assignee=${assignee.userId}`, 
-                method: 'post',
+            await dataContext.API.post(`/me/reports?month=${month}&year=${year}&assignee=${assignee.userId}`, {
                 data: reportData,
                 withCredentials: true
             })
@@ -475,8 +471,11 @@ const Home = () => {
             setIsReportEditable(false)
             setAlertType("info");
             
-        } catch(err) {
-            message.error(err.message);
+        } catch( {response} ) {
+            if( response.data )
+                message.error(response.data);
+            else
+                message.error("Something went wrong")
         }
 
         setAlertMessage(message);
@@ -489,9 +488,7 @@ const Home = () => {
 
     const onSave = async() => {
         try {
-            await axios({
-                url: `${dataContext.protocol}://${dataContext.host}/me/report/save?month=${month}&year=${year}&employerCode=${userCompanyCode}`,
-                method: 'post',
+            await dataContext.API.post(`/me/report/save?month=${month}&year=${year}&employerCode=${userCompanyCode}`, {
                 data: reportData,
                 withCredentials: true
             })
@@ -503,16 +500,15 @@ const Home = () => {
                 UserID: dataContext.user.account_name,
                 items: manualUpdates
             }
-            await axios(`${dataContext.protocol}://${dataContext.host}/me/manual_updates/`, {
-                method: 'post',
+            await dataContext.API.post(`/me/manual_updates/`, {
                 data: manualUpdate,
                 withCredentials: true
             });              
 
             //message.success(t('saved'))
-        } catch(err) {
-            console.error(err);
-            message.error(err.message)
+        } catch( {response} ) {
+            console.error(response.data);
+            message.error(response.data)
         }
     }
 

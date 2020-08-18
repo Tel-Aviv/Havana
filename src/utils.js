@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export function getUserFromHtml() {
 
     let elem = document.getElementById('USER_NAME');
@@ -26,3 +28,8 @@ export function getProtocol() {
     const elem = document.getElementById('PROTOCOL');
     return elem.textContent;
 }
+
+export const API = axios.create({
+        baseURL: `${getProtocol()}://${getHost()}`,
+        //responseType: "json"
+})
