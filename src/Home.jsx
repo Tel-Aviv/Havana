@@ -462,10 +462,11 @@ const Home = () => {
         
         try {
             
-            await dataContext.API.post(`/me/reports?month=${month}&year=${year}&assignee=${assignee.userId}`, {
-                data: reportData,
-                withCredentials: true
-            })
+            await dataContext.API.post(`/me/reports?month=${month}&year=${year}&assignee=${assignee.userId}`,
+                reportData,
+                {
+                    withCredentials: true
+                });
             
             setReportSubmitted(true);
             setIsReportEditable(false)
@@ -488,10 +489,11 @@ const Home = () => {
 
     const onSave = async() => {
         try {
-            await dataContext.API.post(`/me/report/save?month=${month}&year=${year}&employerCode=${userCompanyCode}`, {
-                data: reportData,
-                withCredentials: true
-            })
+            await dataContext.API.post(`/me/report/save?month=${month}&year=${year}&employerCode=${userCompanyCode}`, 
+                reportData,
+                {
+                    withCredentials: true
+                });
 
             // update the server about manual update
             const manualUpdate = {
@@ -500,10 +502,11 @@ const Home = () => {
                 UserID: dataContext.user.account_name,
                 items: manualUpdates
             }
-            await dataContext.API.post(`/me/manual_updates/`, {
-                data: manualUpdate,
-                withCredentials: true
-            });              
+            await dataContext.API.post(`/me/manual_updates/`, 
+                manualUpdate,
+                {
+                 withCredentials: true
+                });              
 
             //message.success(t('saved'))
         } catch( {response} ) {
