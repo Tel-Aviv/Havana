@@ -68,6 +68,7 @@ const Home = () => {
     const [assignee, setAssignee] = useState({
                                             userId:'direct'
                                         });
+    const [reportCodes, setReportCodes] = useState([]);
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
@@ -376,6 +377,7 @@ const Home = () => {
                         let resp = await dataContext.API.get(`/me/report_codes?id=${dataContext.user.userID}&employerCode=${employerCode}&year=${year}&month=${month}`, {
                             withCredentials: true
                         })
+                        setReportCodes(resp.data.items);
 
                         // Now get the report items
                         resp = await dataContext.API.get(`/me/reports/saved?savedReportGuid=${saveReportId}`, {
@@ -821,6 +823,7 @@ const Home = () => {
                                 key="1">
                                   
                             <TableReport dataSource={reportData}
+                                        reportCodes={reportCodes}
                                         daysOff={daysOff}
                                         manualUpdates={manualUpdates}
                                         loading={loadingData}
@@ -862,6 +865,7 @@ const Home = () => {
                     <div className='pdf-title'>{dataContext.user.name}</div>
                     <div className='pdf-title'>{t('summary')} {month}/{year}</div>
                     <TableReport dataSource={reportData} 
+                                reportCodes={reportCodes}
                                 loading={loadingData} 
                                 manualUpdates={manualUpdates}
                                 editable={false} />

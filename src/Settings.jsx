@@ -102,7 +102,7 @@ const Settings = () => {
         }
         const isLt2M = file.size / 1024 / 1024 < 2;
         if (!isLt2M) {
-             message.error('Image must smaller than 2MB!');
+             message.error('The image must be smaller than 2MB!');
         }
 
         return isJpgOrPng && isLt2M;

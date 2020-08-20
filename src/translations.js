@@ -85,7 +85,7 @@ const translations = {
             "approval_status": "Pending appoval",
             "resubmitted_status": "Re-submitted",
             "resubmitted_header": "This report was resubmitted",
-            "action_kind": "Action Kind"
+            "report_type": "Action Kind"
         }
     },
     he: {
@@ -174,7 +174,7 @@ const translations = {
             "approval_status": "ממתין לאישור",
             "resubmitted_status": "נשלח מחדש",
             "resubmitted_header": "דוח זה נשלח לאישור מחדש לאחר טיפול בהערת מנהל",
-            "action_kind": "קוד דיווח"
+            "report_type": "קוד דיווח"
         }
     }
 }    

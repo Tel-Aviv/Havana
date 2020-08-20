@@ -1,24 +1,42 @@
 // @flow
-import React from 'react'
-import { Input, Form, Button } from 'antd';
-var moment = require('moment');
+import React, { useState } from 'react'
+import { Input, Dropdown, Select,
+        Icon, Form, Button, Menu } from 'antd';
+const { Option } = Select;       
+const moment = require('moment');
+import uniqid from 'uniqid';
 
 import { ReportContext } from "./table-context";
 import CustomTimePicker from '../CustomTimePicker'
 const format = 'H:mm';
 
-type Props = {
-    inputType: string
-}
+const EditableCell = (props) => {
 
-const EditableCell = (props: Props) => {
+    const [reportCodes, setReportCodes] = useState([]);
+    
+    const getInput = (type) => {
+        const controls = {
+            time: () => {
+                return  <CustomTimePicker />;
+            },
+            select: () => {
+                return <Select size="small" style={{margin: '2px'}}> 
+                            {
+                                reportCodes.map( item => 
+                                    <Option key={uniqid()} value={item.Code}>{item.Description}</Option>)
+                            }
+                        </Select>;
+            },
+            default: () => {
+                return <Input size="small"/>;
+            }
+        }
 
-    const getInput = () => ( props.inputType !== 'time') ?
-        <Input size="small"/> :
-        <CustomTimePicker />
+        return (controls[type] || controls['default'])();
+    }
 
     return <ReportContext.Consumer>
-        {({ getFieldDecorator }) => {
+        {( {form, codes} ) => {
             const {
                 rowEditing,
                 dataIndex,
@@ -27,14 +45,16 @@ const EditableCell = (props: Props) => {
                 record,
                 index,
                 children,
-                cellEditbale,
                 ...restProps
             } = props;
+
+            setReportCodes(codes);
+
             return (
                 <td {...restProps}>
-                    {rowEditing && cellEditbale ?  (
+                    {rowEditing /*&& cellEditable*/ ?  (
                         <Form.Item style={{ margin: 0 }}>
-                            {getFieldDecorator(dataIndex, {
+                            {form.getFieldDecorator(dataIndex, {
                                 rules: [
                                     {
                                         required: true,
@@ -43,7 +63,9 @@ const EditableCell = (props: Props) => {
                                 ],
                                 initialValue: (record[dataIndex] && props.inputType === 'time') ?
                                             moment.utc(record[dataIndex], format) : (record[dataIndex])
-                            })(getInput())}
+                            })
+                                (getInput(inputType))
+                            }
                         </Form.Item>
                     ) : (
                             children

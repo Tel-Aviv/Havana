@@ -22,7 +22,7 @@ export default ({recordId, display, editing, disable, edit, save, cancel}) => {
           <Icon type="close-circle" theme="twoTone" twoToneColor="#eb2f96" style={iconStyle} />
         </Popconfirm>
         <ReportContext.Consumer>
-          {form => (
+          { ({form}) => (
             <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a"
               onClick={() => save(form, recordId)}
               style={iconStyle} />

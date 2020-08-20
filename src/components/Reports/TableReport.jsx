@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ADD_ITEM, DELETE_ITEM } from '../../redux/actionTypes';
 import 'antd/dist/antd.css';
-import { Table, Popconfirm, Modal, Form, Icon, 
-        Dropdown, Button, 
+import { Table, Popconfirm, Modal, Form, Icon,
         Tag, Row, Col, Tooltip, Menu } from 'antd';
 var moment = require('moment');
 import { useTranslation } from "react-i18next";
@@ -19,13 +18,14 @@ const format = 'H:mm';
 
 const EditableTable = (props) => {
 
-  const { getFieldDecorator, getFieldError, isFieldTouched } = props.form;
+  //const { getFieldDecorator, getFieldError, isFieldTouched } = props.form;
 
   const [data, setData] = useState([])
   const [daysOff, setDaysOff] = useState([]);
   const [originalData, setOriginalData] = useState([])
   const [editingKey, setEditingKey] = useState('')
   const [manualUpdates, setManualUpdates] = useState([]);
+  const [reportCodes, setReportCodes] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -41,7 +41,7 @@ const EditableTable = (props) => {
     deletedItem: item
   })
 
-  // States for adding nee record
+  // States for adding new record
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false)
   const [recordToAdd, setRecordToAdd] = useState();
 
@@ -62,6 +62,13 @@ const EditableTable = (props) => {
       })
     )
   }, [props.dataSource])
+
+  useEffect( () => {
+
+    if( props.reportCodes )
+      setReportCodes(props.reportCodes);
+
+  }, [props.reportCodes])
 
   useEffect( () => {
 
@@ -189,17 +196,13 @@ const EditableTable = (props) => {
     },
   };
 
-  const actionsMenu = (
-    <Menu>
-      {
-        ['aaa', 'bbb'].map( (item, index) => 
-          <Menu.Item key={index}>
-            {item}
-          </Menu.Item>
-        )
-      }
-    </Menu>
-  )
+  const reportCodeClicked = e => {
+    const reportCode = reportCodes.find( item =>
+      item.Code == e.key )
+    console.log(reportCode.Description);
+  };
+
+
   
   let columns = [
     {
@@ -308,16 +311,13 @@ const EditableTable = (props) => {
         editable: false,
       },
       {
-        title: t('action_kind'),
+        title: t('report_type'),
         width: '15%',
-        dataIndex: 'kind',
+        dataIndex: 'reportType',
         align: 'right',
+        editable: true,
         render: (text, _) => 
-          <Dropdown overlay={actionsMenu}>
-             <Button>
-               {text} <Icon type="down" />
-             </Button>
-          </Dropdown>
+          <div>{text}</div>
       },
       {
         title: t('notes'),
@@ -362,26 +362,45 @@ const EditableTable = (props) => {
     ];
 
 
+  const getInputType = (type) => {
+    const controls = {
+      entry: function () {
+        return 'time';
+      },
+      exit: function () {
+        return 'time';
+      },
+      reportType: function () {
+        return 'select';
+      },
+      default: function () {
+        return 'text';
+      }
+    };
+    return (controls[type] || controls['default'])();
+  }
+
   columns = columns.map(col => {
-    if (!col.editable) {
+    if (!col.editable) 
       return col;
-    }
+
     return {
       ...col,
       onCell: (record, rowIndex) => {
 
         return {
           record,
-          inputType: (col.dataIndex === 'exit' ||
-            col.dataIndex === 'entry') ? 'time' : 'text',
+          inputType: getInputType(col.dataIndex),
           dataIndex: col.dataIndex,
           title: col.title,
           rowEditing: isRowEditing(record),
-          cellEditbale: record.isAdded && ( col.dataIndex == 'entry' || col.dataIndex == 'exit' )
-                        || data[rowIndex][col.dataIndex] === '0:00'
-                        || col.dataIndex === 'notes'
-                        || isRecordUpdatedManually(record, col.dataIndex)
+          //cellEditable: true
 
+          // cellEditable: record.isAdded && ( col.dataIndex == 'entry' || col.dataIndex == 'exit' )
+          //               || data[rowIndex][col.dataIndex] === '0:00'
+          //               || col.dataIndex === 'notes' || col.dataIndex === 'typeReport'
+          //               || isRecordUpdatedManually(record, col.dataIndex)
+ 
       }}
     };
   });
@@ -486,7 +505,11 @@ const EditableTable = (props) => {
               onAddRecord={addRecord}
         />
 
-        <ReportContext.Provider value={props.form}>
+        <ReportContext.Provider value={ {
+                                         form: props.form,
+                                         codes: reportCodes
+                                        }
+                                      }>
           <Table
               {...props}
               style={{ 
