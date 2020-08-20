@@ -1,7 +1,6 @@
 // @flow
 import React, { useState } from 'react'
-import { Input, Dropdown, Select,
-        Icon, Form, Button, Menu } from 'antd';
+import { Input, Select, Form } from 'antd';
 const { Option } = Select;       
 const moment = require('moment');
 import uniqid from 'uniqid';
@@ -14,16 +13,26 @@ const EditableCell = (props) => {
 
     const [reportCodes, setReportCodes] = useState([]);
     
+    const onReportCodeChanged = (value) => {
+        console.log(value)
+    }
+
     const getInput = (type) => {
         const controls = {
             time: () => {
                 return  <CustomTimePicker />;
             },
             select: () => {
-                return <Select size="small" style={{margin: '2px'}}> 
+                return <Select
+                            size="small" style={{margin: '2px'}} 
+                            style={{width: '120px'}}
+                            onChange={onReportCodeChanged}> 
                             {
                                 reportCodes.map( item => 
-                                    <Option key={uniqid()} value={item.Code}>{item.Description}</Option>)
+                                    <Option key={uniqid()} 
+                                        value={item.Description}>
+                                            {item.Description}
+                                    </Option>)
                             }
                         </Select>;
             },
