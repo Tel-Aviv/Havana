@@ -209,7 +209,7 @@ const EditableTable = (props) => {
       title: '',
       dataIndex: 'add',
       align: 'center',
-      width: '6%',
+      //width: '6%',
       editable: false,
       render: (text, record) => 
         props.editable? (
@@ -236,7 +236,7 @@ const EditableTable = (props) => {
     },
       {
         title: 'יום',
-        width: '4%',
+        //width: '4%',
         dataIndex: 'day',
         align: 'right',
         ellipsis: true,
@@ -244,7 +244,7 @@ const EditableTable = (props) => {
       },
       {
         title: 'יום בשבוע',
-        width: '10%',
+        //width: '10%',
         dataIndex: 'dayOfWeek',
         align: 'center',
         ellipsis: true,
@@ -252,7 +252,7 @@ const EditableTable = (props) => {
       },    
       {
         title: t('in'),
-        width: '15%',
+        //width: '15%',
         dataIndex: 'entry',
         align: 'right',
         editable: true,
@@ -278,7 +278,7 @@ const EditableTable = (props) => {
       },
       {
         title: t('out'),
-        width: '15%',
+        //width: '15%',
         dataIndex: 'exit',
         align: 'right',
         editable: true,
@@ -305,14 +305,14 @@ const EditableTable = (props) => {
       },
       {
         title: 'סיכום',
-        width: '6%',
+        //width: '6%',
         dataIndex: 'total',
         align: 'right',
         editable: false,
       },
       {
         title: t('report_type'),
-        width: '15%',
+        //width: '13%',
         dataIndex: 'reportType',
         align: 'right',
         editable: true,
@@ -343,7 +343,7 @@ const EditableTable = (props) => {
       {
         title: '',
         dataIndex: 'operation',
-        width: '6%',
+        // width: '8%',
         render: (_, record) => {
 
           return ( moment(record.rdate, 'DD/MM/YYYY').isBefore(moment()) // no edits for future

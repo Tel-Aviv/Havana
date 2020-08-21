@@ -460,11 +460,11 @@ const Home = () => {
   
     const onSubmit = async () => {
         
-        let message = `דוח שעות לחודש ${month}/${year} נשלח לאישור`;
+        let _message = `דוח שעות לחודש ${month}/${year} נשלח לאישור`;
         
         try {
             
-            await dataContext.API.post(`/me/reports?month=${month}&year=${year}&assignee=${assignee.userId}`,
+            await dataContext.API.post(`/me/reports?month=${month}&year=${year}&assignee=${assignee.userAccountName}`,
                 reportData,
                 {
                     withCredentials: true
@@ -475,13 +475,13 @@ const Home = () => {
             setAlertType("info");
             
         } catch( {response} ) {
-            if( response.data )
+            if( response && response.data )
                 message.error(response.data);
             else
                 message.error("Something went wrong")
         }
 
-        setAlertMessage(message);
+        setAlertMessage(_message);
         setShowAlert(true);
     }
 
@@ -497,7 +497,7 @@ const Home = () => {
                     withCredentials: true
                 });
 
-            // update the server about manual update
+            // post to the server the manual update
             const manualUpdate = {
                 Year: year,
                 Month: month,
