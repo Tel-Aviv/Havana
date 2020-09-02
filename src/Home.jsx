@@ -295,7 +295,7 @@ const Home = () => {
 
                 const resp = await axios.all([
                     dataContext.API.get('/me/managers/', { withCredentials: true }),
-                    dataContext.API.get('me/signature', { withCredentials: true }),
+                    dataContext.API.get('/me/signature', { withCredentials: true }),
                     dataContext.API.get('/me/direct_manager', { withCredentials: true } )
                 ]);
                 setManagers(resp[0].data);
@@ -339,7 +339,7 @@ const Home = () => {
                     dataContext.API.get(`/daysoff?year=${year}&month=${month}`, {
                         withCredentials: true
                     }),
-                    dataContext.API.get(`me/reports/status?month=${month}&year=${year}`, {
+                    dataContext.API.get(`/me/reports/status?month=${month}&year=${year}`, {
                         withCredentials: true
                     }),
                     dataContext.API.get(`/me/manual_updates?year=${year}&month=${month}`, {
