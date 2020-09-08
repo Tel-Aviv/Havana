@@ -1,12 +1,13 @@
 // @flow
 import React, { useState } from 'react'
 import { Input, Select, Form } from 'antd';
-const { Option } = Select;       
-const moment = require('moment');
 import uniqid from 'uniqid';
 
 import { ReportContext } from "./table-context";
 import CustomTimePicker from '../CustomTimePicker'
+
+const { Option } = Select;       
+const moment = require('moment');
 const format = 'H:mm';
 
 const EditableCell = (props) => {

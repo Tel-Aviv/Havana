@@ -1,13 +1,14 @@
 import React from 'react';
 
 import { Layout } from 'antd';
-const { Header, Footer, Sider, Content } = Layout;
 
 import { Menu, Icon } from 'antd';
 import { Tabs } from 'antd';
-const { TabPane } = Tabs;
 
 import { Avatar, Tooltip, Badge, Calendar, Table } from 'antd';
+
+const { Header, Footer, Sider, Content } = Layout;
+const { TabPane } = Tabs;
 
 const App2 = () => {
     return (

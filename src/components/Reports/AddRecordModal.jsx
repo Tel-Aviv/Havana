@@ -3,11 +3,12 @@ import React from 'react';
 import moment from 'moment';
 import { Popconfirm, Modal, Form, Icon, Button, 
     Typography , Input, Row, Col } from 'antd';
-const { Title } = Typography;    
 import { useTranslation } from "react-i18next";   
 
 import CustomTimePicker from '../CustomTimePicker'
-
+    
+const { Title } = Typography;    
+    
 const AddRecordModal = (props) => {
 
     const { t } = useTranslation();

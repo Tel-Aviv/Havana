@@ -6,13 +6,10 @@ import { useTranslation } from "react-i18next";
 
 import { Upload, Icon, message } from 'antd';
 import { Row, Col, Card, Avatar } from 'antd';
-const { Meta } = Card;
 
 import { Typography } from 'antd';
-const { Title } = Typography;
 
 import { Menu, Dropdown, Select } from 'antd-rtl';
-const { Option } = Select;
 
 import { DataContext } from './DataContext';
 import { UPDATE_ITEM, SET_DIRECT_MANAGER } from "./redux/actionTypes"
@@ -22,6 +19,9 @@ import { UPDATE_ITEM, SET_DIRECT_MANAGER } from "./redux/actionTypes"
 // So we refer to CSS-class names like compiled CSS-rule
 import style from './less/components/settings.less';
 
+const { Meta } = Card;
+const { Title } = Typography;
+const { Option } = Select;
 
 const Settings = () => {
 

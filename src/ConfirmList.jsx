@@ -8,11 +8,12 @@ import { Table, Alert,
         Row, Col, Icon, Tag, Checkbox } from 'antd';
 import { useTranslation } from "react-i18next";
 import { Tabs } from 'antd-rtl';
-const { TabPane } = Tabs;
-import { Layout } from 'antd';
-const { Content } = Layout;
+import { Layout, Tooltip } from 'antd';
 import { DataContext } from './DataContext';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+
+const { TabPane } = Tabs;
+const { Content } = Layout;
 
 const monthsFilter = [...Array(12).keys()].map( i => ({
                                                         text: i+1,

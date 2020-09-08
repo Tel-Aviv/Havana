@@ -11,17 +11,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from "react-i18next";
 
 import { Layout, Icon, Popconfirm } from 'antd';
-const { Content } = Layout;
 
 import { Tooltip, Modal, Button,
-        Typography, Table, Tag } from 'antd';
-const { Title } = Typography;
-
+    Typography, Table, Tag } from 'antd';
+    
 import { Tabs, Dropdown, Menu, message  } from 'antd-rtl';
-const { TabPane } = Tabs;
 
 import { Alert, Card, 
-        Row, Col } from 'antd';
+    Row, Col } from 'antd';
 import { Pie } from 'ant-design-pro/lib/Charts';        
 
 import ReactToPrint from 'react-to-print';
@@ -34,9 +31,12 @@ import DocsUploader from './components/DocsUploader';
 import { UPDATE_ITEM, SET_DIRECT_MANAGER } from "./redux/actionTypes"
 
 import { DatePicker } from 'antd';
-
+    
+const { Content } = Layout;
+const { Title } = Typography;
+const { TabPane } = Tabs;
 const { MonthPicker } = DatePicker;
-
+    
 const Home = () => {
 
     const [month, setMonth] = useState<number>(moment().month()+1);

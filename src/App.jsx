@@ -8,12 +8,10 @@ import { useTranslation, initReactI18next } from "react-i18next";
 import { Helmet } from 'react-helmet';
 
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
-const { Header, Content, Footer, Sider } = Layout;
 
 import { version } from 'antd';
 
 import { Typography } from 'antd';
-const { Title } = Typography;
 
 import { Row, Col } from 'antd';
 
@@ -35,8 +33,11 @@ import translations from './translations';
 
 import { SET_NOTIFICATIONS_COUNT } from './redux/actionTypes';
 
+const { Header, Content, Footer, Sider } = Layout;
+const { Title } = Typography;
+
 i18n
-  .use(initReactI18next) // passes i18n down to react-i18next
+.use(initReactI18next) // passes i18n down to react-i18next
   .init({
     resources: translations,
     lng: "he",

@@ -13,11 +13,12 @@ import { Provider } from 'react-redux'
 
 import moment from 'moment';
 import 'moment/locale/he';
-moment.locale('he');
 
 import store from './redux/store';
 import App from './App'
 import App2 from './App2'
+
+moment.locale('he');
 
 ReactDOM.render(<Provider store={store}>
                     <HashRouter>

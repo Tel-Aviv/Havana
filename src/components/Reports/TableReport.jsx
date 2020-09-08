@@ -5,7 +5,6 @@ import { ADD_ITEM, DELETE_ITEM } from '../../redux/actionTypes';
 import 'antd/dist/antd.css';
 import { Table, Popconfirm, Modal, Form, Icon,
         Tag, Row, Col, Tooltip, Menu } from 'antd';
-var moment = require('moment');
 import { useTranslation } from "react-i18next";
 
 import { ReportContext } from "./table-context";
@@ -14,6 +13,7 @@ import EditIcons from './EditIcons';
 import AddRecordModal from './AddRecordModal';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
+var moment = require('moment');
 const format = 'H:mm';
 
 const EditableTable = (props) => {

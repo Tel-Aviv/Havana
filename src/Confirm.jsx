@@ -8,15 +8,12 @@ import uniqid from 'uniqid';
 import { useTranslation } from "react-i18next";
 
 import { Button, Typography, 
-        Row, Col, Card, Tooltip, 
-        Icon, Collapse, Alert } from 'antd';
-const { Panel } = Collapse;
-import { Input, Modal } from 'antd-rtl';
-
-const { Title } = Typography;    
-
+    Row, Col, Card, Tooltip, 
+    Icon, Collapse, Alert } from 'antd';
+    import { Input, Modal } from 'antd-rtl';
+    
+    
 import { Layout } from 'antd';
-const { Content } = Layout;
 import { Pie } from 'ant-design-pro/lib/Charts';        
 import ReactToPrint from 'react-to-print';
 
@@ -25,12 +22,17 @@ import TableReport from './components/Reports/TableReport';
 import DocsUploader from './components/DocsUploader';
 
 import { DECREASE_NOTIFICATIONS_COUNT,
-         INCREASE_NOTIFICATION_COUNT } from "./redux/actionTypes";
+    INCREASE_NOTIFICATION_COUNT } from "./redux/actionTypes";
+    
+const { Panel } = Collapse;
+const { Title } = Typography;
+const { Content } = Layout;
 
 type Props = {
     month: number,
     year: number
 }
+let resp;
 
 const ref = React.createRef();
 
