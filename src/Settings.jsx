@@ -5,14 +5,16 @@ import axios from 'axios';
 import { useTranslation } from "react-i18next";
 
 import { Upload, Icon, message } from 'antd';
-import { Row, Col, Card, Avatar } from 'antd';
+import { Row, Col, Avatar } from 'antd';
 const { Meta } = Card;
 
 import { Typography } from 'antd';
 const { Title } = Typography;
 
-import { Menu, Dropdown, Select } from 'antd-rtl';
+import { Menu, Dropdown, Select, Card } from 'antd-rtl';
 const { Option } = Select;
+
+import { TextualEmployeKind } from './utils';
 
 import { DataContext } from './DataContext';
 import { UPDATE_ITEM, SET_DIRECT_MANAGER } from "./redux/actionTypes"
@@ -32,11 +34,12 @@ const Settings = () => {
     const [loading, setLoading] = useState();
     const [managers, setManagers] = useState([]);
     const [directManager, setDirectManager] = useState({});
+    const [employeKind, setEmployeKind] = useState()
     
     const context = useContext(DataContext);
     const dispatch = useDispatch();
     
-    const action_setDirectManager = (manager: object) => ({
+    const action_setDirectManager = (manager) => ({
         type: SET_DIRECT_MANAGER,
         data: manager
     })
@@ -48,32 +51,26 @@ const Settings = () => {
 
             try {
 
-                const resp = await axios.all([
-                    context.API.get('/me/signature', { withCredentials: true} ),
-                    context.API.get('/me/stamp', { withCredentials: true  }),
-                    context.API.get('/me', { withCredentials: true  }),
-                    context.API.get('/me/managers/', { withCredentials: true  })
-                ])
+                const resp = await context.API.get('/me', { withCredentials: true })
 
-                const signature = resp[0].data;
+                const signature = resp.data.signature;
                 if( signature.startsWith('data:') ) {
                     setSignature(signature);
                 }
                 else {    
                     setSignature(`data:/image/*;base64,${signature}`);
                 }
-                const stamp = resp[1].data;
+                const stamp = resp.data.stamp;
                 if( stamp.startsWith('data:') ) {
                     setStamp(stamp)
                 } else {
                     setStamp(`data:/image/*;base64,${stamp}`);
                 }
 
-                setUserName(resp[2].data.userName);
-                setUserID(resp[2].data.ID);
-                
-                const managres = resp[3].data
-                setManagers(managres);
+                setUserName(resp.data.userName);
+                setUserID(resp.data.ID);
+                setManagers(resp.data.managers);
+                setEmployeKind(resp.data.kind);
 
             } catch( err ) {
                 console.log(err)
@@ -251,7 +248,7 @@ const Settings = () => {
                             <Icon type="delete" onClick={ e => removeSignature(e) }/>,
                         ]}>
                         <Upload {...uploadProps}>
-                            { signature?  <img src={signature} className='avatarUploader' onClick={e => dummyClick(e) }/> 
+                            { signature?  <img src={signature} className="avatarUploader" onClick={e => dummyClick(e) }/> 
                                         : uploadButton }
                         </Upload>
                         <Meta title="Uploaded" description="from local store" />
@@ -259,16 +256,11 @@ const Settings = () => {
                 </Col>
                 <Col span={8}>
                     <Card title={context.user.name}>
-                        <Row>
-                            <Col span={18}>
-                                <Meta title={`${userName} (${userID})`}
-                                    description='Not you? Sign out'/>
-                            </Col>
-                            <Col span={6}>
-                                <Avatar size={64} src={`data:image/jpeg;base64,${context.user.imageData}`}/>
-                            </Col>
-                        </Row> 
-  
+                        <Meta 
+                            avatar={`data:image/jpeg;base64,${context.user.imageData}`}
+                            title={'תעודת זהות: ' + userID}
+                            description={TextualEmployeKind[employeKind]}
+                        />
                     </Card>
                     <Card title={t('reports_to')}>
                          <Row>

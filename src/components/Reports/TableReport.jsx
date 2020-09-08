@@ -193,15 +193,7 @@ const EditableTable = (props) => {
       cell: EditableCell,
     },
   };
-
-  const reportCodeClicked = e => {
-    const reportCode = reportCodes.find( item =>
-      item.Code == e.key )
-    console.log(reportCode.Description);
-  };
-
-
-  
+ 
   let columns = [
     {
       title: '',
@@ -309,6 +301,13 @@ const EditableTable = (props) => {
         editable: false,
       },
       {
+        title: 'נדרש',
+        width: '6%',
+        dataIndex: 'required',
+        align: 'right',
+        editable: false,
+      },
+      {
         title: t('report_type'),
         width: '10%',
         dataIndex: 'reportType',
@@ -359,25 +358,6 @@ const EditableTable = (props) => {
       },
     ];
 
-
-  const getInputType = (type) => {
-    const controls = {
-      entry: function () {
-        return 'time';
-      },
-      exit: function () {
-        return 'time';
-      },
-      reportType: function () {
-        return 'select';
-      },
-      default: function () {
-        return 'text';
-      }
-    };
-    return (controls[type] || controls['default'])();
-  }
-
   columns = columns.map(col => {
     if (!col.editable) 
       return col;
@@ -402,6 +382,30 @@ const EditableTable = (props) => {
       }}
     };
   });
+
+  if( props.employeKind === 1) { // Contractor 
+    const index = columns.findIndex( item => item.dataIndex === 'required');
+    columns = [...columns.slice(0, index),
+              ...columns.slice(index+1)]
+  }
+
+  const getInputType = (type) => {
+    const controls = {
+      entry: function () {
+        return 'time';
+      },
+      exit: function () {
+        return 'time';
+      },
+      reportType: function () {
+        return 'select';
+      },
+      default: function () {
+        return 'text';
+      }
+    };
+    return (controls[type] || controls['default'])();
+  }
 
   const manuallyEditedTag = ( isEditedManually ) => {
     return isEditedManually ?

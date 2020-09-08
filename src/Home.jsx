@@ -69,6 +69,7 @@ const Home = () => {
                                             userId:'direct'
                                         });
     const [reportCodes, setReportCodes] = useState([]);
+    const [employeKind, setEmployeKind] = useState()
 
     const dataContext = useContext(DataContext);
     const history = useHistory();
@@ -293,14 +294,10 @@ const Home = () => {
 
             try {
 
-                const resp = await axios.all([
-                    dataContext.API.get('/me/managers/', { withCredentials: true }),
-                    dataContext.API.get('/me/signature', { withCredentials: true }),
-                    dataContext.API.get('/me/direct_manager', { withCredentials: true } )
-                ]);
-                setManagers(resp[0].data);
+                const resp = await dataContext.API.get('/me', { withCredentials: true })
+                setManagers(resp.data.managers);
             
-                const signature = resp[1].data;
+                const signature = resp.data.signature;
                 if( signature.startsWith('data:') ) {
                     setSignature(signature);
                 }
@@ -309,12 +306,14 @@ const Home = () => {
                 }   
                 
                 if( assignee.userId === 'direct' ) {
-                    const directManager = resp[2].data;
+                    const directManager = resp.data;
                     if( directManager ) {
                         setAssignee(directManager);
                         dispatch(action_setDirectManager(directManager));
                     }
                 }
+
+                setEmployeKind(resp.data.kind);
 
             } catch( {response} ) {
                 console.error( response.data );
@@ -333,16 +332,27 @@ const Home = () => {
             try {
 
                 let data = [];
-                const manualUpdates = [];
 
                 let respArr = await axios.all([
-                    dataContext.API.get(`/daysoff?year=${year}&month=${month}`, {
+                    dataContext.API.get('/daysoff',  {
+                        params: {
+                            year: year,
+                            month: month
+                        }, 
                         withCredentials: true
                     }),
-                    dataContext.API.get(`/me/reports/status?month=${month}&year=${year}`, {
+                    dataContext.API.get(`/me/reports/status`, {
+                        params: {
+                            year: year,
+                            month: month
+                        },
                         withCredentials: true
                     }),
-                    dataContext.API.get(`/me/manual_updates?year=${year}&month=${month}`, {
+                    dataContext.API.get(`/me/reports/manual_updates`, {
+                        params: {
+                            year: year,
+                            month: month
+                        },
                         withCredentials: true
                     })
                 ]);
@@ -373,14 +383,23 @@ const Home = () => {
                         const employerCode = reportStatus.employerCode || 0;
                         setUserCompanyCode( employerCode );
 
-                        // Get action codes
-                        let resp = await dataContext.API.get(`/me/report_codes?id=${dataContext.user.userID}&employerCode=${employerCode}&year=${year}&month=${month}`, {
+                        // Get report codes
+                        let resp = await dataContext.API.get(`/me/report_codes`, {
+                            params: {
+                                id : dataContext.user.userID,
+                                employerCode: employerCode,
+                                year: year,
+                                month: month
+                            },
                             withCredentials: true
                         })
                         setReportCodes(resp.data.items);
 
                         // Now get the report items
-                        resp = await dataContext.API.get(`/me/reports/saved?savedReportGuid=${saveReportId}`, {
+                        resp = await dataContext.API.get(`/me/reports/saved`, {
+                            params: {
+                                savedReportGuid: saveReportId
+                            }, 
                             withCredentials: true
                         })  
                         data = resp.data.items.map( (item, index ) => {
@@ -394,7 +413,11 @@ const Home = () => {
                 } else {
 
                     // The status of the report is unknown, i.e. get the original report    
-                    const resp = await dataContext.API.get(`/me/reports/${year}/${month}/`, {
+                    const resp = await dataContext.API.get(`/me/reports`, {
+                        params: {
+                            year: year,
+                            month: month
+                        },
                         withCredentials: true
                     }); 
 
@@ -491,9 +514,14 @@ const Home = () => {
 
     const onSave = async() => {
         try {
-            await dataContext.API.post(`/me/report/save?month=${month}&year=${year}&employerCode=${userCompanyCode}`, 
+            await dataContext.API.post(`/me/report/save`, 
                 reportData,
                 {
+                    params: {
+                        month: month,
+                        year: year,
+                        employerCode: userCompanyCode
+                    },
                     withCredentials: true
                 });
 
@@ -504,7 +532,7 @@ const Home = () => {
                 UserID: dataContext.user.account_name,
                 items: manualUpdates
             }
-            await dataContext.API.post(`/me/manual_updates/`, 
+            await dataContext.API.post(`/me/reports/manual_updates`, 
                 manualUpdate,
                 {
                  withCredentials: true
@@ -551,14 +579,19 @@ const Home = () => {
         setAssignee(managers[e.key].userId);
         message.info(`הדוח יועבר לאישור ${managers[e.key].userName}`);
     }
-    const menu = <Menu onClick={handleMenuClick}>
-        {managers.map((manager, index) => (
-                <Menu.Item  key={index}>
-                    <Icon type="user" />
-                    {manager.userName}
-                </Menu.Item>
-        ))}
-    </Menu>
+    const menu = 
+        <Menu onClick={handleMenuClick}>
+            {
+                managers ? 
+                managers.map((manager, index) => (
+                        <Menu.Item  key={index}>
+                            <Icon type="user" />
+                            {manager.userName}
+                        </Menu.Item>
+                )) : 
+                null
+            }
+        </Menu>
     
     const getSubmitTitle = () => {
         if( assignee ) {
@@ -823,6 +856,7 @@ const Home = () => {
                                 key="1">
                                   
                             <TableReport dataSource={reportData}
+                                        employeKind={employeKind}
                                         reportCodes={reportCodes}
                                         daysOff={daysOff}
                                         manualUpdates={manualUpdates}

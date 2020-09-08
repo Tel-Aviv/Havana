@@ -70,8 +70,7 @@ const Confirm = (props: Props) => {
             setLoadingData(true)
             try {
 
-
-                context.API.get(`/me/employees/reports/${routeParams.saveReportId}`, {
+                const resp = context.API.get(`/me/employees/reports/${routeParams.saveReportId}`, {
                     withCredentials: true
                 }); 
 

@@ -1,6 +1,19 @@
 const path = require('path');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = {
+    plugins: [
+        new FileManagerPlugin({
+          onEnd: {
+            copy: [
+                { 
+                    source: './dist/', 
+                    destination: 'C:\\Dev\\Havana\\PS\\PS\\' 
+                }
+            ]
+          }
+        })
+    ],
     entry: {
         bundle: path.resolve(__dirname, './src/index.js'),
         // ssr_bundle: './src/ssr/index.js'
@@ -9,8 +22,7 @@ module.exports = {
         rules: [
         {
             test: /\.(js|jsx)$/,
-            exclude: [/node_modules/, 
-                      '/ssr/index.js'],
+            include: path.resolve(__dirname, 'src'),          
             use: ['babel-loader']
         },
         {

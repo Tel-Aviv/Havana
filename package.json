@@ -13,7 +13,6 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack -d --watch",
-    "dist": "xcopy /Y .\\dist\\* C:\\Dev\\Havana\\PS\\PS",
     "prod": "webpack -p --config webpack.prod.js",
     "start": "nodemon ./src/ssr/index.js --port 3000 -e jsx",
     "find_user": "node ./src/ssr/findUser.js",
@@ -30,6 +29,7 @@
     "antd": "^3.26.6",
     "antd-rtl": "^3.11.14",
     "axios": "^0.19.2",
+    "axios-mock-adapter": "^1.18.2",
     "bizcharts": "^3.5.6",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -64,6 +64,7 @@
     "css-loader": "^3.4.2",
     "faker": "^4.1.0",
     "file-loader": "^5.0.2",
+    "filemanager-webpack-plugin": "^2.0.5",
     "flow-bin": "^0.117.0",
     "jest": "^25.1.0",
     "nodemon": "^2.0.2",

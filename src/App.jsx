@@ -66,7 +66,7 @@ const App = () => {
     useEffect( () => {
         async function fetchData() {
 
-            let res = await context.API.get('/me/is_manager/', {
+            let res = await context.API.get('/me/is_manager', {
                 withCredentials: true
             })
 
@@ -75,7 +75,7 @@ const App = () => {
             setDisplayNotificatios(display)
 
             if( isManager ) {
-                res = await context.API.get('me/pendings/count',{
+                res = await context.API.get('/me/pendings/count',{
                     withCredentials: true
                 })
                 dispatch(action_setNotificationCount(res.data));
@@ -131,11 +131,13 @@ const App = () => {
             <Layout layout='topmenu' 
                     locale='he-IL'> 
                 <Layout.Header className='ant-layout-header rtl'>                
-                    <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-blue' style={{
-                        padding: '0 3%'
-                    }}>  
+                    <Menu mode="horizontal" className='ant-menu top-nav-menu ant-menu-blue' 
+                        style={{
+                            padding: '0 3%'
+                        }}>  
                         <Menu.Item key='avatar' style={{
-                                top: '6px'
+                                top: '6px',
+                                cursor: 'pointer'
                             }}>
                                 <div>
                                     <Avatar size="large" src={`data:image/jpeg;base64,${context.user.imageData}`}
@@ -166,14 +168,14 @@ const App = () => {
                             float: 'left',
                             marginTop: '8px'
                             }}>
-                             <Tooltip title={t('settings')}>
+                                <Tooltip title={t('settings')}>
                                 <Icon type="setting" 
                                         theme="outlined"
                                         style={{
                                             fontSize: '24px'
                                         }}
                                         onClick={goSettings}/>
-                             </Tooltip>             
+                                </Tooltip>             
                         </Menu.Item>                 
                         <Menu.Item key='notifications' style={{
                                 marginTop: '8px',
@@ -193,27 +195,27 @@ const App = () => {
                         </Menu.Item> 
                     </Menu>   
                 </Layout.Header>
-            <Layout style={{ 
-                    padding: '17px 24px 24px 24px'
-                }}>
-                <DataContext.Provider value={context}>
-                    <Switch>
-                        <Route exact path='/'
-                                render={ (props) => 
-                                    <Home />
-                                }/>
-                        <Route path='/confirmlist' component={ConfirmList} />
-                        <Route path='/confirm/:userid/:saveReportId' component={Confirm}/>
-                        <Route path='/pdf' 
-                                render={ (props) => 
-                                    <ReportPDF tableData={props} />
-                                } />
-                        <Route path='/settings'
-                                component={Settings} />
-                    </Switch>
-                </DataContext.Provider>
-            </Layout>
-        </Layout> 
+                <Layout.Content style={{ 
+                        padding: '17px 24px 24px 24px'
+                    }}>
+                    <DataContext.Provider value={context}>
+                        <Switch>
+                            <Route exact path='/'
+                                    render={ (props) => 
+                                        <Home />
+                                    }/>
+                            <Route path='/confirmlist' component={ConfirmList} />
+                            <Route path='/confirm/:userid/:saveReportId' component={Confirm}/>
+                            <Route path='/pdf' 
+                                    render={ (props) => 
+                                        <ReportPDF tableData={props} />
+                                    } />
+                            <Route path='/settings'
+                                    component={Settings} />
+                        </Switch>
+                    </DataContext.Provider>
+                </Layout.Content>
+            </Layout> 
     </>
     )
 }
