@@ -1,15 +1,22 @@
 const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
+const webpack = require('webpack');
+const dotenv = require('dotenv').config({
+    path: path.join(__dirname, '.env')
+});
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = {
     plugins: [
+        new webpack.DefinePlugin({
+            "process.env": dotenv.parsed
+        }),
         new FileManagerPlugin({
           onEnd: {
             copy: [
                 { 
                     source: './dist/', 
-                    destination: 'C:\\Dev\\Havana\\PS\\PS\\' 
+                    destination:  process.env.distribution_folder
                 }
             ]
           }
@@ -24,7 +31,6 @@ module.exports = {
     },    
     entry: {
         bundle: path.resolve(__dirname, './src/index.js'),
-        // ssr_bundle: './src/ssr/index.js'
     },
     module: {
         rules: [

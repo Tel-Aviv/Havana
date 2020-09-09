@@ -1,4 +1,8 @@
 const path = require('path');
+const webpack = require('webpack');
+const dotenv = require('dotenv').config({
+    path: path.join(__dirname, '.env')
+});
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = {

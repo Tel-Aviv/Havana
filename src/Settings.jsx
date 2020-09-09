@@ -164,11 +164,6 @@ const Settings = () => {
         setSignature(null)        
     }    
 
-    const getUserAvatar = () => {
-        const source = `data:image/jpeg;base64,${context.user.imageData}`;
-        return <Avatar src={source} />
-    }
-
     const uploadProps = {
         action: `${context.protocol}://${context.host}/me/upload_signature`,
         withCredentials: true,
@@ -260,11 +255,8 @@ const Settings = () => {
                     </Card>
                 </Col>
                 <Col span={8}>
-                    <Card title={context.user.name}>
-                        <Meta 
-                            avatar={
-                                <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-                            }
+                    <Card title={context.user.name} loading={loading}>
+                        <Meta
                             title={'תעודת זהות: ' + me.userID}
                             description={TextualEmployeKind[me.employeKind]}
                         />
