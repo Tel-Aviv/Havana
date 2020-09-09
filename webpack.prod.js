@@ -1,7 +1,20 @@
 const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = {
+    plugins: [
+        new FileManagerPlugin({
+          onEnd: {
+            copy: [
+                { 
+                    source: './dist/', 
+                    destination: 'C:\\Dev\\Havana\\PS\\PS\\' 
+                }
+            ]
+          }
+        })
+    ],    
     mode: 'production',
     optimization: {
         minimize: true,

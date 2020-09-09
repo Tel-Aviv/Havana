@@ -1,5 +1,5 @@
 // @flow
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useReducer  } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { useTranslation } from "react-i18next";
@@ -27,14 +27,21 @@ import style from './less/components/settings.less';
 
 const Settings = () => {
 
-    const [userName, setUserName] = useState();
-    const [userID, setUserID] = useState();
-    const [signature, setSignature] = useState();
-    const [stamp, setStamp] = useState();
+    const [me, setMe] = useReducer( 
+            (state, newState) => ({...state, ...newState}),
+            {
+                userName: '',
+                userID: '',
+                signature: '',
+                stamp: '',
+                managers: [],
+                employeKind: ''
+            }
+
+        )
+
     const [loading, setLoading] = useState();
-    const [managers, setManagers] = useState([]);
     const [directManager, setDirectManager] = useState({});
-    const [employeKind, setEmployeKind] = useState()
     
     const context = useContext(DataContext);
     const dispatch = useDispatch();
@@ -54,23 +61,16 @@ const Settings = () => {
                 const resp = await context.API.get('/me', { withCredentials: true })
 
                 const signature = resp.data.signature;
-                if( signature.startsWith('data:') ) {
-                    setSignature(signature);
-                }
-                else {    
-                    setSignature(`data:/image/*;base64,${signature}`);
-                }
                 const stamp = resp.data.stamp;
-                if( stamp.startsWith('data:') ) {
-                    setStamp(stamp)
-                } else {
-                    setStamp(`data:/image/*;base64,${stamp}`);
-                }
 
-                setUserName(resp.data.userName);
-                setUserID(resp.data.ID);
-                setManagers(resp.data.managers);
-                setEmployeKind(resp.data.kind);
+                setMe({
+                    userName: resp.data.userName,
+                    userID: resp.data.ID,
+                    signature: signature.startsWith('data:') ? signature : `data:/image/*;base64,${signature}`,  
+                    stamp: stamp.startsWith('data:') ? stamp : `data:/image/*;base64,${stamp}`, 
+                    managers: resp.data.managers,
+                    employeKind: resp.data.kind
+                })
 
             } catch( err ) {
                 console.log(err)
@@ -164,6 +164,11 @@ const Settings = () => {
         setSignature(null)        
     }    
 
+    const getUserAvatar = () => {
+        const source = `data:image/jpeg;base64,${context.user.imageData}`;
+        return <Avatar src={source} />
+    }
+
     const uploadProps = {
         action: `${context.protocol}://${context.host}/me/upload_signature`,
         withCredentials: true,
@@ -197,17 +202,17 @@ const Settings = () => {
 
     const handleManagersMenuClick = (e) => {
         // setAssignee(managers[e.key].userId);
-        console.log( managers[e.key].userId )
+        console.log( me.managers[e.key].userId )
         // message.info(`הדוח יועבר לאישור ${managers[e.key].userName}`);
     }
 
     const onDirectManagerChanged = (val) => {
-        const _directManager = managers[val];
+        const _directManager = me.managers[val];
         dispatch(action_setDirectManager(_directManager));
     }
 
     const managersMenu = <Menu onClick={handleManagersMenuClick}>
-        {managers.map((manager, index) => (
+        { me.managers.map( (manager, index) => (
                 <Menu.Item  key={index}>
                     <Icon type="user" />
                     {manager.userName}
@@ -234,7 +239,7 @@ const Settings = () => {
                         <Icon type="delete" onClick={ e => removeStamp(e) }/>,
                     ]}>
                         <Upload {...uploadStampProps}>
-                            { stamp? <img src={stamp}  className='avatarUploader' onClick={e => dummyClick(e) }/>
+                            { me.stamp? <img src={me.stamp}  className='avatarUploader' onClick={e => dummyClick(e) }/>
                                     : uploadButton }
                         </Upload> 
                         <Meta title="Uploaded" description="from local store" />
@@ -248,7 +253,7 @@ const Settings = () => {
                             <Icon type="delete" onClick={ e => removeSignature(e) }/>,
                         ]}>
                         <Upload {...uploadProps}>
-                            { signature?  <img src={signature} className="avatarUploader" onClick={e => dummyClick(e) }/> 
+                            { me.signature?  <img src={me.signature} className="avatarUploader" onClick={e => dummyClick(e) }/> 
                                         : uploadButton }
                         </Upload>
                         <Meta title="Uploaded" description="from local store" />
@@ -257,9 +262,11 @@ const Settings = () => {
                 <Col span={8}>
                     <Card title={context.user.name}>
                         <Meta 
-                            avatar={`data:image/jpeg;base64,${context.user.imageData}`}
-                            title={'תעודת זהות: ' + userID}
-                            description={TextualEmployeKind[employeKind]}
+                            avatar={
+                                <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                            }
+                            title={'תעודת זהות: ' + me.userID}
+                            description={TextualEmployeKind[me.employeKind]}
                         />
                     </Card>
                     <Card title={t('reports_to')}>
@@ -270,7 +277,7 @@ const Settings = () => {
                                         onChange={onDirectManagerChanged}
                                         placeholder={directManager.userName}>
                                     {
-                                        managers.map((manager, index) => (
+                                        me.managers.map((manager, index) => (
                                             <Option key={index}>{manager.userName}</Option>
                                         ))
                                     }
