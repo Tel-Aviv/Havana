@@ -42,28 +42,33 @@ export const API = axios.create({
 
 const mock = new MockAdapter(API);
 
+// mock.onGet('/me/report_codes')
+//     .reply(200, {
+//     "items":[{
+//             "Code":10,
+//             "Description":"חופשה מנוחה",
+//             "ShortDescription":"חופשה",
+//             "goodFor":2
+//         },
+//         {
+//             "Code":20,
+//             "Description":"מחלה",
+//             "ShortDescription":"מחלה",
+//             "goodFor":2
+//         },
+//         {s
+//             "Code":624,
+//             "Description":"עבודה מהבית",
+//             "ShortDescription":"ע.מהבית",
+//             "goodFor":2
+//         }
+//     ]        
+//     })
+
 mock.onGet('/me/report_codes')
-    .reply(200, {
-    "items":[{
-            "Code":10,
-            "Description":"חופשה מנוחה",
-            "ShortDecription":"חופשה",
-            "goodFor":2
-        },
-        {
-            "Code":20,
-            "Description":"מחלה",
-            "ShortDecription":"מחלה",
-            "goodFor":2
-        },
-        {
-            "Code":624,
-            "Description":"עבודה מהבית",
-            "ShortDecription":"ע.מהבית",
-            "goodFor":2
-        }
-    ]        
-    })
+    .reply( config => 
+        axios.get('/me/report_codes', config)
+    )
     
 mock.onGet('/me')
     .reply( config => 
@@ -133,3 +138,10 @@ mock.onPost('/me/report/save')
                     config.data,
                     config)
     )
+ 
+const reportsUri = "/me/reports";
+const url = new RegExp(`${reportsUri}/*`);    
+mock.onGet(url)
+        .reply( config => 
+            axios.get(config.url, config)
+        )

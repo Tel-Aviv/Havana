@@ -403,7 +403,16 @@ const Home = () => {
                             withCredentials: true
                         })  
                         data = resp.data.items.map( (item, index ) => {
-                            const _item = {...item, key: index};
+                            
+                            const reportCode = reportCodes.find( (el) => 
+                                el.ShortDescription === item.reportType
+                            );
+                            const reportType = reportCode? reportCode.Description : item.reportType;
+
+                            const _item = {...item, 
+                                            key: index,
+                                            reportType: reportType || t('usual')
+                                        };
                             return _item;
                         })
                         setTotals(`${Math.floor(resp.data.totalHours)}:${Math.round(resp.data.totalHours % 1 * 60)}`);
@@ -413,11 +422,7 @@ const Home = () => {
                 } else {
 
                     // The status of the report is unknown, i.e. get the original report    
-                    const resp = await dataContext.API.get(`/me/reports`, {
-                        params: {
-                            year: year,
-                            month: month
-                        },
+                    const resp = await dataContext.API.get(`/me/reports/${year}/${month}`, {
                         withCredentials: true
                     }); 
 
@@ -501,7 +506,7 @@ const Home = () => {
             if( response && response.data )
                 message.error(response.data);
             else
-                message.error("Something went wrong")
+                message.error("Something went wrong on submission")
         }
 
         setAlertMessage(_message);
@@ -801,20 +806,17 @@ const Home = () => {
             </Row>
             <Row>
             { 
-                showAlert ? (<Alert closable={false}
-                                    style={{
-                                        opacity: alertOpacity
-                                    }}
-                                    message={alertMessage}
-                                    className='hvn-item-rtl' 
-                                    showIcon 
-                                    type={alertType} />
-                ) : null
+                <Alert closable={false}
+                        style={{
+                            opacity: alertOpacity,
+                        }}
+                        message={alertMessage}
+                        className='hvn-item-rtl' 
+                        showIcon 
+                        type={alertType} />
             }
             </Row>
-            <Row gutter={[32, 32]} style={{
-                    margin: '0% 4%' 
-                }}>
+            <Row gutter={[32, 32]}>
                 <Col span={5}>
                     <Row gutter={[40, 32]}>
                         <Col>
@@ -880,7 +882,7 @@ const Home = () => {
                 </Col>
             </Row>
             <Modal title={printReportTitle()}
-                    width='54%'
+                    width='64%'
                     visible={printModalVisible}
                     closable={true}
                     forceRender={true}
@@ -898,8 +900,10 @@ const Home = () => {
                 <div ref={componentRef} style={{textAlign: 'center'}} className='pdf-container'>
                     <div className='pdf-title'>{dataContext.user.name}</div>
                     <div className='pdf-title'>{t('summary')} {month}/{year}</div>
-                    <TableReport dataSource={reportData} 
+                    <TableReport dataSource={reportData}
+                                employeKind={employeKind}
                                 reportCodes={reportCodes}
+                                daysOff={daysOff}
                                 loading={loadingData} 
                                 manualUpdates={manualUpdates}
                                 editable={false} />
