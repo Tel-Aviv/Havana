@@ -411,7 +411,7 @@ const Home = () => {
 
                             const _item = {...item, 
                                             key: index,
-                                            reportType: reportType || t('usual')
+                                            reportType: (reportType && (!isWorkingDay(item)) || t('usual'))
                                         };
                             return _item;
                         })
