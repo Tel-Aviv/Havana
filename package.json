@@ -29,7 +29,7 @@
     "ant-design-pro": "^2.3.2",
     "antd": "^3.26.6",
     "antd-rtl": "^3.11.14",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bizcharts": "^3.5.6",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
